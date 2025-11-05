@@ -13,28 +13,30 @@ $success = '';
 // Handle profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $username = trim($_POST['username']);
+    $nickname = trim($_POST['nickname']);
     $email = trim($_POST['email']);
     
-    if (empty($username) || empty($email)) {
+    if (empty($username) || empty($nickname) || empty($email)) {
         $error = 'Please fill in all fields';
     } else {
         $conn = getDBConnection();
         
-        $stmt = $conn->prepare("SELECT id FROM users WHERE (username = ? OR email = ?) AND id != ?");
-        $stmt->bind_param("ssi", $username, $email, $user['id']);
+        $stmt = $conn->prepare("SELECT id FROM users WHERE (username = ? OR email = ? OR nickname = ?) AND id != ?");
+        $stmt->bind_param("sssi", $username, $email, $nickname, $user['id']);
         $stmt->execute();
         $result = $stmt->get_result();
         
         if ($result->num_rows > 0) {
-            $error = 'Username or email already taken';
+            $error = 'Username, nickname, or email already taken';
         } else {
-            $stmt = $conn->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $username, $email, $user['id']);
+            $stmt = $conn->prepare("UPDATE users SET username = ?, nickname = ?, email = ? WHERE id = ?");
+            $stmt->bind_param("sssi", $username, $nickname, $email, $user['id']);
             
             if ($stmt->execute()) {
                 $success = 'Profile updated successfully!';
                 $_SESSION['username'] = $username;
                 $user['username'] = $username;
+                $user['nickname'] = $nickname;
                 $user['email'] = $email;
             } else {
                 $error = 'Update failed. Please try again.';

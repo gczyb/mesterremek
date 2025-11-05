@@ -95,6 +95,8 @@ $user = getCurrentUser();
 
         .user-menu {
             position: relative;
+            display: flex;
+            align-items: center;
         }
 
         .user-avatar {
@@ -109,6 +111,14 @@ $user = getCurrentUser();
             font-weight: bold;
             cursor: pointer;
             border: 2px solid #fbbf24;
+            position: relative;
+            z-index: 100;
+        }
+
+        .user-avatar:hover {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            transform: scale(1.05);
+            transition: all 0.3s;
         }
 
         .user-dropdown {
@@ -121,6 +131,7 @@ $user = getCurrentUser();
             border-radius: 0.5rem;
             min-width: 200px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
         }
 
         .user-dropdown.active {
@@ -133,6 +144,7 @@ $user = getCurrentUser();
             color: #e2e8f0;
             text-decoration: none;
             transition: background-color 0.3s;
+            cursor: pointer;
         }
 
         .user-dropdown a:hover {
@@ -303,7 +315,6 @@ $user = getCurrentUser();
             }
         }
 
-        /* About Section */
         #about {
             background-color: #0f172a;
         }
@@ -390,7 +401,6 @@ $user = getCurrentUser();
             left: -24px;
         }
 
-        /* Features Section */
         #features {
             background-color: #1e293b;
         }
@@ -464,7 +474,6 @@ $user = getCurrentUser();
             color: #94a3b8;
         }
 
-        /* Gallery Section */
         #gallery {
             background-color: #0f172a;
         }
@@ -554,7 +563,6 @@ $user = getCurrentUser();
             margin-bottom: 1.5rem;
         }
 
-        /* Footer */
         footer {
             background-color: #020617;
             border-top: 1px solid #1e293b;
@@ -638,7 +646,7 @@ $user = getCurrentUser();
                 
                 <?php if ($user): ?>
                     <div class="user-menu">
-                        <div class="user-avatar" onclick="toggleUserMenu()">
+                        <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                         </div>
                         <div class="user-dropdown" id="userDropdown">
@@ -652,7 +660,7 @@ $user = getCurrentUser();
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="login.php" class="btn btn-outline">Login</a>
+                    <a href="login.php" class="btn btn-outline" style="cursor: pointer;">Login</a>
                 <?php endif; ?>
             </div>
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
@@ -706,7 +714,6 @@ $user = getCurrentUser();
         </div>
     </section>
 
-    <!-- About Section -->
     <section id="about">
         <div class="section-container">
             <div class="about-grid">
@@ -739,7 +746,7 @@ $user = getCurrentUser();
                 
                 <div class="about-image-container">
                     <div class="about-image">
-                        <img src="https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXhlbCUyMGFydCUyMGdhbWV8ZW58MXx8fHwxNzYxMTM1MTI1fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="Game artwork">
+                        <img src="https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080" alt="Game artwork">
                     </div>
                     <div class="glow-effect glow-bottom-right"></div>
                     <div class="glow-effect glow-top-left"></div>
@@ -748,7 +755,6 @@ $user = getCurrentUser();
         </div>
     </section>
 
-    <!-- Features Section -->
     <section id="features">
         <div class="section-container">
             <div class="section-header">
@@ -758,7 +764,7 @@ $user = getCurrentUser();
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M6.2 8.9a3 3 0 0 1 5.6 0M5 21h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2z"></path>
                         </svg>
                     </div>
@@ -768,7 +774,7 @@ $user = getCurrentUser();
 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
@@ -779,7 +785,7 @@ $user = getCurrentUser();
 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                             <circle cx="9" cy="7" r="4"></circle>
                             <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -792,12 +798,8 @@ $user = getCurrentUser();
 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
-                            <path d="M5 3v4"></path>
-                            <path d="M19 17v4"></path>
-                            <path d="M3 5h4"></path>
-                            <path d="M17 19h4"></path>
                         </svg>
                     </div>
                     <h3>Magical Abilities</h3>
@@ -806,7 +808,7 @@ $user = getCurrentUser();
 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                         </svg>
                     </div>
@@ -816,13 +818,8 @@ $user = getCurrentUser();
 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                            <path d="M4 22h16"></path>
-                            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-                            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-                            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
                         </svg>
                     </div>
                     <h3>Secrets & Collectibles</h3>
@@ -832,7 +829,6 @@ $user = getCurrentUser();
         </div>
     </section>
 
-    <!-- Gallery Section -->
     <section id="gallery">
         <div class="section-container">
             <div class="section-header">
@@ -845,7 +841,7 @@ $user = getCurrentUser();
                     <div class="carousel-track" id="carouselTrack">
                         <div class="carousel-item">
                             <div class="video-container">
-                                <img src="https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXhlbCUyMGFydCUyMGdhbWV8ZW58MXx8fHwxNzYxMTM1MTI1fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="Epic Boss Battles">
+                                <img src="https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?w=1080" alt="Epic Boss Battles">
                                 <div class="carousel-caption">
                                     <h3>Epic Boss Battles</h3>
                                 </div>
@@ -853,7 +849,7 @@ $user = getCurrentUser();
                         </div>
                         <div class="carousel-item">
                             <div class="video-container">
-                                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZXRybyUyMGdhbWluZ3xlbnwxfHx8fDE3NjExNjI0Nzl8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Retro Inspired Graphics">
+                                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1080" alt="Retro Inspired Graphics">
                                 <div class="carousel-caption">
                                     <h3>Retro Inspired Graphics</h3>
                                 </div>
@@ -861,7 +857,7 @@ $user = getCurrentUser();
                         </div>
                         <div class="carousel-item">
                             <div class="video-container">
-                                <img src="https://images.unsplash.com/photo-1553986782-9f6de60b51b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWRpZXZhbCUyMGtuaWdodHxlbnwxfHx8fDE3NjEyMTg2MTN8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Heroic Adventures">
+                                <img src="https://images.unsplash.com/photo-1553986782-9f6de60b51b4?w=1080" alt="Heroic Adventures">
                                 <div class="carousel-caption">
                                     <h3>Heroic Adventures</h3>
                                 </div>
@@ -869,7 +865,7 @@ $user = getCurrentUser();
                         </div>
                         <div class="carousel-item">
                             <div class="video-container">
-                                <img src="https://images.unsplash.com/photo-1707042711207-2b38f5d93974?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYW50YXN5JTIwYWR2ZW50dXJlfGVufDF8fHx8MTc2MTE0MzQyOHww&ixlib=rb-4.1.0&q=80&w=1080" alt="Mystical Worlds">
+                                <img src="https://images.unsplash.com/photo-1707042711207-2b38f5d93974?w=1080" alt="Mystical Worlds">
                                 <div class="carousel-caption">
                                     <h3>Mystical Worlds</h3>
                                 </div>
@@ -878,12 +874,12 @@ $user = getCurrentUser();
                     </div>
                 </div>
                 <button class="carousel-btn carousel-btn-prev" onclick="previousSlide()">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
                 </button>
                 <button class="carousel-btn carousel-btn-next" onclick="nextSlide()">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
@@ -905,7 +901,6 @@ $user = getCurrentUser();
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <div class="section-container">
             <div class="footer-grid">
@@ -934,7 +929,7 @@ $user = getCurrentUser();
                             </svg>
                         </a>
                         <a href="#" aria-label="Email">
-                            <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <rect width="20" height="16" x="2" y="4" rx="2"></rect>
                                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                             </svg>
@@ -955,7 +950,8 @@ $user = getCurrentUser();
             menu.classList.toggle('active');
         }
 
-        function toggleUserMenu() {
+        function toggleUserMenu(event) {
+            event.stopPropagation();
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('active');
         }
@@ -964,7 +960,7 @@ $user = getCurrentUser();
             const userMenu = document.querySelector('.user-menu');
             const dropdown = document.getElementById('userDropdown');
             
-            if (userMenu && !userMenu.contains(event.target)) {
+            if (dropdown && userMenu && !userMenu.contains(event.target)) {
                 dropdown.classList.remove('active');
             }
         });
@@ -975,7 +971,9 @@ $user = getCurrentUser();
 
         function updateCarousel() {
             const track = document.getElementById('carouselTrack');
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            if (track) {
+                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
         }
 
         function nextSlide() {
