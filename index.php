@@ -686,7 +686,7 @@ $user = getCurrentUser();
     </nav>
 
     <section id="home" class="hero">
-        <img src="https://i.redd.it/tried-to-create-some-landscape-pixel-art-so-i-attempted-to-v0-qln4rxoc2m291.png?width=2600&format=png&auto=webp&s=f64d50fdbcc3a18d49ec3cc01943bf64c8f07739" alt="Background" class="hero-bg">
+        <img src="img/background_img.png" alt="Background" class="hero-bg">
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1>TREASURE QUEST</h1>

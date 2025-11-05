@@ -13,30 +13,28 @@ $success = '';
 // Handle profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $username = trim($_POST['username']);
-    $nickname = trim($_POST['nickname']);
     $email = trim($_POST['email']);
     
-    if (empty($username) || empty($nickname) || empty($email)) {
+    if (empty($username) || empty($email)) {
         $error = 'Please fill in all fields';
     } else {
         $conn = getDBConnection();
         
-        $stmt = $conn->prepare("SELECT id FROM users WHERE (username = ? OR email = ? OR nickname = ?) AND id != ?");
-        $stmt->bind_param("sssi", $username, $email, $nickname, $user['id']);
+        $stmt = $conn->prepare("SELECT id FROM users WHERE (username = ? OR email = ?) AND id != ?");
+        $stmt->bind_param("ssi", $username, $email, $user['id']);
         $stmt->execute();
         $result = $stmt->get_result();
         
         if ($result->num_rows > 0) {
-            $error = 'Username, nickname, or email already taken';
+            $error = 'Username or email already taken';
         } else {
-            $stmt = $conn->prepare("UPDATE users SET username = ?, nickname = ?, email = ? WHERE id = ?");
-            $stmt->bind_param("sssi", $username, $nickname, $email, $user['id']);
+            $stmt = $conn->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
+            $stmt->bind_param("ssi", $username, $email, $user['id']);
             
             if ($stmt->execute()) {
                 $success = 'Profile updated successfully!';
                 $_SESSION['username'] = $username;
                 $user['username'] = $username;
-                $user['nickname'] = $nickname;
                 $user['email'] = $email;
             } else {
                 $error = 'Update failed. Please try again.';
@@ -80,6 +78,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
             }
         } else {
             $error = 'Current password is incorrect';
+        }
+        
+        $stmt->close();
+        $conn->close();
+    }
+}
+
+// Handle account deletion
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
+    $confirm_password = $_POST['confirm_delete_password'];
+    
+    if (empty($confirm_password)) {
+        $error = 'Please enter your password to confirm deletion';
+    } else {
+        $conn = getDBConnection();
+        $stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
+        $stmt->bind_param("i", $user['id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user_data = $result->fetch_assoc();
+        
+        if (password_verify($confirm_password, $user_data['password'])) {
+            $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->bind_param("i", $user['id']);
+            
+            if ($stmt->execute()) {
+                $stmt->close();
+                $conn->close();
+                session_destroy();
+                header('Location: index.php?deleted=1');
+                exit;
+            } else {
+                $error = 'Account deletion failed. Please try again.';
+            }
+        } else {
+            $error = 'Incorrect password';
         }
         
         $stmt->close();
@@ -268,6 +302,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
             background-color: #dc2626;
         }
 
+        .danger-zone {
+            border: 1px solid #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .danger-zone h2 {
+            color: #ef4444;
+        }
+
+        .delete-warning {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            color: #fca5a5;
+        }
+
         .card p {
             color: #94a3b8;
             margin-bottom: 1rem;
@@ -335,8 +387,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 
         <div class="card">
             <h2>Account Actions</h2>
-            <p>Manage your account settings and preferences.</p>
-            <a href="logout.php" class="btn btn-danger">Logout</a>
+            <p style="margin-bottom: 1.5rem;">Manage your account settings and preferences.</p>
+            <a href="logout.php" class="btn" style="background-color: #fbbf24; margin-bottom: 1rem;">Logout</a>
+        </div>
+
+        <div class="card danger-zone">
+            <h2>Delete Account</h2>
+            <div class="delete-warning">
+                <strong>⚠️ Warning:</strong> Deleting your account is permanent and cannot be undone. All your data will be lost forever.
+            </div>
+            <form method="POST" action="" onsubmit="return confirm('Are you absolutely sure you want to delete your account? This action cannot be undone!');">
+                <div class="form-group">
+                    <label for="confirm_delete_password">Enter your password to confirm deletion</label>
+                    <input type="password" id="confirm_delete_password" name="confirm_delete_password" required>
+                </div>
+                <button type="submit" name="delete_account" class="btn btn-danger">Delete Account Permanently</button>
+            </form>
         </div>
     </div>
 </body>
