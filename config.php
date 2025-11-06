@@ -132,7 +132,7 @@ function getCurrentUser() {
     $conn = getDBConnection();
     $user_id = $_SESSION['user_id'];
     
-    $stmt = $conn->prepare("SELECT id, username, email FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, username, email, profile_picture FROM users WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();

@@ -113,6 +113,13 @@ $user = getCurrentUser();
             border: 2px solid #fbbf24;
             position: relative;
             z-index: 100;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-avatar:hover {
@@ -647,7 +654,11 @@ $user = getCurrentUser();
                 <?php if ($user): ?>
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
-                            <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
+                            <?php if (!empty($user['profile_picture']) && file_exists($user['profile_picture'])): ?>
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <?php else: ?>
+                                <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
+                            <?php endif; ?>
                         </div>
                         <div class="user-dropdown" id="userDropdown">
                             <div class="user-info">
