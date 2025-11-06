@@ -23,46 +23,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_picture'])) {
         } elseif ($filesize > 5000000) { // 5MB limit
             $error = 'File size must be less than 5MB';
         } else {
-            // Create uploads directory if it doesn't exist
-            $upload_dir = 'uploads/profiles/';
-            if (!file_exists($upload_dir)) {
-                mkdir($upload_dir, 0777, true);
-            }
+            // Read file content as binary data
+            $image_data = file_get_contents($_FILES['profile_picture']['tmp_name']);
             
-            // Generate unique filename
-            $new_filename = 'profile_' . $user['id'] . '_' . time() . '.' . $filetype;
-            $upload_path = $upload_dir . $new_filename;
+            $conn = getDBConnection();
             
-            if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $upload_path)) {
-                $conn = getDBConnection();
-                
-                // Delete old profile picture if exists
-                $stmt = $conn->prepare("SELECT profile_picture FROM users WHERE id = ?");
-                $stmt->bind_param("i", $user['id']);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $old_user = $result->fetch_assoc();
-                
-                if ($old_user['profile_picture'] && file_exists($old_user['profile_picture'])) {
-                    unlink($old_user['profile_picture']);
-                }
-                
-                // Update database
-                $stmt = $conn->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
-                $stmt->bind_param("si", $upload_path, $user['id']);
-                
-                if ($stmt->execute()) {
-                    $success = 'Profile picture updated successfully!';
-                    $user['profile_picture'] = $upload_path;
-                } else {
-                    $error = 'Failed to update profile picture';
-                }
-                
-                $stmt->close();
-                $conn->close();
+            // Store image in database as BLOB
+            $stmt = $conn->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
+            $stmt->bind_param("bi", $null, $user['id']);
+            $stmt->send_long_data(0, $image_data);
+            
+            if ($stmt->execute()) {
+                $success = 'Profile picture updated successfully!';
+                // Reload user data to get the updated picture
+                $user = getCurrentUser();
             } else {
-                $error = 'Failed to upload file';
+                $error = 'Failed to update profile picture';
             }
+            
+            $stmt->close();
+            $conn->close();
         }
     } else {
         $error = 'Please select an image file';
@@ -72,16 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_picture'])) {
 // Handle profile picture removal
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_picture'])) {
     $conn = getDBConnection();
-    
-    $stmt = $conn->prepare("SELECT profile_picture FROM users WHERE id = ?");
-    $stmt->bind_param("i", $user['id']);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $old_user = $result->fetch_assoc();
-    
-    if ($old_user['profile_picture'] && file_exists($old_user['profile_picture'])) {
-        unlink($old_user['profile_picture']);
-    }
     
     $stmt = $conn->prepare("UPDATE users SET profile_picture = NULL WHERE id = ?");
     $stmt->bind_param("i", $user['id']);
@@ -424,8 +394,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
     <div class="container">
         <div class="profile-header">
             <div class="profile-avatar">
-                <?php if (!empty($user['profile_picture']) && file_exists($user['profile_picture'])): ?>
-                    <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                <?php if (!empty($user['profile_picture'])): ?>
+                    <img src="image.php?id=<?php echo $user['id']; ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                 <?php else: ?>
                     <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                 <?php endif; ?>
@@ -450,8 +420,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                 <h3 style="color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1rem;">Profile Picture</h3>
                 <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;">
                     <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #f59e0b); display: flex; align-items: center; justify-content: center; border: 3px solid #fbbf24; overflow: hidden;">
-                        <?php if (!empty($user['profile_picture']) && file_exists($user['profile_picture'])): ?>
-                            <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+                        <?php if (!empty($user['profile_picture'])): ?>
+                            <img src="image.php?id=<?php echo $user['id']; ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
                         <?php else: ?>
                             <span style="font-size: 32px; color: #0f172a; font-weight: bold;"><?php echo strtoupper(substr($user['username'], 0, 1)); ?></span>
                         <?php endif; ?>
