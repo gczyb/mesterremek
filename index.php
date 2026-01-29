@@ -642,6 +642,7 @@ $user = getCurrentUser();
                 <a href="#about">About</a>
                 <a href="#features">Features</a>
                 <a href="#gallery">Gallery</a>
+                <a href="leaderboard.php">Leaderboard</a>
                 <button class="btn">Get Game</button>
                 
                 <?php if ($user): ?>
@@ -680,6 +681,7 @@ $user = getCurrentUser();
             <a href="#about">About</a>
             <a href="#features">Features</a>
             <a href="#gallery">Gallery</a>
+            <a href="leaderboard.php">Leaderboard</a>
             <?php if ($user): ?>
                 <a href="profile.php">Profile (<?php echo htmlspecialchars($user['username']); ?>)</a>
                 <a href="logout.php">Logout</a>
