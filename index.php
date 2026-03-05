@@ -328,13 +328,12 @@ $user = getCurrentUser();
             z-index: 9999;
         }
 
-        /* Restored aspect-ratio here so all galleries and the showcase work! */
         .video-container {
             position: relative;
             width: 100%;
             height: 100%;
-            aspect-ratio: 16/9; /* <-- FIX APPLIED HERE */
-            background-color: #1e293b;
+            aspect-ratio: 16/9;
+            background-color: #0f172a; 
             border-radius: 0.5rem;
             overflow: hidden;
             border: 4px solid rgba(251, 191, 36, 0.3);
@@ -360,13 +359,13 @@ $user = getCurrentUser();
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(to bottom right, #1e293b, #0f172a);
+            background: linear-gradient(to bottom right, #0f172a, #0f172a);
             transition: background 0.4s ease;
             z-index: 5;
         }
 
         .video-placeholder:not(.is-playing):hover .video-overlay {
-            background: linear-gradient(to bottom right, #2a3a52, #162238);
+            background: linear-gradient(to bottom right, #1a2a47, #10192e);
         }
 
         /* --- Universal Custom Button Styles --- */
@@ -477,19 +476,22 @@ $user = getCurrentUser();
         .glow-effect { position: absolute; width: 128px; height: 128px; background-color: rgba(251, 191, 36, 0.1); border-radius: 0.5rem; filter: blur(60px); }
         .glow-bottom-right { bottom: -24px; right: -24px; }
         .glow-top-left { top: -24px; left: -24px; }
-        #features { background-color: #1e293b; }
+        
+        /* Features section background changed to #0f172a */
+        #features { background-color: #0f172a; }
         h2 { color: #fbbf24; font-size: 2rem; margin-bottom: 1.5rem; }
         .section-header { text-align: center; margin-bottom: 4rem; }
         .section-header p { max-width: 42rem; margin: 0 auto; }
         .features-grid { display: grid; gap: 1.5rem; }
         @media (min-width: 768px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 1024px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
-        .feature-card { background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; padding: 1.5rem; transition: all 0.3s; }
+        .feature-card { background-color: #020617; border: 1px solid #334155; border-radius: 0.5rem; padding: 1.5rem; transition: all 0.3s; }
         .feature-card:hover { border-color: rgba(251, 191, 36, 0.5); }
         .feature-icon { display: inline-flex; padding: 0.75rem; border-radius: 0.5rem; background-color: rgba(251, 191, 36, 0.1); margin-bottom: 1rem; }
         .feature-icon svg { width: 32px; height: 32px; color: #fbbf24; }
         .feature-card h3 { color: #f1f5f9; margin-bottom: 0.5rem; font-size: 1.25rem; }
         .feature-card p { color: #94a3b8; }
+        
         #gallery { background-color: #0f172a; }
         .carousel { position: relative; max-width: 64rem; margin: 0 auto; }
         .carousel-container { position: relative; overflow: hidden; border-radius: 0.5rem; }
@@ -818,7 +820,7 @@ $user = getCurrentUser();
                     </div>
                 </div>
             </div>
-
+            
         </div>
     </section>
 
@@ -883,7 +885,7 @@ $user = getCurrentUser();
         // --- YouTube API & Player Control Logic ---
         
         // 1. SET YOUR YOUTUBE VIDEO ID HERE
-        const YOUTUBE_VIDEO_ID = 'dQw4w9WgXcQ'; // Replace with your trailer's ID
+        const YOUTUBE_VIDEO_ID = 'dQw4w9WgXcQ'; 
 
         let ytPlayer;
         let isVideoExpanded = false;
