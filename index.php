@@ -20,8 +20,10 @@ $user = getCurrentUser();
             background-color: #0f172a;
             color: #cbd5e1;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
+        /* --- Navigation Styles --- */
         .nav {
             position: fixed;
             top: 0;
@@ -207,6 +209,7 @@ $user = getCurrentUser();
             }
         }
 
+        /* --- Hero Section Styles --- */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -264,19 +267,90 @@ $user = getCurrentUser();
             margin: 0 auto 2rem;
         }
 
-        .video-placeholder {
+        /* --- Dynamic Video Player Styles --- */
+        .video-backdrop {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .video-backdrop.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .video-wrapper {
             max-width: 56rem;
             margin: 0 auto 2rem;
+            position: relative;
+            aspect-ratio: 16/9;
+            width: 100%;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            inset: 0;
+            margin: 0;
+            cursor: pointer;
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1), 
+                        width 0.5s cubic-bezier(0.19, 1, 0.22, 1), 
+                        height 0.5s cubic-bezier(0.19, 1, 0.22, 1),
+                        max-width 0.5s cubic-bezier(0.19, 1, 0.22, 1),
+                        max-height 0.5s cubic-bezier(0.19, 1, 0.22, 1),
+                        inset 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 10;
+        }
+
+        .video-placeholder:not(.is-playing):hover {
+            transform: scale(1.02);
+        }
+
+        .video-placeholder.is-playing {
+            cursor: default;
+        }
+
+        /* State: Maximized (Expanded) */
+        .video-placeholder.is-expanded {
+            position: fixed;
+            inset: 0; 
+            margin: auto; 
+            width: min(80vw, calc(80vh * 16 / 9));
+            height: min(calc(80vw * 9 / 16), 80vh);
+            max-width: 1024px;
+            max-height: 576px;
+            transform: scale(1);
+            z-index: 9999;
         }
 
         .video-container {
             position: relative;
+            width: 100%;
+            height: 100%;
             aspect-ratio: 16/9;
-            background-color: #1e293b;
+            background-color: #0f172a; 
             border-radius: 0.5rem;
             overflow: hidden;
             border: 4px solid rgba(251, 191, 36, 0.3);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: border-radius 0.4s ease;
+        }
+
+        /* YouTube iFrame Container */
+        #ytPlayerContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: none; 
+            z-index: 1;
         }
 
         .video-overlay {
@@ -285,22 +359,92 @@ $user = getCurrentUser();
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(to bottom right, #1e293b, #0f172a);
+            background: linear-gradient(to bottom right, #0f172a, #0f172a);
+            transition: background 0.4s ease;
+            z-index: 5;
         }
 
-        .play-button {
-            background-color: rgba(251, 191, 36, 0.2);
-            backdrop-filter: blur(4px);
-            border-radius: 50%;
-            padding: 2rem;
+        .video-placeholder:not(.is-playing):hover .video-overlay {
+            background: linear-gradient(to bottom right, #1a2a47, #10192e);
+        }
+
+        /* --- Universal Custom Button Styles --- */
+        .control-btn {
+            background-color: #0b1121; 
+            border: 2px solid #a1803a; 
+            color: #dcb355; 
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .control-btn:hover {
+            background-color: #131c33;
+            border-color: #fbbf24;
+            color: #fbbf24;
+            transform: scale(1.1);
+        }
+
+        /* Standard Overlay Buttons (Play/Pause, Size Toggle) */
+        .controls-group {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; 
+            z-index: 20;
+        }
+
+        .controls-group .control-btn {
+            position: absolute;
+            top: 1rem;
+            width: 44px;
+            height: 44px;
+            opacity: 0; 
+            pointer-events: none;
+        }
+
+        .controls-group .control-btn.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #playPauseBtn { right: 4.5rem; }
+        #sizeToggleBtn { right: 1rem; }
+
+        /* The Initial Massive Play Button */
+        #playBtnContent {
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+            z-index: 15;
+        }
+
+        #playBtnContent .initial-play-btn {
+            width: 96px;
+            height: 96px;
+            border-radius: 1.5rem; 
             margin-bottom: 1rem;
         }
 
-        .play-icon {
-            width: 64px;
-            height: 64px;
-            color: #fbbf24;
-        }
+        .btn-icon { width: 22px; height: 22px; }
+        #playBtnContent .initial-play-btn .btn-icon { width: 48px; height: 48px; margin-left: 6px; } 
+
+        .icon-minimize { display: none; }
+        .is-expanded .icon-maximize { display: none; }
+        .is-expanded .icon-minimize { display: block; }
 
         .hero-buttons {
             display: flex;
@@ -315,322 +459,66 @@ $user = getCurrentUser();
             }
         }
 
-        #about {
-            background-color: #0f172a;
-        }
-
-        .about-grid {
-            display: grid;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        @media (min-width: 768px) {
-            .about-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .about-content {
-            color: #cbd5e1;
-        }
-
-        .about-content p {
-            margin-bottom: 1rem;
-        }
-
-        .about-content .highlight {
-            color: #fbbf24;
-        }
-
-        .about-info {
-            padding-top: 1rem;
-            margin-top: 1rem;
-            border-top: 1px solid #334155;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .info-item p:first-child {
-            color: #fbbf24;
-            margin-bottom: 0.25rem;
-        }
-
-        .info-item p:last-child {
-            color: #94a3b8;
-        }
-
-        .about-image-container {
-            position: relative;
-        }
-
-        .about-image {
-            aspect-ratio: 1;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            border: 4px solid rgba(251, 191, 36, 0.3);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .about-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .glow-effect {
-            position: absolute;
-            width: 128px;
-            height: 128px;
-            background-color: rgba(251, 191, 36, 0.1);
-            border-radius: 0.5rem;
-            filter: blur(60px);
-        }
-
-        .glow-bottom-right {
-            bottom: -24px;
-            right: -24px;
-        }
-
-        .glow-top-left {
-            top: -24px;
-            left: -24px;
-        }
-
-        #features {
-            background-color: #1e293b;
-        }
-
-        h2 {
-            color: #fbbf24;
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-header p {
-            max-width: 42rem;
-            margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 768px) {
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .features-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .feature-card {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            transition: all 0.3s;
-        }
-
-        .feature-card:hover {
-            border-color: rgba(251, 191, 36, 0.5);
-        }
-
-        .feature-icon {
-            display: inline-flex;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            background-color: rgba(251, 191, 36, 0.1);
-            margin-bottom: 1rem;
-        }
-
-        .feature-icon svg {
-            width: 32px;
-            height: 32px;
-            color: #fbbf24;
-        }
-
-        .feature-card h3 {
-            color: #f1f5f9;
-            margin-bottom: 0.5rem;
-            font-size: 1.25rem;
-        }
-
-        .feature-card p {
-            color: #94a3b8;
-        }
-
-        #gallery {
-            background-color: #0f172a;
-        }
-
-        .carousel {
-            position: relative;
-            max-width: 64rem;
-            margin: 0 auto;
-        }
-
-        .carousel-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 0.5rem;
-        }
-
-        .carousel-track {
-            display: flex;
-            transition: transform 0.5s ease;
-        }
-
-        .carousel-item {
-            min-width: 100%;
-            position: relative;
-        }
-
-        .carousel-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .carousel-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
-            padding: 1.5rem;
-        }
-
-        .carousel-caption h3 {
-            color: #fbbf24;
-            font-size: 1.5rem;
-        }
-
-        .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #1e293b;
-            border: 1px solid rgba(251, 191, 36, 0.5);
-            color: #fbbf24;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-
-        .carousel-btn:hover {
-            background-color: #334155;
-        }
-
-        .carousel-btn-prev {
-            left: 1rem;
-        }
-
-        .carousel-btn-next {
-            right: 1rem;
-        }
-
-        .gallery-video {
-            margin-top: 4rem;
-            max-width: 56rem;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .gallery-video h3 {
-            text-align: center;
-            color: #fbbf24;
-            margin-bottom: 1.5rem;
-        }
-
-        footer {
-            background-color: #020617;
-            border-top: 1px solid #1e293b;
-            padding: 3rem 0;
-        }
-
-        .footer-grid {
-            display: grid;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        @media (min-width: 768px) {
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        footer h3 {
-            color: #fbbf24;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        footer h4 {
-            color: #e2e8f0;
-            margin-bottom: 1rem;
-        }
-
-        footer p {
-            color: #94a3b8;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            color: #94a3b8;
-            transition: color 0.3s;
-        }
-
-        .social-links a:hover {
-            color: #fbbf24;
-        }
-
-        .social-links svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .footer-bottom {
-            padding-top: 2rem;
-            border-top: 1px solid #1e293b;
-            text-align: center;
-            color: #64748b;
-        }
-
-        section {
-            padding: 5rem 0;
-        }
-
-        .section-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
+        /* --- Content Sections Styles --- */
+        #about { background-color: #0f172a; }
+        .about-grid { display: grid; gap: 3rem; align-items: center; }
+        @media (min-width: 768px) { .about-grid { grid-template-columns: 1fr 1fr; } }
+        .about-content { color: #cbd5e1; }
+        .about-content p { margin-bottom: 1rem; }
+        .about-content .highlight { color: #fbbf24; }
+        .about-info { padding-top: 1rem; margin-top: 1rem; border-top: 1px solid #334155; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .info-item p:first-child { color: #fbbf24; margin-bottom: 0.25rem; }
+        .info-item p:last-child { color: #94a3b8; }
+        .about-image-container { position: relative; }
+        .about-image { aspect-ratio: 1; border-radius: 0.5rem; overflow: hidden; border: 4px solid rgba(251, 191, 36, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .about-image img { width: 100%; height: 100%; object-fit: cover; }
+        .glow-effect { position: absolute; width: 128px; height: 128px; background-color: rgba(251, 191, 36, 0.1); border-radius: 0.5rem; filter: blur(60px); }
+        .glow-bottom-right { bottom: -24px; right: -24px; }
+        .glow-top-left { top: -24px; left: -24px; }
+        
+        /* Features section background changed to #0f172a */
+        #features { background-color: #0f172a; }
+        h2 { color: #fbbf24; font-size: 2rem; margin-bottom: 1.5rem; }
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-header p { max-width: 42rem; margin: 0 auto; }
+        .features-grid { display: grid; gap: 1.5rem; }
+        @media (min-width: 768px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
+        .feature-card { background-color: #020617; border: 1px solid #334155; border-radius: 0.5rem; padding: 1.5rem; transition: all 0.3s; }
+        .feature-card:hover { border-color: rgba(251, 191, 36, 0.5); }
+        .feature-icon { display: inline-flex; padding: 0.75rem; border-radius: 0.5rem; background-color: rgba(251, 191, 36, 0.1); margin-bottom: 1rem; }
+        .feature-icon svg { width: 32px; height: 32px; color: #fbbf24; }
+        .feature-card h3 { color: #f1f5f9; margin-bottom: 0.5rem; font-size: 1.25rem; }
+        .feature-card p { color: #94a3b8; }
+        
+        #gallery { background-color: #0f172a; }
+        .carousel { position: relative; max-width: 64rem; margin: 0 auto; }
+        .carousel-container { position: relative; overflow: hidden; border-radius: 0.5rem; }
+        .carousel-track { display: flex; transition: transform 0.5s ease; }
+        .carousel-item { min-width: 100%; position: relative; }
+        .carousel-item img { width: 100%; height: 100%; object-fit: cover; }
+        .carousel-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent); padding: 1.5rem; }
+        .carousel-caption h3 { color: #fbbf24; font-size: 1.5rem; }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background-color: #1e293b; border: 1px solid rgba(251, 191, 36, 0.5); color: #fbbf24; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: background-color 0.3s; display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .carousel-btn:hover { background-color: #334155; }
+        .carousel-btn-prev { left: 1rem; }
+        .carousel-btn-next { right: 1rem; }
+        .gallery-video { margin-top: 4rem; max-width: 56rem; margin-left: auto; margin-right: auto; }
+        .gallery-video h3 { text-align: center; color: #fbbf24; margin-bottom: 1.5rem; }
+        footer { background-color: #020617; border-top: 1px solid #1e293b; padding: 3rem 0; }
+        .footer-grid { display: grid; gap: 2rem; margin-bottom: 2rem; }
+        @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+        footer h3 { color: #fbbf24; margin-bottom: 1rem; font-size: 1.5rem; }
+        footer h4 { color: #e2e8f0; margin-bottom: 1rem; }
+        footer p { color: #94a3b8; }
+        .social-links { display: flex; gap: 1rem; }
+        .social-links a { color: #94a3b8; transition: color 0.3s; }
+        .social-links a:hover { color: #fbbf24; }
+        .social-links svg { width: 24px; height: 24px; }
+        .footer-bottom { padding-top: 2rem; border-top: 1px solid #1e293b; text-align: center; color: #64748b; }
+        section { padding: 5rem 0; }
+        .section-container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
     </style>
 </head>
 <body>
@@ -698,24 +586,53 @@ $user = getCurrentUser();
             <h1>TREASURE QUEST</h1>
             <p>Embark on an epic 2D adventure through treacherous dungeons, mystical forests, and ancient ruins. Master the art of combat, discover legendary treasures, and become the hero of legend.</p>
             
-            <div class="video-placeholder">
-                <div class="video-container">
-                    <div class="video-overlay">
-                        <div style="text-align: center;">
-                            <div class="play-button">
-                                <svg class="play-icon" fill="currentColor" viewBox="0 0 24 24">
+            <div class="video-backdrop" id="videoBackdrop" onclick="minimizeVideo()"></div>
+
+            <div class="video-wrapper">
+                <div id="mainVideo" class="video-placeholder initial-state" onclick="startVideo()">
+                    <div class="video-container">
+                        
+                        <div class="video-overlay" id="videoOverlay"></div>
+
+                        <div id="ytPlayerContainer"></div>
+                        
+                        <div id="playBtnContent">
+                            <div class="control-btn initial-play-btn" title="Watch Gameplay Trailer">
+                                <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24">
                                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
                                 </svg>
                             </div>
-                            <p style="color: #94a3b8;">Gameplay Trailer</p>
+                            <p style="color: #94a3b8; font-weight: 500; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Watch Gameplay Trailer</p>
                         </div>
+
+                        <div id="controlsGroup" class="controls-group">
+                            <button id="playPauseBtn" class="control-btn" onclick="togglePlayPause(event)" title="Play/Pause Video">
+                                <svg id="iconPause" class="btn-icon" fill="currentColor" viewBox="0 0 24 24" style="display: none;">
+                                    <rect x="6" y="4" width="4" height="16"></rect>
+                                    <rect x="14" y="4" width="4" height="16"></rect>
+                                </svg>
+                                <svg id="iconPlay" class="btn-icon" fill="currentColor" viewBox="0 0 24 24">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                            </button>
+
+                            <button id="sizeToggleBtn" class="control-btn" onclick="toggleVideoSize(event)" title="Toggle Fullscreen">
+                                <svg class="icon-maximize btn-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                                </svg>
+                                <svg class="icon-minimize btn-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+                                </svg>
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
             <div class="hero-buttons">
                 <button class="btn">Buy Now</button>
-                <button class="btn btn-outline">Watch Trailer</button>
+                <button class="btn btn-outline" onclick="startVideo()">Watch Trailer</button>
             </div>
         </div>
     </section>
@@ -749,7 +666,6 @@ $user = getCurrentUser();
                         </div>
                     </div>
                 </div>
-                
                 <div class="about-image-container">
                     <div class="about-image">
                         <img src="https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080" alt="Game artwork">
@@ -904,6 +820,7 @@ $user = getCurrentUser();
                     </div>
                 </div>
             </div>
+            
         </div>
     </section>
 
@@ -951,49 +868,139 @@ $user = getCurrentUser();
     </footer>
 
     <script>
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('active');
-        }
-
-        function toggleUserMenu(event) {
-            event.stopPropagation();
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('active');
-        }
-
-        document.addEventListener('click', function(event) {
-            const userMenu = document.querySelector('.user-menu');
-            const dropdown = document.getElementById('userDropdown');
-            
-            if (dropdown && userMenu && !userMenu.contains(event.target)) {
-                dropdown.classList.remove('active');
-            }
+        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userDropdown').classList.toggle('active'); }
+        document.addEventListener('click', function(e) {
+            const d = document.getElementById('userDropdown'), u = document.querySelector('.user-menu');
+            if (d && u && !u.contains(e.target)) d.classList.remove('active');
         });
 
-        // Carousel functionality
         let currentSlide = 0;
         const totalSlides = 4;
+        function updateCarousel() { const t = document.getElementById('carouselTrack'); if (t) t.style.transform = `translateX(-${currentSlide * 100}%)`; }
+        function nextSlide() { currentSlide = (currentSlide + 1) % totalSlides; updateCarousel(); }
+        function previousSlide() { currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; updateCarousel(); }
+        setInterval(nextSlide, 5000);
 
-        function updateCarousel() {
-            const track = document.getElementById('carouselTrack');
-            if (track) {
-                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        // --- YouTube API & Player Control Logic ---
+        
+        // 1. SET YOUR YOUTUBE VIDEO ID HERE
+        const YOUTUBE_VIDEO_ID = 'dQw4w9WgXcQ'; 
+
+        let ytPlayer;
+        let isVideoExpanded = false;
+
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('ytPlayerContainer', {
+                height: '100%',
+                width: '100%',
+                videoId: YOUTUBE_VIDEO_ID,
+                playerVars: {
+                    'controls': 0,        
+                    'rel': 0,             
+                    'modestbranding': 1,  
+                    'fs': 0,              
+                    'disablekb': 1        
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            const iconPause = document.getElementById('iconPause');
+            const iconPlay = document.getElementById('iconPlay');
+
+            if (event.data === YT.PlayerState.PLAYING) {
+                iconPlay.style.display = 'none';
+                iconPause.style.display = 'block';
+            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                iconPause.style.display = 'none';
+                iconPlay.style.display = 'block';
             }
         }
 
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            updateCarousel();
+        function startVideo() {
+            const placeholder = document.getElementById('mainVideo');
+            if (placeholder.classList.contains('is-playing')) return; 
+            
+            if (!ytPlayer || typeof ytPlayer.playVideo !== 'function') {
+                console.warn("YouTube API not ready yet.");
+                return; 
+            }
+
+            const overlayContent = document.getElementById('playBtnContent');
+            const overlayBackground = document.getElementById('videoOverlay');
+            
+            const sizeToggleBtn = document.getElementById('sizeToggleBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+
+            placeholder.classList.add('is-playing');
+            placeholder.classList.remove('initial-state');
+            
+            overlayContent.style.opacity = '0';
+            
+            setTimeout(() => {
+                overlayContent.style.display = 'none';
+                overlayBackground.style.display = 'none'; 
+                
+                sizeToggleBtn.classList.add('visible');
+                playPauseBtn.classList.add('visible');
+                
+                ytPlayer.playVideo(); 
+                
+            }, 300);
         }
 
-        function previousSlide() {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            updateCarousel();
+        function togglePlayPause(event) {
+            event.stopPropagation();
+            
+            const state = ytPlayer.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                ytPlayer.pauseVideo();
+            } else {
+                ytPlayer.playVideo();
+            }
         }
 
-        // Auto-play carousel
-        setInterval(nextSlide, 5000);
+        function toggleVideoSize(event) {
+            event.stopPropagation(); 
+            if (!isVideoExpanded) {
+                maximizeVideo();
+            } else {
+                minimizeVideo();
+            }
+        }
+
+        function maximizeVideo() {
+            const placeholder = document.getElementById('mainVideo');
+            const backdrop = document.getElementById('videoBackdrop');
+            
+            placeholder.classList.add('is-expanded');
+            backdrop.classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+            
+            isVideoExpanded = true;
+        }
+
+        function minimizeVideo() {
+            if (!isVideoExpanded) return;
+            
+            const placeholder = document.getElementById('mainVideo');
+            const backdrop = document.getElementById('videoBackdrop');
+            
+            placeholder.classList.remove('is-expanded');
+            backdrop.classList.remove('active');
+            document.body.style.overflow = ''; 
+            
+            isVideoExpanded = false;
+        }
     </script>
 </body>
 </html>
