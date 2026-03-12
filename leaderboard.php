@@ -173,7 +173,7 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
                     <a href="map_leaderboard.php?id=<?php echo $map['id']; ?>" class="map-card">
                         <?php 
                             // Check for background image
-                            $bgImage = 'data:image/jpeg;base64,' . base64_encode($map['bg']); 
+                            $bgImage = !empty($map['bg']) ? htmlspecialchars($map['bg']) : 'uploads/maps/default-map.jpg'; 
                         ?>
                         
                         <div class="map-preview" style="background-image: url('<?php echo $bgImage; ?>');"></div>

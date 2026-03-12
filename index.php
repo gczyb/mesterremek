@@ -649,7 +649,7 @@ $user = getCurrentUser();
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php if (!empty($user['profile_picture'])): ?>
-                                <img src="image.php?id=<?php echo $user['id']; ?>&t=<?php echo time(); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>

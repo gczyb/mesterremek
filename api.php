@@ -20,8 +20,8 @@ if ($action === 'login') {
     $email = $data['email'] ?? '';
     $password = $data['password'] ?? '';
 
-    // Check credentials
-    $stmt = $conn->prepare("SELECT id, password, username FROM users WHERE email = ?");
+    // Check credentials (ADDED profile_picture to SELECT)
+    $stmt = $conn->prepare("SELECT id, password, username, profile_picture FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -37,10 +37,15 @@ if ($action === 'login') {
             $update->bind_param("si", $token, $user['id']);
             $update->execute();
 
+            // Construct full URL for Godot
+            $baseUrl = 'http://localhost/geczygod/mesterremek/';
+            $pfpPath = !empty($user['profile_picture']) ? $baseUrl . $user['profile_picture'] : $baseUrl . 'uploads/profiles/default.png';
+
             echo json_encode([
                 'status' => 'success',
                 'token' => $token,
-                'username' => $user['username']
+                'username' => $user['username'],
+                'profile_pic' => $pfpPath
             ]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Invalid password']);
@@ -66,8 +71,6 @@ elseif ($action === 'submit_score') {
         $user = $user_result->fetch_assoc();
         $user_id = $user['id'];
 
-        // Insert Score
-        // Note: Assuming your scores table has user_id, map_id, turns, and date
         $insert = $conn->prepare("INSERT INTO scores (user_id, map_id, turns, date) VALUES (?, ?, ?, NOW())");
         $insert->bind_param("iii", $user_id, $map_id, $turns);
         
