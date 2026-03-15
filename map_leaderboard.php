@@ -18,14 +18,8 @@ if (!$map_info) {
 
 // --- UPDATED BACKGROUND IMAGE LOGIC (BLOB) ---
 // Default fallback image
-$bgImage = 'assets/images/default-map.jpg'; 
+$bgImage = !empty($map_info['bg']) ? $map_info['bg'] : 'uploads/maps/default-map.jpg';
 
-// Check if 'bg' column has binary data
-if (!empty($map_info['bg'])) {
-    // Convert binary BLOB data to a base64 Data URI
-    // We assume image/jpeg based on your previous data, but this works for most standard formats
-    $bgImage = 'data:image/jpeg;base64,' . base64_encode($map_info['bg']);
-}
 // ---------------------------------------------
 
 // 2. Fetch Characters on this Map
@@ -225,14 +219,17 @@ $scores_result = $score_stmt->get_result();
                         <td class="<?php echo $rankClass; ?>">#<?php echo $rank; ?></td>
                         <td>
                             <div class="user-flex">
-                                <div class="avatar"><?php echo strtoupper(substr($row['username'], 0, 1)); ?></div>
+                                <div class="avatar" style="overflow: hidden;">
+                                    <?php if (!empty($row['profile_picture']) && $row['profile_picture'] !== 'uploads/profiles/default.png'): ?>
+                                        <img src="<?php echo htmlspecialchars($row['profile_picture']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <?php else: ?>
+                                        <?php echo strtoupper(substr($row['username'], 0, 1)); ?>
+                                    <?php endif; ?>
+                                </div>
                                 <?php echo htmlspecialchars($row['username']); ?>
                             </div>
                         </td>
-                        <td style="font-family: monospace; font-size: 1.1rem; color: #fbbf24;">
-                            <?php echo number_format($row['turns']); ?>
-                        </td>
-                        <td style="color: #94a3b8; font-size: 0.9rem;">
+                        <td style="font-family: monospace; font-size: 1.1rem; color: #fbbf24;"></td>
                             <?php echo date('M j, Y', strtotime($row['date'])); ?>
                         </td>
                     </tr>

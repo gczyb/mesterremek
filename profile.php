@@ -17,32 +17,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_picture'])) {
         $filename = $_FILES['profile_picture']['name'];
         $filetype = pathinfo($filename, PATHINFO_EXTENSION);
         $filesize = $_FILES['profile_picture']['size'];
-        
+
         if (!in_array(strtolower($filetype), $allowed)) {
             $error = 'Only JPG, JPEG, PNG, and GIF files are allowed';
         } elseif ($filesize > 5000000) { // 5MB limit
             $error = 'File size must be less than 5MB';
         } else {
-            // Read file content as binary data
-            $image_data = file_get_contents($_FILES['profile_picture']['tmp_name']);
+            // NEW LOGIC: Save to server directory instead of BLOB
+            $upload_dir = 'uploads/profiles/';
             
-            $conn = getDBConnection();
-            
-            // Store image in database as BLOB
-            $stmt = $conn->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
-            $stmt->bind_param("bi", $null, $user['id']);
-            $stmt->send_long_data(0, $image_data);
-            
-            if ($stmt->execute()) {
-                $success = 'Profile picture updated successfully!';
-                // Reload user data to get the updated picture
-                $user = getCurrentUser();
-            } else {
-                $error = 'Failed to update profile picture';
+            // Create directory if it doesn't exist
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
             }
-            
-            $stmt->close();
-            $conn->close();
+
+            // Create a unique filename so images don't overwrite each other randomly
+            $new_filename = 'user_' . $user['id'] . '_' . time() . '.' . $filetype;
+            $target_path = $upload_dir . $new_filename;
+
+            if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $target_path)) {
+                $conn = getDBConnection();
+                
+                // Delete the old picture from the server (if it exists and isn't the default)
+                if (!empty($user['profile_picture']) && file_exists($user['profile_picture']) && strpos($user['profile_picture'], 'default.png') === false) {
+                    unlink($user['profile_picture']);
+                }
+
+                // Update DB with the new path
+                $stmt = $conn->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
+                $stmt->bind_param("si", $target_path, $user['id']);
+                
+                if ($stmt->execute()) {
+                    $success = 'Profile picture updated successfully!';
+                    $user = getCurrentUser(); // Reload
+                } else {
+                    $error = 'Failed to update database.';
+                }
+                $stmt->close();
+                $conn->close();
+            } else {
+                $error = 'Failed to move uploaded file.';
+            }
         }
     } else {
         $error = 'Please select an image file';
@@ -51,14 +66,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_picture'])) {
 
 // Handle profile picture removal
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_picture'])) {
+    // Delete the file from the server
+    if (!empty($user['profile_picture']) && file_exists($user['profile_picture']) && strpos($user['profile_picture'], 'default.png') === false) {
+        unlink($user['profile_picture']);
+    }
+
     $conn = getDBConnection();
-    
-    $stmt = $conn->prepare("UPDATE users SET profile_picture = NULL WHERE id = ?");
-    $stmt->bind_param("i", $user['id']);
-    
+    $default_pic = 'uploads/profiles/default.png'; // Set back to default
+    $stmt = $conn->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
+    $stmt->bind_param("si", $default_pic, $user['id']);
+
     if ($stmt->execute()) {
         $success = 'Profile picture removed successfully!';
-        $user['profile_picture'] = null;
+        $user['profile_picture'] = $default_pic;
     } else {
         $error = 'Failed to remove profile picture';
     }
@@ -395,7 +415,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
         <div class="profile-header">
             <div class="profile-avatar">
                 <?php if (!empty($user['profile_picture'])): ?>
-                    <img src="image.php?id=<?php echo $user['id']; ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                 <?php else: ?>
                     <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                 <?php endif; ?>
@@ -421,22 +441,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                 <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;">
                     <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #f59e0b); display: flex; align-items: center; justify-content: center; border: 3px solid #fbbf24; overflow: hidden;">
                         <?php if (!empty($user['profile_picture'])): ?>
-                            <img src="image.php?id=<?php echo $user['id']; ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
                         <?php else: ?>
                             <span style="font-size: 32px; color: #0f172a; font-weight: bold;"><?php echo strtoupper(substr($user['username'], 0, 1)); ?></span>
                         <?php endif; ?>
                     </div>
+                    
                     <div>
                         <form method="POST" action="" enctype="multipart/form-data" style="display: inline-block;">
                             <input type="file" name="profile_picture" accept="image/*" required style="display: none;" id="profilePicInput" onchange="this.form.submit()">
                             <label for="profilePicInput" class="btn" style="cursor: pointer; display: inline-block; margin-right: 0.5rem;">Upload New Picture</label>
                             <input type="hidden" name="upload_picture" value="1">
                         </form>
-                        <?php if (!empty($user['profile_picture'])): ?>
+                        
+                        <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
                             <form method="POST" action="" style="display: inline-block;">
                                 <button type="submit" name="remove_picture" class="btn" style="background-color: #ef4444;" onclick="return confirm('Remove profile picture?')">Remove Picture</button>
                             </form>
                         <?php endif; ?>
+                        
                         <p style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">JPG, PNG or GIF. Max 5MB.</p>
                     </div>
                 </div>
