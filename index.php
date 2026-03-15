@@ -9,6 +9,9 @@ $user = getCurrentUser();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Treasure Quest - Epic 2D Adventure</title>
     <style>
+        /* Import the Press Start 2P font */
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -21,6 +24,12 @@ $user = getCurrentUser();
             color: #cbd5e1;
             line-height: 1.6;
             overflow-x: hidden;
+        }
+
+        /* --- Apply Pixel Font to Headings Only --- */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Press Start 2P', system-ui, sans-serif;
+            line-height: 1.4;
         }
 
         /* --- Navigation Styles --- */
@@ -38,23 +47,36 @@ $user = getCurrentUser();
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: grid;
+            /* Two columns: auto for the logo (takes what it needs), 1fr for the rest of the space */
+            grid-template-columns: auto 1fr; 
+            /* align-items: center; - We can rely on align-self for the logo now */
             height: 64px;
         }
 
         .logo {
-            color: #fbbf24;
-            font-weight: bold;
-            font-size: 24px;
-            letter-spacing: 0.05em;
+            grid-column: 1; /* Places logo in the first column (left side) */
+            display: flex; /* Kept for precise content centering inside .logo */
+            align-items: center; /* Vertically centers the content within the logo div */
+            justify-content: center; /* Horizontally centers the content within the logo div */
+            align-self: center; /* This is the key! DIRECT control over the .logo's vertical position in its grid cell */
+            
+        }
+
+        .logo h2 {
+            font-size: 1.2rem;
+            white-space: nowrap; /* Prevents text from wrapping */
+            margin: 0; /* Explicitly reset any margins on the h2 that might cause offset */
+            /* line-height: 1.2; - A tighter line-height can also help if needed */
         }
 
         .nav-links {
             display: none;
             gap: 2rem;
             align-items: center;
+            justify-content: flex-end; /* Pushes links to the far right within column 2 */
+            grid-column: 2; /* Places links in the second column */
+            align-self: center; /* Also center the nav links div vertically */
         }
 
         .nav-links a {
@@ -75,7 +97,7 @@ $user = getCurrentUser();
             padding: 0.5rem 1.5rem;
             border-radius: 0.375rem;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: bold;
             transition: background-color 0.3s;
             text-decoration: none;
             display: inline-block;
@@ -171,6 +193,9 @@ $user = getCurrentUser();
             border: none;
             color: #e2e8f0;
             cursor: pointer;
+            grid-column: 2; /* Keeps hamburger on the right on mobile */
+            justify-self: end;
+            align-self: center; /* Center the hamburger menu vertically */
         }
 
         .mobile-menu {
@@ -250,9 +275,8 @@ $user = getCurrentUser();
 
         .hero h1 {
             color: #fbbf24;
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 1rem;
+            font-size: 28px; 
+            margin-bottom: 1.5rem;
             animation: pulse 2s infinite;
         }
 
@@ -341,16 +365,17 @@ $user = getCurrentUser();
             transition: border-radius 0.4s ease;
         }
 
-        /* YouTube iFrame Container */
-        #ytPlayerContainer {
+        /* Local Video Container */
+        #localVideo {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border: none;
-            pointer-events: none; 
+            object-fit: cover;
+            pointer-events: none; /* Let custom controls handle clicks */
             z-index: 1;
+            display: none; /* Hidden until played */
         }
 
         .video-overlay {
@@ -468,7 +493,7 @@ $user = getCurrentUser();
         .about-content .highlight { color: #fbbf24; }
         .about-info { padding-top: 1rem; margin-top: 1rem; border-top: 1px solid #334155; }
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .info-item p:first-child { color: #fbbf24; margin-bottom: 0.25rem; }
+        .info-item p:first-child { color: #fbbf24; margin-bottom: 0.25rem; font-weight: bold; }
         .info-item p:last-child { color: #94a3b8; }
         .about-image-container { position: relative; }
         .about-image { aspect-ratio: 1; border-radius: 0.5rem; overflow: hidden; border: 4px solid rgba(251, 191, 36, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
@@ -477,9 +502,10 @@ $user = getCurrentUser();
         .glow-bottom-right { bottom: -24px; right: -24px; }
         .glow-top-left { top: -24px; left: -24px; }
         
-        /* Features section background changed to #0f172a */
         #features { background-color: #0f172a; }
-        h2 { color: #fbbf24; font-size: 2rem; margin-bottom: 1.5rem; }
+        
+        h2 { color: #fbbf24; font-size: 20px; margin-bottom: 1.5rem; }
+        
         .section-header { text-align: center; margin-bottom: 4rem; }
         .section-header p { max-width: 42rem; margin: 0 auto; }
         .features-grid { display: grid; gap: 1.5rem; }
@@ -489,7 +515,9 @@ $user = getCurrentUser();
         .feature-card:hover { border-color: rgba(251, 191, 36, 0.5); }
         .feature-icon { display: inline-flex; padding: 0.75rem; border-radius: 0.5rem; background-color: rgba(251, 191, 36, 0.1); margin-bottom: 1rem; }
         .feature-icon svg { width: 32px; height: 32px; color: #fbbf24; }
-        .feature-card h3 { color: #f1f5f9; margin-bottom: 0.5rem; font-size: 1.25rem; }
+        
+        .feature-card h3 { color: #f1f5f9; margin-bottom: 0.75rem; font-size: 14px; }
+        
         .feature-card p { color: #94a3b8; }
         
         #gallery { background-color: #0f172a; }
@@ -499,18 +527,24 @@ $user = getCurrentUser();
         .carousel-item { min-width: 100%; position: relative; }
         .carousel-item img { width: 100%; height: 100%; object-fit: cover; }
         .carousel-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent); padding: 1.5rem; }
-        .carousel-caption h3 { color: #fbbf24; font-size: 1.5rem; }
+        
+        .carousel-caption h3 { color: #fbbf24; font-size: 16px; }
+        
         .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background-color: #1e293b; border: 1px solid rgba(251, 191, 36, 0.5); color: #fbbf24; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: background-color 0.3s; display: flex; align-items: center; justify-content: center; z-index: 10; }
         .carousel-btn:hover { background-color: #334155; }
         .carousel-btn-prev { left: 1rem; }
         .carousel-btn-next { right: 1rem; }
         .gallery-video { margin-top: 4rem; max-width: 56rem; margin-left: auto; margin-right: auto; }
-        .gallery-video h3 { text-align: center; color: #fbbf24; margin-bottom: 1.5rem; }
+        
+        .gallery-video h3 { text-align: center; color: #fbbf24; margin-bottom: 1.5rem; font-size: 18px; }
+        
         footer { background-color: #020617; border-top: 1px solid #1e293b; padding: 3rem 0; }
         .footer-grid { display: grid; gap: 2rem; margin-bottom: 2rem; }
         @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
-        footer h3 { color: #fbbf24; margin-bottom: 1rem; font-size: 1.5rem; }
-        footer h4 { color: #e2e8f0; margin-bottom: 1rem; }
+        
+        footer h3 { color: #fbbf24; margin-bottom: 1rem; font-size: 16px; }
+        footer h4 { color: #e2e8f0; margin-bottom: 1rem; font-size: 14px; }
+        
         footer p { color: #94a3b8; }
         .social-links { display: flex; gap: 1rem; }
         .social-links a { color: #94a3b8; transition: color 0.3s; }
@@ -524,7 +558,10 @@ $user = getCurrentUser();
 <body>
     <nav class="nav">
         <div class="nav-container">
-            <div class="logo">TREASURE QUEST</div>
+            <div class="logo">
+                <div><h2>TREASURE QUEST</h2></div>
+            </div>
+            
             <div class="nav-links">
                 <a href="#home">Home</a>
                 <a href="#about">About</a>
@@ -594,7 +631,10 @@ $user = getCurrentUser();
                         
                         <div class="video-overlay" id="videoOverlay"></div>
 
-                        <div id="ytPlayerContainer"></div>
+                        <video id="localVideo" playsinline>
+                            <source src="your-downloaded-video.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
                         
                         <div id="playBtnContent">
                             <div class="control-btn initial-play-btn" title="Watch Gameplay Trailer">
@@ -882,58 +922,34 @@ $user = getCurrentUser();
         function previousSlide() { currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; updateCarousel(); }
         setInterval(nextSlide, 5000);
 
-        // --- YouTube API & Player Control Logic ---
+        // --- Native Video Control Logic ---
         
-        // 1. SET YOUR YOUTUBE VIDEO ID HERE
-        const YOUTUBE_VIDEO_ID = 'dQw4w9WgXcQ'; 
-
-        let ytPlayer;
         let isVideoExpanded = false;
+        const localVideo = document.getElementById('localVideo');
+        const iconPause = document.getElementById('iconPause');
+        const iconPlay = document.getElementById('iconPlay');
 
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('ytPlayerContainer', {
-                height: '100%',
-                width: '100%',
-                videoId: YOUTUBE_VIDEO_ID,
-                playerVars: {
-                    'controls': 0,        
-                    'rel': 0,             
-                    'modestbranding': 1,  
-                    'fs': 0,              
-                    'disablekb': 1        
-                },
-                events: {
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-
-        function onPlayerStateChange(event) {
-            const iconPause = document.getElementById('iconPause');
-            const iconPlay = document.getElementById('iconPlay');
-
-            if (event.data === YT.PlayerState.PLAYING) {
+        // Setup HTML5 Video event listeners
+        if(localVideo) {
+            localVideo.addEventListener('play', () => {
                 iconPlay.style.display = 'none';
                 iconPause.style.display = 'block';
-            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+            });
+
+            localVideo.addEventListener('pause', () => {
                 iconPause.style.display = 'none';
                 iconPlay.style.display = 'block';
-            }
+            });
+            
+            localVideo.addEventListener('ended', () => {
+                iconPause.style.display = 'none';
+                iconPlay.style.display = 'block';
+            });
         }
 
         function startVideo() {
             const placeholder = document.getElementById('mainVideo');
             if (placeholder.classList.contains('is-playing')) return; 
-            
-            if (!ytPlayer || typeof ytPlayer.playVideo !== 'function') {
-                console.warn("YouTube API not ready yet.");
-                return; 
-            }
 
             const overlayContent = document.getElementById('playBtnContent');
             const overlayBackground = document.getElementById('videoOverlay');
@@ -953,7 +969,8 @@ $user = getCurrentUser();
                 sizeToggleBtn.classList.add('visible');
                 playPauseBtn.classList.add('visible');
                 
-                ytPlayer.playVideo(); 
+                localVideo.style.display = 'block';
+                localVideo.play(); 
                 
             }, 300);
         }
@@ -961,11 +978,10 @@ $user = getCurrentUser();
         function togglePlayPause(event) {
             event.stopPropagation();
             
-            const state = ytPlayer.getPlayerState();
-            if (state === YT.PlayerState.PLAYING) {
-                ytPlayer.pauseVideo();
+            if (localVideo.paused) {
+                localVideo.play();
             } else {
-                ytPlayer.playVideo();
+                localVideo.pause();
             }
         }
 
