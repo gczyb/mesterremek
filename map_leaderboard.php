@@ -17,9 +17,13 @@ if (!$map_info) {
 }
 
 // --- UPDATED BACKGROUND IMAGE LOGIC (BLOB) ---
-// Default fallback image
-$bgImage = !empty($map_info['bg']) ? $map_info['bg'] : 'uploads/maps/default-map.jpg';
-
+// Encode the BLOB to Base64 so it can be rendered inline via CSS
+if (!empty($map_info['bg'])) {
+    $base64 = base64_encode($map_info['bg']);
+    $bgImage = 'data:image/jpeg;base64,' . $base64; 
+} else {
+    $bgImage = 'img/default-map.jpg'; // Ensure this path points to your actual default fallback
+}
 // ---------------------------------------------
 
 // 2. Fetch Characters on this Map
@@ -52,6 +56,9 @@ $scores_result = $score_stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($map_info['name']); ?> - Leaderboard</title>
     <style>
+        /* Import the Press Start 2P font to match the rest of the site */
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
         /* Core Theme */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -60,33 +67,41 @@ $scores_result = $score_stmt->get_result();
             color: #cbd5e1;
             line-height: 1.6;
         }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Press Start 2P', system-ui, sans-serif;
+            line-height: 1.4;
+        }
+
+        /* --- Synced Navigation Styles --- */
         .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background-color: #0f172a; border-bottom: 1px solid #334155; }
         .nav-container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
-        .logo { color: #fbbf24; font-weight: bold; font-size: 24px; text-decoration: none; }
+        
+        .logo { display: flex; align-items: center; height: 100%; text-decoration: none; }
+        .logo h2 { color: #fbbf24; font-size: 1.2rem; margin: 0; white-space: nowrap; }
+        
         .nav-links { display: flex; gap: 2rem; align-items: center; }
-        .nav-links a { color: #e2e8f0; text-decoration: none; transition: color 0.3s; }
+        .nav-links a { color: #e2e8f0; text-decoration: none; transition: color 0.3s; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+        .nav-links a:hover { color: #fbbf24; }
+        .nav-links a.active { color: #fbbf24; }
         
         .container { max-width: 1000px; margin: 100px auto 4rem; padding: 0 1rem; }
         
         /* --- MAP HEADER WITH BACKGROUND --- */
         .map-header {
             background-color: #1e293b;
-            /* Positioning for overlay */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            
             border: 1px solid #334155;
             border-radius: 1rem;
             overflow: hidden;
             margin-bottom: 2rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            
             padding: 4rem 2rem 2rem; 
             position: relative;
         }
 
-        /* Dark overlay to ensure text is readable */
         .map-header-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -106,9 +121,10 @@ $scores_result = $score_stmt->get_result();
 
         .map-title { 
             color: #fbbf24; 
-            font-size: 2.5rem; 
+            font-size: 1.8rem; /* Adjusted for pixel font */
             margin-bottom: 0.5rem; 
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 0.05em;
         }
         
         .map-desc { 
@@ -165,10 +181,22 @@ $scores_result = $score_stmt->get_result();
 <body>
     <nav class="nav">
         <div class="nav-container">
-            <a href="index.php" class="logo">TREASURE QUEST</a>
+            <a href="index.php" class="logo">
+                <h2>TREASURE QUEST</h2>
+            </a>
             <div class="nav-links">
-                <a href="index.php">Home</a>
-                <a href="leaderboard.php">Leaderboard</a>
+                <a href="index.php#home">Home</a>
+                <a href="index.php#about">About</a>
+                <a href="index.php#features">Features</a>
+                <a href="index.php#gallery">Gallery</a>
+                <a href="leaderboard.php" class="active">Leaderboard</a>
+                
+                <?php if ($user): ?>
+                    <a href="profile.php" style="margin-left: 1rem;">My Profile</a>
+                    <a href="logout.php">Logout</a>
+                <?php else: ?>
+                    <a href="login.php" style="margin-left: 1rem; background-color: transparent; border: 1px solid #fbbf24; color: #fbbf24; padding: 0.5rem 1.5rem; border-radius: 0.375rem;">Login</a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
@@ -190,7 +218,7 @@ $scores_result = $score_stmt->get_result();
                             <div class="char-tag <?php echo $char['ally'] ? 'char-ally' : 'char-enemy'; ?>">
                                 <?php echo $char['ally'] ? '🛡️' : '⚔️'; ?>
                                 <?php echo htmlspecialchars($char['name']); ?> 
-                                <span style="opacity: 0.7; font-size: 0.8em;">(<?php echo $char['class_name']; ?>)</span>
+                                <span style="opacity: 0.7; font-size: 0.8em;">(<?php echo htmlspecialchars($char['class_name']); ?>)</span>
                             </div>
                         <?php endwhile; ?>
                     </div>
@@ -229,7 +257,10 @@ $scores_result = $score_stmt->get_result();
                                 <?php echo htmlspecialchars($row['username']); ?>
                             </div>
                         </td>
-                        <td style="font-family: monospace; font-size: 1.1rem; color: #fbbf24;"></td>
+                        <td style="font-family: monospace; font-size: 1.1rem; color: #fbbf24;">
+                            <?php echo htmlspecialchars($row['turns']); ?>
+                        </td>
+                        <td>
                             <?php echo date('M j, Y', strtotime($row['date'])); ?>
                         </td>
                     </tr>

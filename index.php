@@ -1,6 +1,10 @@
 <?php
 require_once 'config.php';
 $user = getCurrentUser();
+
+// Get the current page filename to handle the Home link visibility
+$currentPage = basename($_SERVER['PHP_SELF']);
+$isHomePage = ($currentPage === 'index.php' || $currentPage === ''); 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,36 +51,28 @@ $user = getCurrentUser();
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 1rem;
-            display: grid;
-            /* Two columns: auto for the logo (takes what it needs), 1fr for the rest of the space */
-            grid-template-columns: auto 1fr; 
-            /* align-items: center; - We can rely on align-self for the logo now */
+            display: flex;
+            align-items: center; /* Perfectly centers items vertically */
+            justify-content: space-between; /* Pushes logo left, menus right */
             height: 64px;
         }
 
         .logo {
-            grid-column: 1; /* Places logo in the first column (left side) */
-            display: flex; /* Kept for precise content centering inside .logo */
-            align-items: center; /* Vertically centers the content within the logo div */
-            justify-content: center; /* Horizontally centers the content within the logo div */
-            align-self: center; /* This is the key! DIRECT control over the .logo's vertical position in its grid cell */
-            
+            display: flex;
+            align-items: center;
+            height: 100%;
         }
 
         .logo h2 {
             font-size: 1.2rem;
-            white-space: nowrap; /* Prevents text from wrapping */
-            margin: 0; /* Explicitly reset any margins on the h2 that might cause offset */
-            /* line-height: 1.2; - A tighter line-height can also help if needed */
+            margin: 0; /* Removes default margins to ensure perfect vertical centering */
+            white-space: nowrap;
         }
 
         .nav-links {
             display: none;
             gap: 2rem;
             align-items: center;
-            justify-content: flex-end; /* Pushes links to the far right within column 2 */
-            grid-column: 2; /* Places links in the second column */
-            align-self: center; /* Also center the nav links div vertically */
         }
 
         .nav-links a {
@@ -193,9 +189,6 @@ $user = getCurrentUser();
             border: none;
             color: #e2e8f0;
             cursor: pointer;
-            grid-column: 2; /* Keeps hamburger on the right on mobile */
-            justify-self: end;
-            align-self: center; /* Center the hamburger menu vertically */
         }
 
         .mobile-menu {
@@ -373,9 +366,9 @@ $user = getCurrentUser();
             width: 100%;
             height: 100%;
             object-fit: cover;
-            pointer-events: none; /* Let custom controls handle clicks */
+            pointer-events: none;
             z-index: 1;
-            display: none; /* Hidden until played */
+            display: none;
         }
 
         .video-overlay {
@@ -553,28 +546,54 @@ $user = getCurrentUser();
         .footer-bottom { padding-top: 2rem; border-top: 1px solid #1e293b; text-align: center; color: #64748b; }
         section { padding: 5rem 0; }
         .section-container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
+
+        /* --- Mobile Responsive Overrides --- */
+        @media (max-width: 768px) {
+            /* Hide the hero title above the video on mobile */
+            .hero h1 {
+                display: none;
+            }
+            
+            /* Ensure the hero section adjusts padding if the title is missing */
+            .hero-content {
+                padding-top: 2rem; 
+            }
+        }
     </style>
 </head>
 <body>
     <nav class="nav">
         <div class="nav-container">
             <div class="logo">
-                <div><h2>TREASURE QUEST</h2></div>
+                <h2>TREASURE QUEST</h2>
             </div>
             
             <div class="nav-links">
-                <a href="#home">Home</a>
-                <a href="#about">About</a>
-                <a href="#features">Features</a>
-                <a href="#gallery">Gallery</a>
+                <?php if (!$isHomePage): ?>
+                    <a href="index.php#home">Home</a>
+                <?php endif; ?>
+                <a href="index.php#about">About</a>
+                <a href="index.php#features">Features</a>
+                <a href="index.php#gallery">Gallery</a>
                 <a href="leaderboard.php">Leaderboard</a>
                 <button class="btn">Get Game</button>
                 
                 <?php if ($user): ?>
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
-                            <?php if (!empty($user['profile_picture'])): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
+                                <?php 
+                                    $profileData = $user['profile_picture'];
+                                    
+                                    // Bulletproof check: If it's stored as raw binary (BLOB), encode it to Base64.
+                                    // If it's stored as a normal file path, just use the path.
+                                    if (strpos($profileData, '.') === false && strlen($profileData) > 100) {
+                                        $avatarSrc = 'data:image/jpeg;base64,' . base64_encode($profileData);
+                                    } else {
+                                        $avatarSrc = htmlspecialchars($profileData);
+                                    }
+                                ?>
+                                <img src="<?php echo $avatarSrc; ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -593,6 +612,7 @@ $user = getCurrentUser();
                     <a href="login.php" class="btn btn-outline" style="cursor: pointer;">Login</a>
                 <?php endif; ?>
             </div>
+            
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                 <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -602,10 +622,12 @@ $user = getCurrentUser();
             </button>
         </div>
         <div class="mobile-menu" id="mobileMenu">
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
-            <a href="#features">Features</a>
-            <a href="#gallery">Gallery</a>
+            <?php if (!$isHomePage): ?>
+                <a href="index.php#home">Home</a>
+            <?php endif; ?>
+            <a href="index.php#about">About</a>
+            <a href="index.php#features">Features</a>
+            <a href="index.php#gallery">Gallery</a>
             <a href="leaderboard.php">Leaderboard</a>
             <?php if ($user): ?>
                 <a href="profile.php">Profile (<?php echo htmlspecialchars($user['username']); ?>)</a>
