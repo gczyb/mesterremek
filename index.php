@@ -218,15 +218,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             margin-top: 0.5rem;
         }
 
-        @media (min-width: 768px) {
-            .nav-links {
-                display: flex;
-            }
-            .mobile-menu-btn {
-                display: none;
-            }
-        }
-
         /* --- Hero Section Styles --- */
         .hero {
             position: relative;
@@ -547,6 +538,12 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         section { padding: 5rem 0; }
         .section-container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
 
+        /* Media queries for navigation layout */
+        @media (min-width: 1025px) {
+            .nav-links { display: flex; }
+            .mobile-menu-btn { display: none; }
+        }
+        
         /* --- Mobile Responsive Overrides --- */
         @media (max-width: 768px) {
             /* Hide the hero title above the video on mobile */
