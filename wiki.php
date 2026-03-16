@@ -84,15 +84,7 @@ $wiki_result = $conn->query("SELECT * FROM wiki_entries ORDER BY created_at DESC
                     <div class="user-menu" style="margin-left: 1rem;">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <?php 
-                                    $profileData = $user['profile_picture'];
-                                    if (strpos($profileData, '.') === false && strlen($profileData) > 100) {
-                                        $avatarSrc = 'data:image/jpeg;base64,' . base64_encode($profileData);
-                                    } else {
-                                        $avatarSrc = htmlspecialchars($profileData);
-                                    }
-                                ?>
-                                <img src="<?php echo $avatarSrc; ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>

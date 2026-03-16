@@ -16,12 +16,11 @@ if (!$map_info) {
     die("Map not found.");
 }
 
-// Encode the BLOB to Base64
+// Get Map Background
 if (!empty($map_info['bg'])) {
-    $base64 = base64_encode($map_info['bg']);
-    $bgImage = 'data:image/jpeg;base64,' . $base64; 
+    $bgImage = htmlspecialchars($map_info['bg']); 
 } else {
-    $bgImage = 'img/default-map.jpg'; 
+    $bgImage = 'uploads/maps/default-map.jpg'; 
 }
 
 // 2. Fetch Characters on this Map
@@ -166,15 +165,7 @@ $scores_result = $score_stmt->get_result();
                     <div class="user-menu" style="margin-left: 1rem;">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <?php 
-                                    $profileData = $user['profile_picture'];
-                                    if (strpos($profileData, '.') === false && strlen($profileData) > 100) {
-                                        $avatarSrc = 'data:image/jpeg;base64,' . base64_encode($profileData);
-                                    } else {
-                                        $avatarSrc = htmlspecialchars($profileData);
-                                    }
-                                ?>
-                                <img src="<?php echo $avatarSrc; ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -264,20 +255,11 @@ $scores_result = $score_stmt->get_result();
                         <td>
                             <div class="user-flex">
                                 <div class="avatar">
-                                    <?php 
-                                        // Process avatar for leaderboard users safely
-                                        if (!empty($row['profile_picture']) && $row['profile_picture'] !== 'uploads/profiles/default.png') {
-                                            $pPic = $row['profile_picture'];
-                                            if (strpos($pPic, '.') === false && strlen($pPic) > 100) {
-                                                $pPicSrc = 'data:image/jpeg;base64,' . base64_encode($pPic);
-                                            } else {
-                                                $pPicSrc = htmlspecialchars($pPic);
-                                            }
-                                            echo '<img src="' . $pPicSrc . '" style="width: 100%; height: 100%; object-fit: cover;">';
-                                        } else {
-                                            echo strtoupper(substr($row['username'], 0, 1));
-                                        }
-                                    ?>
+                                    <?php if (!empty($row['profile_picture']) && $row['profile_picture'] !== 'uploads/profiles/default.png'): ?>
+                                        <img src="<?php echo htmlspecialchars($row['profile_picture']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <?php else: ?>
+                                        <?php echo strtoupper(substr($row['username'], 0, 1)); ?>
+                                    <?php endif; ?>
                                 </div>
                                 <?php echo htmlspecialchars($row['username']); ?>
                             </div>
