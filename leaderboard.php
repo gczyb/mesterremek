@@ -1,5 +1,7 @@
 <?php
 require_once 'config.php';
+$currentPage = basename($_SERVER['PHP_SELF']);
+$isHomePage = ($currentPage === 'index.php' || $currentPage === '');
 $user = getCurrentUser();
 $conn = getDBConnection();
 // Fetch all maps
@@ -31,16 +33,39 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
 
         /* --- Universal Navigation Styles --- */
         .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background-color: #0f172a; border-bottom: 1px solid #334155; }
-        .nav-container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
         
-        .logo { display: flex; align-items: center; height: 100%; text-decoration: none; }
+        .nav-container { 
+            max-width: 1280px; 
+            margin: 0 auto; 
+            padding: 0 1rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; /* 1. Perfectly centers the menu links */
+            height: 64px; 
+            position: relative; /* 2. Allows us to pin the logo to the absolute left */
+        }
+        
+        .logo { 
+            position: absolute; /* 3. Pulls logo out of the center flow */
+            left: 1rem;         /* 4. Pins logo to the left edge */
+            display: flex; 
+            align-items: center; 
+            height: 100%; 
+            text-decoration: none; 
+        }
+        
         .logo h2 { color: #fbbf24; font-size: 1.2rem; margin: 0; white-space: nowrap; }
         .logo a { color: inherit; text-decoration: none; }
-        
         .nav-links { display: none; gap: 2rem; align-items: center; }
-        .nav-links a { color: #e2e8f0; text-decoration: none; transition: color 0.3s; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+        .nav-links a { 
+            color: #e2e8f0; 
+            text-decoration: none; 
+            transition: color 0.3s; 
+            font-family: 'Press Start 2P', system-ui, sans-serif; /* Pixel Font */
+            font-size: 1rem; /* 5. BIGGER TEXT SIZE (Adjust up to 1rem if you want it huge) */
+        }
+        
         .nav-links a:hover { color: #fbbf24; }
-        .nav-links a.active { color: #fbbf24; }
 
         .btn { background-color: #fbbf24; color: #0f172a; border: none; padding: 0.5rem 1.5rem; border-radius: 0.375rem; cursor: pointer; font-weight: bold; transition: background-color 0.3s; text-decoration: none; display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
         .btn:hover { background-color: #f59e0b; }
@@ -54,7 +79,16 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
         
         .user-dropdown { display: none; position: absolute; top: 50px; right: 0; background-color: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; min-width: 200px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); z-index: 1001; }
         .user-dropdown.active { display: block; }
-        .user-dropdown a { display: block; padding: 0.75rem 1rem; color: #e2e8f0; text-decoration: none; transition: background-color 0.3s; cursor: pointer; }
+        .user-dropdown a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #e2e8f0;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; /* Explicitly reset to standard font */
+            font-size: 1rem; /* Reset to normal size */
+        }
         .user-dropdown a:hover { background-color: #334155; }
         .user-dropdown .user-info { padding: 0.75rem 1rem; border-bottom: 1px solid #334155; color: #94a3b8; }
         .user-dropdown .user-info strong { display: block; color: #fbbf24; margin-bottom: 0.25rem; }
@@ -63,7 +97,15 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
         .mobile-menu-btn { display: block; background: none; border: none; color: #e2e8f0; cursor: pointer; }
         .mobile-menu { display: none; background-color: #1e293b; padding: 1rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
         .mobile-menu.active { display: block; }
-        .mobile-menu a { display: block; color: #e2e8f0; text-decoration: none; padding: 0.75rem; transition: color 0.3s; }
+        .mobile-menu a {
+            display: block;
+            color: #e2e8f0;
+            text-decoration: none;
+            padding: 0.75rem;
+            transition: color 0.3s;
+            font-family: 'Press Start 2P', system-ui, sans-serif; /* Added Pixel Font */
+            font-size: 0.7rem; /* Scaled down */
+        }
         .mobile-menu a:hover { color: #fbbf24; }
         .mobile-menu .btn { width: 100%; margin-top: 0.5rem; }
 
@@ -99,12 +141,11 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
 <body>
     <nav class="nav">
         <div class="nav-container">
-            <div class="logo">
-                <h2><a href="index.php">TREASURE QUEST</a></h2>
-            </div>
             
             <div class="nav-links">
-                <a href="index.php#home">Home</a>
+                <?php if (!$isHomePage): ?>
+                    <a href="index.php#home">Home</a>
+                <?php endif; ?>
                 <a href="index.php#about">About</a>
                 <a href="index.php#features">Features</a>
                 <a href="index.php#gallery">Gallery</a>
@@ -149,7 +190,9 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
             </button>
         </div>
         <div class="mobile-menu" id="mobileMenu">
-            <a href="index.php#home">Home</a>
+            <?php if (!$isHomePage): ?>
+                <a href="index.php#home">Home</a>
+            <?php endif; ?>
             <a href="index.php#about">About</a>
             <a href="index.php#features">Features</a>
             <a href="index.php#gallery">Gallery</a>

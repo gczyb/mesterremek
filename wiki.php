@@ -2,6 +2,8 @@
 require_once 'config.php';
 $user = getCurrentUser();
 $conn = getDBConnection();
+$currentPage = basename($_SERVER['PHP_SELF']);
+$isHomePage = ($currentPage === 'index.php' || $currentPage === '');
 
 // Fetch Wiki Entries
 $wiki_result = $conn->query("SELECT * FROM wiki_entries ORDER BY created_at DESC");
@@ -20,14 +22,39 @@ $wiki_result = $conn->query("SELECT * FROM wiki_entries ORDER BY created_at DESC
         
         /* Universal Navbar CSS */
         .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background-color: #0f172a; border-bottom: 1px solid #334155; }
-        .nav-container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
-        .logo { display: flex; align-items: center; height: 100%; text-decoration: none; }
+        
+        .nav-container { 
+            max-width: 1280px; 
+            margin: 0 auto; 
+            padding: 0 1rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; /* 1. Perfectly centers the menu links */
+            height: 64px; 
+            position: relative; /* 2. Allows us to pin the logo to the absolute left */
+        }
+        
+        .logo { 
+            position: absolute; /* 3. Pulls logo out of the center flow */
+            left: 1rem;         /* 4. Pins logo to the left edge */
+            display: flex; 
+            align-items: center; 
+            height: 100%; 
+            text-decoration: none; 
+        }
+        
         .logo h2 { color: #fbbf24; font-size: 1.2rem; margin: 0; white-space: nowrap; }
         .logo a { color: inherit; text-decoration: none; }
         .nav-links { display: none; gap: 2rem; align-items: center; }
-        .nav-links a { color: #e2e8f0; text-decoration: none; transition: color 0.3s; font-family: -apple-system, sans-serif; }
+        .nav-links a { 
+            color: #e2e8f0; 
+            text-decoration: none; 
+            transition: color 0.3s; 
+            font-family: 'Press Start 2P', system-ui, sans-serif; /* Pixel Font */
+            font-size: 1rem; /* 5. BIGGER TEXT SIZE (Adjust up to 1rem if you want it huge) */
+        }
+        
         .nav-links a:hover { color: #fbbf24; }
-        .nav-links a.active { color: #fbbf24; }
         .btn { background-color: #fbbf24; color: #0f172a; border: none; padding: 0.5rem 1.5rem; border-radius: 0.375rem; cursor: pointer; font-weight: bold; transition: background-color 0.3s; text-decoration: none; display: inline-block; font-family: -apple-system, sans-serif; }
         .btn:hover { background-color: #f59e0b; }
         .btn-outline { background-color: transparent; color: #fbbf24; border: 1px solid #fbbf24; }
@@ -68,12 +95,10 @@ $wiki_result = $conn->query("SELECT * FROM wiki_entries ORDER BY created_at DESC
 <body>
     <nav class="nav">
         <div class="nav-container">
-            <div class="logo">
-                <h2><a href="index.php">TREASURE QUEST</a></h2>
-            </div>
-            
             <div class="nav-links">
-                <a href="index.php#home">Home</a>
+                <?php if (!$isHomePage): ?>
+                    <a href="index.php#home">Home</a>
+                <?php endif; ?>
                 <a href="index.php#about">About</a>
                 <a href="index.php#features">Features</a>
                 <a href="index.php#gallery">Gallery</a>
@@ -116,7 +141,9 @@ $wiki_result = $conn->query("SELECT * FROM wiki_entries ORDER BY created_at DESC
             </button>
         </div>
         <div class="mobile-menu" id="mobileMenu">
-            <a href="index.php#home">Home</a>
+            <?php if (!$isHomePage): ?>
+                <a href="index.php#home">Home</a>
+            <?php endif; ?>
             <a href="index.php#about">About</a>
             <a href="index.php#features">Features</a>
             <a href="index.php#gallery">Gallery</a>

@@ -45,6 +45,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             z-index: 1000;
             background-color: #0f172a;
             border-bottom: 1px solid #334155;
+            font-family: 'Press Start 2P', system-ui, sans-serif;
         }
 
         .nav-container {
@@ -142,6 +143,8 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             min-width: 200px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             z-index: 1001;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; /* Explicitly reset to standard font */
+            font-size: 1rem; /* Reset to normal size */
         }
 
         .user-dropdown.active {
@@ -155,6 +158,8 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             text-decoration: none;
             transition: background-color 0.3s;
             cursor: pointer;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; /* Explicitly reset to standard font */
+            font-size: 1rem; /* Reset to normal size */
         }
 
         .user-dropdown a:hover {
@@ -584,7 +589,9 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         <div class="nav-container">
             
             <div class="nav-links">
-                <a href="index.php#home">Home</a>
+                <?php if (!$isHomePage): ?>
+                    <a href="index.php#home">Home</a>
+                <?php endif; ?>
                 <a href="index.php#about">About</a>
                 <a href="index.php#features">Features</a>
                 <a href="index.php#gallery">Gallery</a>
@@ -629,7 +636,9 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             </button>
         </div>
         <div class="mobile-menu" id="mobileMenu">
-            <a href="index.php#home">Home</a>
+            <?php if (!$isHomePage): ?>
+                <a href="index.php#home">Home</a>
+            <?php endif; ?>
             <a href="index.php#about">About</a>
             <a href="index.php#features">Features</a>
             <a href="index.php#gallery">Gallery</a>
