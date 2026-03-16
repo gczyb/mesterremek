@@ -52,23 +52,13 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             margin: 0 auto;
             padding: 0 1rem;
             display: flex;
-            align-items: center; /* Perfectly centers items vertically */
-            justify-content: space-between; /* Pushes logo left, menus right */
+            align-items: center; 
+            justify-content: center; /* Perfectly centers the nav links */
             height: 64px;
+            position: relative; /* Allows absolute positioning for the mobile button */
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            height: 100%;
-        }
-
-        .logo h2 {
-            font-size: 1.2rem;
-            margin: 0; /* Removes default margins to ensure perfect vertical centering */
-            white-space: nowrap;
-        }
-
+        /* Nav links styling */
         .nav-links {
             display: none;
             gap: 2rem;
@@ -189,6 +179,8 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             border: none;
             color: #e2e8f0;
             cursor: pointer;
+            position: absolute; /* Keeps it strictly on the right side */
+            right: 1rem;
         }
 
         .mobile-menu {
@@ -257,11 +249,16 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             z-index: 10;
         }
 
-        .hero h1 {
-            color: #fbbf24;
-            font-size: 28px; 
+        /* Image logo styling */
+        .hero-logo {
+            max-width: 450px; /* Desktop size */
+            width: 100%;
+            height: auto;
             margin-bottom: 1.5rem;
             animation: pulse 2s infinite;
+            display: inline-block;
+            mix-blend-mode: screen; /* Blends the black background of the JPG out */
+            transition: max-width 0.3s ease; /* Smooth scaling */
         }
 
         @keyframes pulse {
@@ -546,14 +543,13 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         
         /* --- Mobile Responsive Overrides --- */
         @media (max-width: 768px) {
-            /* Hide the hero title above the video on mobile */
-            .hero h1 {
-                display: none;
+            /* Responsively scale the logo down on smaller screens */
+            .hero-logo {
+                max-width: 280px;
+                margin-bottom: 1rem;
             }
-            
-            /* Ensure the hero section adjusts padding if the title is missing */
             .hero-content {
-                padding-top: 2rem; 
+                padding-top: 1rem; 
             }
         }
     </style>
@@ -561,9 +557,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
 <body>
     <nav class="nav">
         <div class="nav-container">
-            <div class="logo">
-                <h2>TREASURE QUEST</h2>
-            </div>
             
             <div class="nav-links">
                 <?php if (!$isHomePage): ?>
@@ -639,7 +632,11 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         <img src="img/bckg.gif" alt="Background" class="hero-bg">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>TREASURE QUEST</h1>
+            
+            <a href="index.php">
+                <img src="img/logo.png" alt="Treasure Quest Logo" class="hero-logo">
+            </a>
+
             <p>Embark on an epic 2D adventure through treacherous dungeons, mystical forests, and ancient ruins. Master the art of combat, discover legendary treasures, and become the hero of legend.</p>
             
             <div class="video-backdrop" id="videoBackdrop" onclick="minimizeVideo()"></div>
