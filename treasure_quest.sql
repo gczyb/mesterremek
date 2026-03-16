@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Már 12. 11:28
+-- Létrehozás ideje: 2026. Már 16. 13:28
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Adatbázis: `treasure_quest`
 --
-CREATE DATABASE IF NOT EXISTS `treasure_quest` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `treasure_quest`;
 
 -- --------------------------------------------------------
 
@@ -191,6 +189,7 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `admin` tinyint(1) NOT NULL DEFAULT 0,
   `reset_token` varchar(100) DEFAULT NULL,
   `reset_token_expires` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -202,15 +201,15 @@ CREATE TABLE `users` (
 -- A tábla adatainak kiíratása `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `reset_token`, `reset_token_expires`, `created_at`, `profile_picture`, `api_token`) VALUES
-(1, 'gx', 'geczyba@gmail.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', NULL, NULL, '2026-01-29 07:28:32', '', NULL),
-(2, 'SpeedRunner99', 'speed@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
-(3, 'CasualGamer', 'casual@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
-(4, 'QuestMaster', 'master@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
-(5, 'gecseb', 'gecseboti@gmail.com', '$2y$10$5nPUWNls6dhs0VPLHVrZyepi6aHpk7cRktI0crBaDkuCFFSSNoBZe', NULL, NULL, '2026-02-16 12:44:03', '', 'b5a937b82b92823beccdcb3bb877567e64263a50a4a85b81195ef6d3ab3c58f4'),
-(6, 'aasfadsadada', 'a@a.a', '$2y$10$nuE40heApBAmmESbA.zALuJLgg4OhePCQw.pybjZveza86i7nUo8K', NULL, NULL, '2026-02-17 11:56:37', NULL, 'c16d33a74ae22276528ad698e0d44755274c983fa5aab434f8c6cbb8d7124a2d'),
-(7, 'csuma', 'csuma@a.a', '$2y$10$CKWl4gCmnIDZdRm.SDuPHua/.6cdk.PNWY8HwJWf27s9nRpBhh6Iy', NULL, NULL, '2026-03-12 09:58:57', 'uploads/profiles/user_7_1773310521.png', NULL),
-(8, 'asdasd', 'asd@a.a', '$2y$10$GZVlgEAe5FxMG2KXSLBxXuAKna/ptvWgFMh1x.Szr1kswtRGN.EQq', NULL, NULL, '2026-03-12 10:17:16', 'uploads/profiles/default.png', NULL);
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `admin`, `reset_token`, `reset_token_expires`, `created_at`, `profile_picture`, `api_token`) VALUES
+(1, 'gx', 'geczyba@gmail.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 1, NULL, NULL, '2026-01-29 07:28:32', 'uploads/profiles/user_1_1773664004.jpg', NULL),
+(2, 'SpeedRunner99', 'speed@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
+(3, 'CasualGamer', 'casual@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
+(4, 'QuestMaster', 'master@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
+(5, 'gecseb', 'gecseboti@gmail.com', '$2y$10$5nPUWNls6dhs0VPLHVrZyepi6aHpk7cRktI0crBaDkuCFFSSNoBZe', 0, NULL, NULL, '2026-02-16 12:44:03', '', 'b5a937b82b92823beccdcb3bb877567e64263a50a4a85b81195ef6d3ab3c58f4'),
+(6, 'aasfadsadada', 'a@a.a', '$2y$10$nuE40heApBAmmESbA.zALuJLgg4OhePCQw.pybjZveza86i7nUo8K', 0, NULL, NULL, '2026-02-17 11:56:37', NULL, 'c16d33a74ae22276528ad698e0d44755274c983fa5aab434f8c6cbb8d7124a2d'),
+(7, 'csuma', 'csuma@a.a', '$2y$10$CKWl4gCmnIDZdRm.SDuPHua/.6cdk.PNWY8HwJWf27s9nRpBhh6Iy', 0, NULL, NULL, '2026-03-12 09:58:57', 'uploads/profiles/user_7_1773310521.png', NULL),
+(8, 'asdasd', 'asd@a.a', '$2y$10$GZVlgEAe5FxMG2KXSLBxXuAKna/ptvWgFMh1x.Szr1kswtRGN.EQq', 0, NULL, NULL, '2026-03-12 10:17:16', 'uploads/profiles/default.png', NULL);
 
 -- --------------------------------------------------------
 
@@ -237,6 +236,26 @@ INSERT INTO `weapons` (`weapon_id`, `name`, `description`, `base_attack`, `base_
 (3, 'Oak Staff', 'A wooden staff for channeling magic.', 6, 6, 95),
 (4, 'Silver Dagger', 'A lightweight dagger for quick strikes.', 5, 10, 95),
 (5, 'Longbow', 'A large bow for attacking from distance.', 9, 7, 85);
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `wiki_entries`
+--
+
+CREATE TABLE `wiki_entries` (
+  `id` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `content` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `wiki_entries`
+--
+
+INSERT INTO `wiki_entries` (`id`, `title`, `content`, `created_at`) VALUES
+(1, 'Getting Started', 'Welcome to the Treasure Quest Wiki! Here you will find guides, lore, and tips for surviving the realms.', '2026-03-16 12:15:34');
 
 --
 -- Indexek a kiírt táblákhoz
@@ -302,6 +321,12 @@ ALTER TABLE `weapons`
   ADD UNIQUE KEY `name` (`name`);
 
 --
+-- A tábla indexei `wiki_entries`
+--
+ALTER TABLE `wiki_entries`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- A kiírt táblák AUTO_INCREMENT értéke
 --
 
@@ -340,6 +365,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `weapons`
   MODIFY `weapon_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT a táblához `wiki_entries`
+--
+ALTER TABLE `wiki_entries`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Megkötések a kiírt táblákhoz
