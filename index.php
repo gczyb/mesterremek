@@ -320,15 +320,15 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             cursor: default;
         }
 
-        /* State: Maximized (Expanded) */
+        /* State: Maximized (Expanded) - Now MUCH larger */
         .video-placeholder.is-expanded {
             position: fixed;
             inset: 0; 
             margin: auto; 
-            width: min(80vw, calc(80vh * 16 / 9));
-            height: min(calc(80vw * 9 / 16), 80vh);
-            max-width: 1024px;
-            max-height: 576px;
+            width: min(95vw, calc(95vh * 16 / 9));
+            height: min(calc(95vw * 9 / 16), 95vh);
+            max-width: 1600px;
+            max-height: 900px;
             transform: scale(1);
             z-index: 9999;
         }
@@ -423,7 +423,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         #playPauseBtn { right: 4.5rem; }
         #sizeToggleBtn { right: 1rem; }
 
-        /* The Initial Massive Play Button */
+        /* The Initial Massive Play Button (Now Responsive) */
         #playBtnContent {
             position: absolute;
             inset: 0;
@@ -439,14 +439,25 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         }
 
         #playBtnContent .initial-play-btn {
-            width: 96px;
-            height: 96px;
+            width: clamp(60px, 12vw, 96px);
+            height: clamp(60px, 12vw, 96px);
             border-radius: 1.5rem; 
             margin-bottom: 1rem;
         }
 
         .btn-icon { width: 22px; height: 22px; }
-        #playBtnContent .initial-play-btn .btn-icon { width: 48px; height: 48px; margin-left: 6px; } 
+        #playBtnContent .initial-play-btn .btn-icon { 
+            width: clamp(30px, 6vw, 48px); 
+            height: clamp(30px, 6vw, 48px); 
+            margin-left: 6px; 
+        } 
+
+        #playBtnContent p {
+            font-size: clamp(0.85rem, 2vw, 1.1rem);
+            color: #94a3b8; 
+            font-weight: 500; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
 
         .icon-minimize { display: none; }
         .is-expanded .icon-maximize { display: none; }
@@ -535,13 +546,27 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         section { padding: 5rem 0; }
         .section-container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
 
-        /* Media queries for navigation layout */
+        /* --- Media Queries --- */
+
+        /* 1. Ensure hamburger menu activates on tablets and mobile */
         @media (min-width: 1025px) {
             .nav-links { display: flex; }
             .mobile-menu-btn { display: none; }
         }
         
-        /* --- Mobile Responsive Overrides --- */
+        /* 2. Overrides for Tablets and Phones */
+        @media (max-width: 1024px) {
+            /* Hide the expand button entirely */
+            #sizeToggleBtn {
+                display: none !important;
+            }
+            /* Slide the play/pause button over to take its place */
+            #playPauseBtn {
+                right: 1rem !important;
+            }
+        }
+
+        /* 3. Small Mobile specific tweaks */
         @media (max-width: 768px) {
             /* Responsively scale the logo down on smaller screens */
             .hero-logo {
@@ -652,7 +677,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
                                 </svg>
                             </div>
-                            <p style="color: #94a3b8; font-weight: 500; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Watch Gameplay Trailer</p>
+                            <p>Watch Gameplay Trailer</p>
                         </div>
 
                         <div id="controlsGroup" class="controls-group">
