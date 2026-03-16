@@ -559,31 +559,26 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
     </style>
 </head>
 <body>
-    <nav class="nav">
+<nav class="nav">
         <div class="nav-container">
             <div class="logo">
-                <h2>TREASURE QUEST</h2>
+                <h2><a href="index.php" style="color: inherit; text-decoration: none;">TREASURE QUEST</a></h2>
             </div>
             
             <div class="nav-links">
-                <?php if (!$isHomePage): ?>
-                    <a href="index.php#home">Home</a>
-                <?php endif; ?>
+                <a href="index.php#home">Home</a>
                 <a href="index.php#about">About</a>
                 <a href="index.php#features">Features</a>
                 <a href="index.php#gallery">Gallery</a>
                 <a href="leaderboard.php">Leaderboard</a>
-                <button class="btn">Get Game</button>
+                <a href="wiki.php">Wiki</a>
                 
                 <?php if ($user): ?>
-                    <div class="user-menu">
+                    <div class="user-menu" style="margin-left: 1rem;">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
                                 <?php 
                                     $profileData = $user['profile_picture'];
-                                    
-                                    // Bulletproof check: If it's stored as raw binary (BLOB), encode it to Base64.
-                                    // If it's stored as a normal file path, just use the path.
                                     if (strpos($profileData, '.') === false && strlen($profileData) > 100) {
                                         $avatarSrc = 'data:image/jpeg;base64,' . base64_encode($profileData);
                                     } else {
@@ -602,11 +597,16 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                             </div>
                             <a href="profile.php">My Profile</a>
                             <a href="profile.php">Settings</a>
+                            
+                            <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
+                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                            <?php endif; ?>
+                            
                             <a href="logout.php">Logout</a>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="login.php" class="btn btn-outline" style="cursor: pointer;">Login</a>
+                    <a href="login.php" class="btn btn-outline" style="cursor: pointer; margin-left: 1rem;">Login</a>
                 <?php endif; ?>
             </div>
             
@@ -619,15 +619,17 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             </button>
         </div>
         <div class="mobile-menu" id="mobileMenu">
-            <?php if (!$isHomePage): ?>
-                <a href="index.php#home">Home</a>
-            <?php endif; ?>
+            <a href="index.php#home">Home</a>
             <a href="index.php#about">About</a>
             <a href="index.php#features">Features</a>
             <a href="index.php#gallery">Gallery</a>
             <a href="leaderboard.php">Leaderboard</a>
+            <a href="wiki.php">Wiki</a>
             <?php if ($user): ?>
                 <a href="profile.php">Profile (<?php echo htmlspecialchars($user['username']); ?>)</a>
+                <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
+                    <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
+                <?php endif; ?>
                 <a href="logout.php">Logout</a>
             <?php else: ?>
                 <a href="login.php" class="btn">Login</a>
