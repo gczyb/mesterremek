@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Már 16. 13:28
+-- Létrehozás ideje: 2026. Már 17. 13:18
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -39,20 +39,21 @@ CREATE TABLE `characters` (
   `base_def` int(11) NOT NULL,
   `base_luck` int(11) NOT NULL,
   `base_move` int(11) NOT NULL,
-  `description` text DEFAULT NULL
+  `description` text DEFAULT NULL,
+  `image_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- A tábla adatainak kiíratása `characters`
 --
 
-INSERT INTO `characters` (`character_id`, `name`, `class_id`, `ally`, `base_hp`, `base_str`, `base_dex`, `base_skill`, `base_def`, `base_luck`, `base_move`, `description`) VALUES
-(1, 'Aric the Bold', 1, 1, 35, 15, 10, 12, 14, 8, 5, 'A brave knight from the capital.'),
-(2, 'Elara Moon', 2, 1, 25, 20, 12, 15, 6, 10, 5, 'A mysterious sorceress seeking ancient scrolls.'),
-(3, 'Garret Shadow', 3, 1, 28, 12, 18, 16, 8, 15, 6, 'A thief with a heart of gold.'),
-(4, 'Brother Thomas', 4, 1, 30, 10, 8, 10, 10, 12, 5, 'A humble priest on a pilgrimage.'),
-(5, 'Goblin Grunt', 1, 0, 20, 8, 12, 8, 5, 5, 5, 'A low-ranking goblin soldier.'),
-(6, 'Dark Sorcerer', 2, 0, 40, 22, 14, 18, 10, 5, 6, 'The evil mastermind guarding the treasure.');
+INSERT INTO `characters` (`character_id`, `name`, `class_id`, `ally`, `base_hp`, `base_str`, `base_dex`, `base_skill`, `base_def`, `base_luck`, `base_move`, `description`, `image_url`) VALUES
+(1, 'Tibi', 1, 1, 22, 6, 5, 4, 4, 2, 5, 'A dependable frontline fighter. Good health and strength.', 'uploads/characters/img_69b936f37e425.jpg'),
+(2, 'Tibo', 2, 1, 18, 5, 6, 6, 3, 3, 5, 'A sharp-eyed archer. Excels at dealing chip damage from behind the lines.', NULL),
+(3, 'Geri', 4, 1, 25, 7, 3, 4, 9, 2, 4, 'A heavily armored knight. Moves slowly but can block chokepoints.', NULL),
+(5, 'Goblin Grunt', 1, 0, 18, 4, 4, 3, 2, 0, 5, 'A weak but aggressive forest dweller.', NULL),
+(6, 'Goblin Scout', 2, 0, 16, 3, 5, 4, 2, 0, 5, 'A goblin equipped with a crude bow.', NULL),
+(7, 'Orc Brute', 4, 0, 26, 8, 2, 2, 5, 0, 4, 'A terrifyingly strong and durable orc boss.', NULL);
 
 -- --------------------------------------------------------
 
@@ -63,18 +64,20 @@ INSERT INTO `characters` (`character_id`, `name`, `class_id`, `ally`, `base_hp`,
 CREATE TABLE `classes` (
   `class_id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `description` text DEFAULT NULL
+  `description` text DEFAULT NULL,
+  `image_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- A tábla adatainak kiíratása `classes`
 --
 
-INSERT INTO `classes` (`class_id`, `name`, `description`) VALUES
-(1, 'Warrior', 'A strong fighter skilled in melee combat and defense.'),
-(2, 'Mage', 'A spellcaster who wields powerful magic but has low defense.'),
-(3, 'Rogue', 'A quick and stealthy fighter who relies on speed and critical hits.'),
-(4, 'Cleric', 'A holy warrior who specializes in healing and support.');
+INSERT INTO `classes` (`class_id`, `name`, `description`, `image_url`) VALUES
+(1, 'Fighter', 'A balanced frontline warrior with good HP and Strength.', NULL),
+(2, 'Archer', 'A ranged specialist who strikes from afar but is vulnerable up close.', NULL),
+(3, 'Mage', 'A spellcaster targeting the enemy\'s magical resistance.', NULL),
+(4, 'Knight', 'A heavily armored wall. High Defense, but very low Speed and Movement.', NULL),
+(5, 'Thief', 'A fragile but incredibly fast rogue. High Dexterity and Luck for dodging.', NULL);
 
 -- --------------------------------------------------------
 
@@ -94,10 +97,13 @@ CREATE TABLE `class_weapons` (
 INSERT INTO `class_weapons` (`class_id`, `weapon_id`) VALUES
 (1, 1),
 (1, 2),
-(2, 3),
-(3, 4),
-(3, 5),
-(4, 3);
+(1, 3),
+(2, 5),
+(2, 6),
+(4, 2),
+(4, 3),
+(5, 1),
+(5, 4);
 
 -- --------------------------------------------------------
 
@@ -139,13 +145,12 @@ CREATE TABLE `map_characters` (
 
 INSERT INTO `map_characters` (`map_id`, `character_id`) VALUES
 (1, 1),
+(1, 2),
 (1, 5),
-(2, 2),
+(1, 6),
 (2, 3),
 (2, 5),
-(3, 1),
-(3, 4),
-(3, 6);
+(2, 7);
 
 -- --------------------------------------------------------
 
@@ -207,9 +212,9 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `admin`, `reset_toke
 (3, 'CasualGamer', 'casual@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
 (4, 'QuestMaster', 'master@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
 (5, 'gecseb', 'gecseboti@gmail.com', '$2y$10$5nPUWNls6dhs0VPLHVrZyepi6aHpk7cRktI0crBaDkuCFFSSNoBZe', 0, NULL, NULL, '2026-02-16 12:44:03', '', 'b5a937b82b92823beccdcb3bb877567e64263a50a4a85b81195ef6d3ab3c58f4'),
-(6, 'aasfadsadada', 'a@a.a', '$2y$10$nuE40heApBAmmESbA.zALuJLgg4OhePCQw.pybjZveza86i7nUo8K', 0, NULL, NULL, '2026-02-17 11:56:37', NULL, 'c16d33a74ae22276528ad698e0d44755274c983fa5aab434f8c6cbb8d7124a2d'),
+(6, 'aasfadsadada', 'a@a.a', '$2y$10$nuE40heApBAmmESbA.zALuJLgg4OhePCQw.pybjZveza86i7nUo8K', 1, NULL, NULL, '2026-02-17 11:56:37', 'uploads/profiles/user_6_1773741693.png', 'c16d33a74ae22276528ad698e0d44755274c983fa5aab434f8c6cbb8d7124a2d'),
 (7, 'csuma', 'csuma@a.a', '$2y$10$CKWl4gCmnIDZdRm.SDuPHua/.6cdk.PNWY8HwJWf27s9nRpBhh6Iy', 0, NULL, NULL, '2026-03-12 09:58:57', 'uploads/profiles/user_7_1773310521.png', NULL),
-(8, 'asdasd', 'asd@a.a', '$2y$10$GZVlgEAe5FxMG2KXSLBxXuAKna/ptvWgFMh1x.Szr1kswtRGN.EQq', 0, NULL, NULL, '2026-03-12 10:17:16', 'uploads/profiles/default.png', NULL);
+(8, 'asdasd', 'asd@a.a', '$2y$10$GZVlgEAe5FxMG2KXSLBxXuAKna/ptvWgFMh1x.Szr1kswtRGN.EQq', 0, NULL, NULL, '2026-03-12 10:17:16', 'uploads/profiles/user_8_1773666004.gif', NULL);
 
 -- --------------------------------------------------------
 
@@ -220,22 +225,29 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `admin`, `reset_toke
 CREATE TABLE `weapons` (
   `weapon_id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
+  `weapon_type` varchar(20) NOT NULL,
+  `atk` int(11) NOT NULL,
+  `hit_rate` int(11) NOT NULL,
+  `crit_rate` int(11) NOT NULL,
+  `weight` int(11) NOT NULL,
+  `min_range` int(11) NOT NULL DEFAULT 1,
+  `max_range` int(11) NOT NULL DEFAULT 1,
+  `durability` int(11) NOT NULL,
   `description` text DEFAULT NULL,
-  `base_attack` int(11) DEFAULT 0,
-  `base_speed` int(11) DEFAULT 0,
-  `base_accuracy` int(11) DEFAULT 0
+  `image_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- A tábla adatainak kiíratása `weapons`
 --
 
-INSERT INTO `weapons` (`weapon_id`, `name`, `description`, `base_attack`, `base_speed`, `base_accuracy`) VALUES
-(1, 'Iron Sword', 'A standard soldier sword.', 8, 5, 90),
-(2, 'Steel Axe', 'A heavy axe that deals great damage.', 12, 3, 75),
-(3, 'Oak Staff', 'A wooden staff for channeling magic.', 6, 6, 95),
-(4, 'Silver Dagger', 'A lightweight dagger for quick strikes.', 5, 10, 95),
-(5, 'Longbow', 'A large bow for attacking from distance.', 9, 7, 85);
+INSERT INTO `weapons` (`weapon_id`, `name`, `weapon_type`, `atk`, `hit_rate`, `crit_rate`, `weight`, `min_range`, `max_range`, `durability`, `description`, `image_url`) VALUES
+(1, 'Bronze Sword', 'Sword', 3, 100, 0, 3, 1, 1, 40, 'A basic, lightweight sword. Cannot critical hit, but highly accurate.', NULL),
+(2, 'Iron Sword', 'Sword', 5, 90, 0, 5, 1, 1, 35, 'A standard issue sword used by infantry. Reliable and balanced.', NULL),
+(3, 'Steel Sword', 'Sword', 8, 75, 0, 9, 1, 1, 30, 'A heavy blade that deals massive damage but lowers Attack Speed.', NULL),
+(4, 'Slim Sword', 'Sword', 2, 100, 10, 2, 1, 1, 30, 'Exceptionally light and precise, allowing for quick critical strikes.', NULL),
+(5, 'Iron Bow', 'Bow', 4, 85, 0, 5, 2, 2, 35, 'A standard bow. Cannot attack enemies right next to the user.', NULL),
+(6, 'Hunter\'s Bow', 'Bow', 6, 80, 5, 6, 2, 2, 25, 'A sturdy bow used by experienced woodsmen. Deals solid damage.', NULL);
 
 -- --------------------------------------------------------
 
@@ -247,6 +259,7 @@ CREATE TABLE `wiki_entries` (
   `id` int(11) NOT NULL,
   `title` varchar(100) NOT NULL,
   `content` text NOT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -254,8 +267,8 @@ CREATE TABLE `wiki_entries` (
 -- A tábla adatainak kiíratása `wiki_entries`
 --
 
-INSERT INTO `wiki_entries` (`id`, `title`, `content`, `created_at`) VALUES
-(1, 'Getting Started', 'Welcome to the Treasure Quest Wiki! Here you will find guides, lore, and tips for surviving the realms.', '2026-03-16 12:15:34');
+INSERT INTO `wiki_entries` (`id`, `title`, `content`, `image_url`, `created_at`) VALUES
+(1, 'Getting Started', 'fasz', NULL, '2026-03-16 12:15:34');
 
 --
 -- Indexek a kiírt táblákhoz
@@ -334,13 +347,13 @@ ALTER TABLE `wiki_entries`
 -- AUTO_INCREMENT a táblához `characters`
 --
 ALTER TABLE `characters`
-  MODIFY `character_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `character_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT a táblához `classes`
 --
 ALTER TABLE `classes`
-  MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT a táblához `maps`
@@ -364,7 +377,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT a táblához `weapons`
 --
 ALTER TABLE `weapons`
-  MODIFY `weapon_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `weapon_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT a táblához `wiki_entries`
@@ -380,7 +393,7 @@ ALTER TABLE `wiki_entries`
 -- Megkötések a táblához `characters`
 --
 ALTER TABLE `characters`
-  ADD CONSTRAINT `characters_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `characters_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`) ON DELETE CASCADE;
 
 --
 -- Megkötések a táblához `class_weapons`
@@ -393,8 +406,7 @@ ALTER TABLE `class_weapons`
 -- Megkötések a táblához `map_characters`
 --
 ALTER TABLE `map_characters`
-  ADD CONSTRAINT `map_characters_ibfk_1` FOREIGN KEY (`map_id`) REFERENCES `maps` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `map_characters_ibfk_2` FOREIGN KEY (`character_id`) REFERENCES `characters` (`character_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `map_characters_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `characters` (`character_id`) ON DELETE CASCADE;
 
 --
 -- Megkötések a táblához `scores`
