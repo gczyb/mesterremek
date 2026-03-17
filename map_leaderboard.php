@@ -81,14 +81,14 @@ $scores_result = $score_stmt->get_result();
             padding: 0 1rem; 
             display: flex; 
             align-items: center; 
-            justify-content: center; /* 1. Perfectly centers the menu links */
+            justify-content: center; 
             height: 64px; 
-            position: relative; /* 2. Allows us to pin the logo to the absolute left */
+            position: relative; 
         }
         
         .logo { 
-            position: absolute; /* 3. Pulls logo out of the center flow */
-            left: 1rem;         /* 4. Pins logo to the left edge */
+            position: absolute; 
+            left: 1rem;         
             display: flex; 
             align-items: center; 
             height: 100%; 
@@ -97,13 +97,13 @@ $scores_result = $score_stmt->get_result();
         
         .logo h2 { color: #fbbf24; font-size: 1.2rem; margin: 0; white-space: nowrap; }
         .logo a { color: inherit; text-decoration: none; }
-        .nav-links { display: none; gap: 2rem; align-items: center; }
+        .nav-links { display: none; gap: 3rem; align-items: center; }
         .nav-links a { 
             color: #e2e8f0; 
             text-decoration: none; 
             transition: color 0.3s; 
-            font-family: 'Press Start 2P', system-ui, sans-serif; /* Pixel Font */
-            font-size: 1rem; /* 5. BIGGER TEXT SIZE (Adjust up to 1rem if you want it huge) */
+            font-family: 'Press Start 2P', system-ui, sans-serif; 
+            font-size: 1rem; 
         }
         
         .nav-links a:hover { color: #fbbf24; }
@@ -125,6 +125,15 @@ $scores_result = $score_stmt->get_result();
         .user-dropdown .user-info { padding: 0.75rem 1rem; border-bottom: 1px solid #334155; color: #94a3b8; }
         .user-dropdown .user-info strong { display: block; color: #fbbf24; margin-bottom: 0.25rem; }
 
+        /* Mobile Controls wrapper */
+        .mobile-controls {
+            display: none;
+            position: absolute;
+            right: 1rem;
+            align-items: center;
+            gap: 1rem;
+        }
+
         /* Mobile Menu Elements */
         .mobile-menu-btn { display: block; background: none; border: none; color: #e2e8f0; cursor: pointer; }
         .mobile-menu { display: none; background-color: #1e293b; padding: 1rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
@@ -135,7 +144,11 @@ $scores_result = $score_stmt->get_result();
 
         @media (min-width: 1025px) {
             .nav-links { display: flex; }
-            .mobile-menu-btn { display: none; }
+            .mobile-controls { display: none; }
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-controls { display: flex; }
         }
 
         /* --- Page Content Styles --- */
@@ -202,6 +215,9 @@ $scores_result = $score_stmt->get_result();
                             </div>
                             <a href="profile.php">My Profile</a>
                             <a href="profile.php">Settings</a>
+                            <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
+                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                            <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
                     </div>
@@ -210,13 +226,41 @@ $scores_result = $score_stmt->get_result();
                 <?php endif; ?>
             </div>
             
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
+            <div class="mobile-controls">
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                
+                <?php if ($user): ?>
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
+                            <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <?php else: ?>
+                                <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="user-dropdown" id="mobileUserDropdown">
+                            <div class="user-info">
+                                <strong><?php echo htmlspecialchars($user['username']); ?></strong>
+                                <span><?php echo htmlspecialchars($user['email']); ?></span>
+                            </div>
+                            <a href="profile.php">My Profile</a>
+                            <a href="profile.php">Settings</a>
+                            
+                            <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
+                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                            <?php endif; ?>
+                            
+                            <a href="logout.php">Logout</a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
         <div class="mobile-menu" id="mobileMenu">
             <?php if (!$isHomePage): ?>
@@ -229,6 +273,9 @@ $scores_result = $score_stmt->get_result();
             <a href="wiki.php">Wiki</a>
             <?php if ($user): ?>
                 <a href="profile.php">Profile (<?php echo htmlspecialchars($user['username']); ?>)</a>
+                <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
+                    <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
+                <?php endif; ?>
                 <a href="logout.php">Logout</a>
             <?php else: ?>
                 <a href="login.php" class="btn">Login</a>
@@ -314,9 +361,14 @@ $scores_result = $score_stmt->get_result();
     <script>
         function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userDropdown').classList.toggle('active'); }
+        function toggleMobileUserMenu(e) { e.stopPropagation(); document.getElementById('mobileUserDropdown').classList.toggle('active'); }
+        
         document.addEventListener('click', function(e) {
-            const d = document.getElementById('userDropdown'), u = document.querySelector('.user-menu');
-            if (d && u && !u.contains(e.target)) d.classList.remove('active');
+            document.querySelectorAll('.user-dropdown').forEach(dropdown => {
+                if (!dropdown.parentElement.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
         });
     </script>
 </body>

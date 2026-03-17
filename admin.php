@@ -120,7 +120,7 @@ $wiki_result = $conn->query("SELECT * FROM wiki_entries ORDER BY created_at DESC
         .logo { display: flex; align-items: center; height: 100%; text-decoration: none; }
         .logo h2 { color: #fbbf24; font-size: 1.2rem; margin: 0; white-space: nowrap; }
         .logo a { color: inherit; text-decoration: none; }
-        .nav-links { display: none; gap: 2rem; align-items: center; }
+        .nav-links { display: none; gap: 3rem; align-items: center; }
         .nav-links a { color: #e2e8f0; text-decoration: none; transition: color 0.3s; font-family: -apple-system, sans-serif; }
         .nav-links a:hover { color: #fbbf24; }
         .nav-links a.active { color: #fbbf24; }
