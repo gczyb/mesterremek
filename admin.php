@@ -1,7 +1,7 @@
 <?php
 require_once 'config.php';
 
-// 1. Security Check: Must be logged in AND be an admin
+// Security Check: Must be logged in AND be an admin
 $user = getCurrentUser();
 if (!$user || !isset($user['admin']) || $user['admin'] != 1) {
     header("HTTP/1.1 403 Forbidden");
@@ -15,377 +15,344 @@ $conn = getDBConnection();
 $message = '';
 $error = '';
 
-// Handle Admin Actions (Delete User / Toggle Admin / Wiki Management)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $target_id = isset($_POST['target_id']) ? (int)$_POST['target_id'] : 0;
-    
-    if (isset($_POST['action'])) {
-        
-        // --- USER MANAGEMENT ---
-        if ($_POST['action'] === 'delete') {
-            if ($target_id === $user['id']) {
-                $error = "You cannot delete yourself.";
-            } else {
-                $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
-                $stmt->bind_param("i", $target_id);
-                if ($stmt->execute()) {
-                    $message = "User deleted successfully.";
-                } else {
-                    $error = "Failed to delete user.";
-                }
-                $stmt->close();
-            }
-        } 
-        elseif ($_POST['action'] === 'toggle_admin') {
-            if ($target_id === $user['id']) {
-                $error = "You cannot change your own admin status.";
-            } else {
-                $check_stmt = $conn->prepare("SELECT admin FROM users WHERE id = ?");
-                $check_stmt->bind_param("i", $target_id);
-                $check_stmt->execute();
-                $target_user = $check_stmt->get_result()->fetch_assoc();
-                $check_stmt->close();
+// Helper function for image uploads
+function handleAdminUpload($file, $folder) {
+    if (isset($file) && $file['error'] === 0) {
+        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (in_array($ext, $allowed)) {
+            $dir = 'uploads/' . $folder . '/';
+            if (!is_dir($dir)) mkdir($dir, 0777, true);
+            $path = $dir . uniqid('img_') . '.' . $ext;
+            if (move_uploaded_file($file['tmp_name'], $path)) return $path;
+        }
+    }
+    return null;
+}
 
-                if ($target_user) {
-                    $new_status = $target_user['admin'] ? 0 : 1;
-                    $update_stmt = $conn->prepare("UPDATE users SET admin = ? WHERE id = ?");
-                    $update_stmt->bind_param("ii", $new_status, $target_id);
-                    if ($update_stmt->execute()) {
-                        $message = "User admin status updated.";
-                    } else {
-                        $error = "Failed to update user status.";
-                    }
-                    $update_stmt->close();
-                }
-            }
-        }
+// ---------------------------------------------------------
+// POST HANDLERS (CRUD Operations)
+// ---------------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+
+    // GENERIC DELETE (Handles all tables securely)
+    if ($action === 'delete_record') {
+        $table = $_POST['table'];
+        $id_col = $_POST['id_col'];
+        $id_val = (int)$_POST['id_val'];
+        $allowed_tables = ['wiki_entries', 'characters', 'classes', 'weapons', 'users'];
         
-        // --- WIKI MANAGEMENT ---
-        elseif ($_POST['action'] === 'add_wiki') {
-            $title = trim($_POST['wiki_title']);
-            $content = trim($_POST['wiki_content']);
+        if (in_array($table, $allowed_tables)) {
+            $stmt = $conn->prepare("DELETE FROM $table WHERE $id_col = ?");
+            $stmt->bind_param("i", $id_val);
+            $stmt->execute();
+            $message = "Record deleted successfully.";
             
-            if (!empty($title) && !empty($content)) {
-                $stmt = $conn->prepare("INSERT INTO wiki_entries (title, content) VALUES (?, ?)");
-                $stmt->bind_param("ss", $title, $content);
-                if ($stmt->execute()) {
-                    $message = "Wiki entry added successfully.";
-                } else {
-                    $error = "Failed to add wiki entry.";
-                }
-                $stmt->close();
-            } else {
-                $error = "Wiki title and content cannot be empty.";
+            // Redirect back to wiki if requested
+            if (!empty($_POST['return_to'])) {
+                header("Location: " . $_POST['return_to']);
+                exit;
             }
         }
-        elseif ($_POST['action'] === 'delete_wiki') {
-            $stmt = $conn->prepare("DELETE FROM wiki_entries WHERE id = ?");
-            $stmt->bind_param("i", $target_id);
-            if ($stmt->execute()) {
-                $message = "Wiki entry deleted.";
+    }
+
+    // SAVE ARTICLE
+    elseif ($action === 'save_article') {
+        $id = (int)$_POST['id'];
+        $title = trim($_POST['title']);
+        $content = trim($_POST['content']);
+        $img = handleAdminUpload($_FILES['image'] ?? null, 'wiki');
+
+        if ($id > 0) {
+            if ($img) {
+                $stmt = $conn->prepare("UPDATE wiki_entries SET title=?, content=?, image_url=? WHERE id=?");
+                $stmt->bind_param("sssi", $title, $content, $img, $id);
             } else {
-                $error = "Failed to delete wiki entry.";
+                $stmt = $conn->prepare("UPDATE wiki_entries SET title=?, content=? WHERE id=?");
+                $stmt->bind_param("ssi", $title, $content, $id);
             }
-            $stmt->close();
+        } else {
+            $stmt = $conn->prepare("INSERT INTO wiki_entries (title, content, image_url) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $title, $content, $img);
         }
+        $stmt->execute();
+        $message = "Article saved.";
+    }
+
+    // SAVE CLASS
+    elseif ($action === 'save_class') {
+        $id = (int)$_POST['class_id'];
+        $name = trim($_POST['name']);
+        $desc = trim($_POST['description']);
+        $img = handleAdminUpload($_FILES['image'] ?? null, 'classes');
+
+        if ($id > 0) {
+            if ($img) {
+                $stmt = $conn->prepare("UPDATE classes SET name=?, description=?, image_url=? WHERE class_id=?");
+                $stmt->bind_param("sssi", $name, $desc, $img, $id);
+            } else {
+                $stmt = $conn->prepare("UPDATE classes SET name=?, description=? WHERE class_id=?");
+                $stmt->bind_param("ssi", $name, $desc, $id);
+            }
+        } else {
+            $stmt = $conn->prepare("INSERT INTO classes (name, description, image_url) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $name, $desc, $img);
+        }
+        $stmt->execute();
+        $message = "Class saved.";
+    }
+
+    // SAVE WEAPON
+    elseif ($action === 'save_weapon') {
+        $id = (int)$_POST['weapon_id'];
+        $name = $_POST['name']; $type = $_POST['weapon_type']; $atk = (int)$_POST['atk'];
+        $hit = (int)$_POST['hit_rate']; $crit = (int)$_POST['crit_rate']; $wt = (int)$_POST['weight'];
+        $min_r = (int)$_POST['min_range']; $max_r = (int)$_POST['max_range']; $dur = (int)$_POST['durability'];
+        $desc = $_POST['description']; $img = handleAdminUpload($_FILES['image'] ?? null, 'weapons');
+
+        if ($id > 0) {
+            if ($img) {
+                $stmt = $conn->prepare("UPDATE weapons SET name=?, weapon_type=?, atk=?, hit_rate=?, crit_rate=?, weight=?, min_range=?, max_range=?, durability=?, description=?, image_url=? WHERE weapon_id=?");
+                $stmt->bind_param("ssiiiiiiissi", $name, $type, $atk, $hit, $crit, $wt, $min_r, $max_r, $dur, $desc, $img, $id);
+            } else {
+                $stmt = $conn->prepare("UPDATE weapons SET name=?, weapon_type=?, atk=?, hit_rate=?, crit_rate=?, weight=?, min_range=?, max_range=?, durability=?, description=? WHERE weapon_id=?");
+                $stmt->bind_param("ssiiiiiiisi", $name, $type, $atk, $hit, $crit, $wt, $min_r, $max_r, $dur, $desc, $id);
+            }
+        } else {
+            $stmt = $conn->prepare("INSERT INTO weapons (name, weapon_type, atk, hit_rate, crit_rate, weight, min_range, max_range, durability, description, image_url) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+            $stmt->bind_param("ssiiiiiiiss", $name, $type, $atk, $hit, $crit, $wt, $min_r, $max_r, $dur, $desc, $img);
+        }
+        $stmt->execute();
+        $message = "Weapon saved.";
+    }
+
+    // SAVE CHARACTER
+    elseif ($action === 'save_character') {
+        $id = (int)$_POST['character_id']; $name = $_POST['name']; $c_id = (int)$_POST['class_id'];
+        $ally = (int)$_POST['ally']; $hp = (int)$_POST['base_hp']; $str = (int)$_POST['base_str'];
+        $dex = (int)$_POST['base_dex']; $skill = (int)$_POST['base_skill']; $def = (int)$_POST['base_def'];
+        $luck = (int)$_POST['base_luck']; $move = (int)$_POST['base_move']; $desc = $_POST['description'];
+        $img = handleAdminUpload($_FILES['image'] ?? null, 'characters');
+
+        if ($id > 0) {
+            if ($img) {
+                $stmt = $conn->prepare("UPDATE characters SET name=?, class_id=?, ally=?, base_hp=?, base_str=?, base_dex=?, base_skill=?, base_def=?, base_luck=?, base_move=?, description=?, image_url=? WHERE character_id=?");
+                // FIXED: 9 'i's instead of 10
+                $stmt->bind_param("siiiiiiiiissi", $name, $c_id, $ally, $hp, $str, $dex, $skill, $def, $luck, $move, $desc, $img, $id);
+            } else {
+                $stmt = $conn->prepare("UPDATE characters SET name=?, class_id=?, ally=?, base_hp=?, base_str=?, base_dex=?, base_skill=?, base_def=?, base_luck=?, base_move=?, description=? WHERE character_id=?");
+                // FIXED: 9 'i's instead of 10
+                $stmt->bind_param("siiiiiiiiisi", $name, $c_id, $ally, $hp, $str, $dex, $skill, $def, $luck, $move, $desc, $id);
+            }
+        } else {
+            $stmt = $conn->prepare("INSERT INTO characters (name, class_id, ally, base_hp, base_str, base_dex, base_skill, base_def, base_luck, base_move, description, image_url) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+            // FIXED: 9 'i's instead of 10
+            $stmt->bind_param("siiiiiiiiiss", $name, $c_id, $ally, $hp, $str, $dex, $skill, $def, $luck, $move, $desc, $img);
+        }
+        $stmt->execute();
+        $message = "Character saved.";
     }
 }
 
-// Fetch Stats
-$stats = [
-    'users' => $conn->query("SELECT COUNT(*) as count FROM users")->fetch_assoc()['count'],
-    'scores' => $conn->query("SELECT COUNT(*) as count FROM scores")->fetch_assoc()['count'],
-    'maps' => $conn->query("SELECT COUNT(*) as count FROM maps")->fetch_assoc()['count']
-];
-
-// Fetch Data for Tables
-$users_result = $conn->query("SELECT id, username, email, admin, created_at FROM users ORDER BY created_at DESC");
-$wiki_result = $conn->query("SELECT * FROM wiki_entries ORDER BY created_at DESC");
+// Setup Data Fetching for Editor
+$tab = $_GET['tab'] ?? 'users';
+$edit_data = null;
+if (isset($_GET['edit'])) {
+    $edit_id = (int)$_GET['edit'];
+    if ($tab === 'articles') $edit_data = $conn->query("SELECT * FROM wiki_entries WHERE id = $edit_id")->fetch_assoc();
+    if ($tab === 'classes') $edit_data = $conn->query("SELECT * FROM classes WHERE class_id = $edit_id")->fetch_assoc();
+    if ($tab === 'weapons') $edit_data = $conn->query("SELECT * FROM weapons WHERE weapon_id = $edit_id")->fetch_assoc();
+    if ($tab === 'characters') $edit_data = $conn->query("SELECT * FROM characters WHERE character_id = $edit_id")->fetch_assoc();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Treasure Quest</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0f172a; color: #cbd5e1; line-height: 1.6; }
-        h1, h2, h3 { font-family: 'Press Start 2P', system-ui, sans-serif; line-height: 1.4; color: #fbbf24; }
+        body { font-family: -apple-system, sans-serif; background-color: #0f172a; color: #cbd5e1; line-height: 1.6; padding: 2rem; }
+        h1, h2, h3 { font-family: 'Press Start 2P', sans-serif; color: #fbbf24; margin-bottom: 1.5rem; }
+        a { color: #fbbf24; text-decoration: none; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; margin-bottom: 2rem; }
         
-        /* Universal Navbar CSS */
-        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background-color: #0f172a; border-bottom: 1px solid #334155; }
-        .nav-container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
-        .logo { display: flex; align-items: center; height: 100%; text-decoration: none; }
-        .logo h2 { color: #fbbf24; font-size: 1.2rem; margin: 0; white-space: nowrap; }
-        .logo a { color: inherit; text-decoration: none; }
-        .nav-links { display: none; gap: 2rem; align-items: center; }
-        .nav-links a { color: #e2e8f0; text-decoration: none; transition: color 0.3s; font-family: -apple-system, sans-serif; }
-        .nav-links a:hover { color: #fbbf24; }
-        .nav-links a.active { color: #fbbf24; }
-        .btn { background-color: #fbbf24; color: #0f172a; border: none; padding: 0.5rem 1.5rem; border-radius: 0.375rem; cursor: pointer; font-weight: bold; transition: background-color 0.3s; text-decoration: none; display: inline-block; font-family: -apple-system, sans-serif; }
+        .admin-tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #334155; padding-bottom: 1rem; flex-wrap: wrap; }
+        .admin-tab { color: #94a3b8; font-weight: bold; padding: 0.5rem 1.5rem; border-radius: 0.5rem; transition: background 0.2s; }
+        .admin-tab:hover { background: rgba(251,191,36,0.1); }
+        .admin-tab.active { background: #fbbf24; color: #0f172a; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .form-full { grid-column: 1 / -1; }
+        .form-group label { display: block; color: #cbd5e1; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input, .form-group textarea, .form-group select { 
+            width: 100%; padding: 0.75rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; color: #e2e8f0; 
+        }
+        .btn { background-color: #fbbf24; color: #0f172a; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: bold; width: 100%;}
         .btn:hover { background-color: #f59e0b; }
-        .btn-outline { background-color: transparent; color: #fbbf24; border: 1px solid #fbbf24; }
-        .btn-outline:hover { background-color: rgba(251, 191, 36, 0.1); }
-
-        /* User Menu & Avatar */
-        .user-menu { position: relative; display: flex; align-items: center; font-family: -apple-system, sans-serif; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #f59e0b); display: flex; align-items: center; justify-content: center; color: #0f172a; font-weight: bold; cursor: pointer; border: 2px solid #fbbf24; position: relative; z-index: 100; transition: all 0.3s; }
-        .user-avatar:hover { transform: scale(1.05); }
-        .user-dropdown { display: none; position: absolute; top: 50px; right: 0; background-color: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; min-width: 200px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); z-index: 1001; }
-        .user-dropdown.active { display: block; }
-        .user-dropdown a { display: block; padding: 0.75rem 1rem; color: #e2e8f0; text-decoration: none; transition: background-color 0.3s; cursor: pointer; }
-        .user-dropdown a:hover { background-color: #334155; }
-        .user-dropdown .user-info { padding: 0.75rem 1rem; border-bottom: 1px solid #334155; color: #94a3b8; }
-        .user-dropdown .user-info strong { display: block; color: #fbbf24; margin-bottom: 0.25rem; }
-
-        /* Mobile Menu Elements */
-        .mobile-menu-btn { display: block; background: none; border: none; color: #e2e8f0; cursor: pointer; }
-        .mobile-menu { display: none; background-color: #1e293b; padding: 1rem; font-family: -apple-system, sans-serif; }
-        .mobile-menu.active { display: block; }
-        .mobile-menu a { display: block; color: #e2e8f0; text-decoration: none; padding: 0.75rem; transition: color 0.3s; }
-        .mobile-menu a:hover { color: #fbbf24; }
-        .mobile-menu .btn { width: 100%; margin-top: 0.5rem; }
-        
-        @media (min-width: 1025px) { .nav-links { display: flex; } .mobile-menu-btn { display: none; } }
-
-        /* Admin Page Specific Styles */
-        .container { max-width: 1200px; margin: 100px auto 2rem; padding: 0 1rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-        .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; padding: 1.5rem; text-align: center; }
-        .stat-card h3 { color: #94a3b8; font-size: 1rem; font-family: sans-serif; margin-bottom: 0.5rem; }
-        .stat-card .value { font-size: 2.5rem; color: #fbbf24; font-weight: bold; }
-        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; overflow-x: auto; margin-bottom: 2rem;}
-        
-        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; }
-        th, td { padding: 1rem; border-bottom: 1px solid #334155; }
-        th { background-color: #0f172a; color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; }
-        tr:hover { background-color: #334155; }
-        
-        .badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: bold; }
-        .badge-admin { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid #fbbf24; }
-        .badge-user { background: rgba(148, 163, 184, 0.2); color: #94a3b8; border: 1px solid #94a3b8; }
-
-        .action-btn { background: none; border: 1px solid; padding: 0.4rem 0.8rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; color: white; margin-right: 0.5rem;}
-        .btn-toggle { border-color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); color: #60a5fa; }
-        .btn-toggle:hover { background-color: #3b82f6; color: white; }
-        .btn-delete { border-color: #ef4444; background-color: rgba(239, 68, 68, 0.1); color: #f87171; }
-        .btn-delete:hover { background-color: #ef4444; color: white; }
-        
-        .alert { padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; }
-        .alert-success { background: rgba(34, 197, 94, 0.1); border: 1px solid #22c55e; color: #86efac; }
-        .alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #fca5a5; }
+        .alert { padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; background: rgba(34,197,94,0.1); border: 1px solid #22c55e; color: #86efac; }
     </style>
 </head>
 <body>
-    <nav class="nav">
-        <div class="nav-container">
-            <div class="logo">
-                <h2><a href="index.php">TREASURE QUEST</a></h2>
-            </div>
-            
-            <div class="nav-links">
-                <a href="index.php#home">Home</a>
-                <a href="index.php#about">About</a>
-                <a href="index.php#features">Features</a>
-                <a href="index.php#gallery">Gallery</a>
-                <a href="leaderboard.php">Leaderboard</a>
-                <a href="wiki.php">Wiki</a>
-                
-                <?php if ($user): ?>
-                    <div class="user-menu" style="margin-left: 1rem;">
-                        <div class="user-avatar" onclick="toggleUserMenu(event)">
-                                <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                            <?php else: ?>
-                                <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
-                            <?php endif; ?>
-                        </div>
-                        <div class="user-dropdown" id="userDropdown">
-                            <div class="user-info">
-                                <strong><?php echo htmlspecialchars($user['username']); ?></strong>
-                                <span><?php echo htmlspecialchars($user['email']); ?></span>
-                            </div>
-                            <a href="profile.php">My Profile</a>
-                            <a href="profile.php">Settings</a>
-                            <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
-                            <?php endif; ?>
-                            <a href="logout.php">Logout</a>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <a href="login.php" class="btn btn-outline" style="cursor: pointer; margin-left: 1rem;">Login</a>
-                <?php endif; ?>
-            </div>
-            
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
-        </div>
-        <div class="mobile-menu" id="mobileMenu">
-            <a href="index.php#home">Home</a>
-            <a href="index.php#about">About</a>
-            <a href="index.php#features">Features</a>
-            <a href="index.php#gallery">Gallery</a>
-            <a href="leaderboard.php">Leaderboard</a>
-            <a href="wiki.php">Wiki</a>
-            <?php if ($user): ?>
-                <a href="profile.php">Profile (<?php echo htmlspecialchars($user['username']); ?>)</a>
-                <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                    <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
-                <?php endif; ?>
-                <a href="logout.php">Logout</a>
-            <?php else: ?>
-                <a href="login.php" class="btn">Login</a>
-            <?php endif; ?>
-        </div>
-    </nav>
+    <a href="index.php">← Back to Home</a>
+    <h1 style="margin-top: 1rem; font-size: 1.5rem;">Database Manager</h1>
 
-    <div class="container">
-        <h1 style="margin-bottom: 2rem; font-size: 1.5rem;">System Dashboard</h1>
+    <?php if ($message): ?><div class="alert"><?php echo $message; ?></div><?php endif; ?>
 
-        <?php if ($message): ?>
-            <div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div>
-        <?php endif; ?>
-        <?php if ($error): ?>
-            <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Users</h3>
-                <div class="value"><?php echo $stats['users']; ?></div>
-            </div>
-            <div class="stat-card">
-                <h3>Total Scores Logged</h3>
-                <div class="value"><?php echo $stats['scores']; ?></div>
-            </div>
-            <div class="stat-card">
-                <h3>Active Realms (Maps)</h3>
-                <div class="value"><?php echo $stats['maps']; ?></div>
-            </div>
-        </div>
-
-        <h2 style="margin-bottom: 1.5rem; font-size: 1.2rem;">User Management</h2>
-        <div class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Joined</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while($row = $users_result->fetch_assoc()): ?>
-                    <tr>
-                        <td style="color: #94a3b8;">#<?php echo $row['id']; ?></td>
-                        <td style="font-weight: bold; color: #e2e8f0;"><?php echo htmlspecialchars($row['username']); ?></td>
-                        <td><?php echo htmlspecialchars($row['email']); ?></td>
-                        <td>
-                            <?php if ($row['admin']): ?>
-                                <span class="badge badge-admin">Admin</span>
-                            <?php else: ?>
-                                <span class="badge badge-user">Player</span>
-                            <?php endif; ?>
-                        </td>
-                        <td style="color: #94a3b8;"><?php echo date('M j, Y', strtotime($row['created_at'])); ?></td>
-                        <td>
-                            <?php if ($row['id'] !== $user['id']): ?>
-                                <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to change this user\'s role?');">
-                                    <input type="hidden" name="target_id" value="<?php echo $row['id']; ?>">
-                                    <input type="hidden" name="action" value="toggle_admin">
-                                    <button type="submit" class="action-btn btn-toggle">
-                                        <?php echo $row['admin'] ? 'Revoke Admin' : 'Make Admin'; ?>
-                                    </button>
-                                </form>
-                                <form method="POST" style="display:inline;" onsubmit="return confirm('Are you absolutely sure you want to delete this user? This cannot be undone.');">
-                                    <input type="hidden" name="target_id" value="<?php echo $row['id']; ?>">
-                                    <input type="hidden" name="action" value="delete">
-                                    <button type="submit" class="action-btn btn-delete">Delete</button>
-                                </form>
-                            <?php else: ?>
-                                <span style="color: #64748b; font-style: italic; font-size: 0.85rem;">(You)</span>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
-
-        <h2 style="margin: 3rem 0 1.5rem; font-size: 1.2rem;">Wiki Management</h2>
-        
-        <div class="card">
-            <h3 style="color: #94a3b8; font-family: sans-serif; margin-bottom: 1rem;">Add New Entry</h3>
-            <form method="POST">
-                <input type="hidden" name="action" value="add_wiki">
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; color: #cbd5e1; font-family: sans-serif; margin-bottom: 0.5rem;">Title</label>
-                    <input type="text" name="wiki_title" required style="width: 100%; padding: 0.75rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; color: #e2e8f0;">
-                </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; color: #cbd5e1; font-family: sans-serif; margin-bottom: 0.5rem;">Content (Supports basic HTML like &lt;b&gt;, &lt;br&gt;)</label>
-                    <textarea name="wiki_content" required rows="5" style="width: 100%; padding: 0.75rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; color: #e2e8f0; resize: vertical;"></textarea>
-                </div>
-                <button type="submit" class="btn">Post to Wiki</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Date Added</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($wiki_result && $wiki_result->num_rows > 0): ?>
-                        <?php while($wiki = $wiki_result->fetch_assoc()): ?>
-                        <tr>
-                            <td style="color: #94a3b8;">#<?php echo $wiki['id']; ?></td>
-                            <td style="font-weight: bold; color: #e2e8f0;"><?php echo htmlspecialchars($wiki['title']); ?></td>
-                            <td style="color: #94a3b8;"><?php echo date('M j, Y', strtotime($wiki['created_at'])); ?></td>
-                            <td>
-                                <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this wiki entry?');">
-                                    <input type="hidden" name="target_id" value="<?php echo $wiki['id']; ?>">
-                                    <input type="hidden" name="action" value="delete_wiki">
-                                    <button type="submit" class="action-btn btn-delete">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: #64748b;">No wiki entries found.</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-
+    <div class="admin-tabs">
+        <a href="?tab=users" class="admin-tab <?php echo $tab=='users'?'active':'';?>">Users</a>
+        <a href="?tab=articles" class="admin-tab <?php echo $tab=='articles'?'active':'';?>">Articles</a>
+        <a href="?tab=characters" class="admin-tab <?php echo $tab=='characters'?'active':'';?>">Characters</a>
+        <a href="?tab=classes" class="admin-tab <?php echo $tab=='classes'?'active':'';?>">Classes</a>
+        <a href="?tab=weapons" class="admin-tab <?php echo $tab=='weapons'?'active':'';?>">Weapons</a>
     </div>
 
-    <script>
-        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
-        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userDropdown').classList.toggle('active'); }
-        document.addEventListener('click', function(e) {
-            const d = document.getElementById('userDropdown'), u = document.querySelector('.user-menu');
-            if (d && u && !u.contains(e.target)) d.classList.remove('active');
-        });
-    </script>
+    <?php if ($tab == 'users'): 
+        $users = $conn->query("SELECT * FROM users");
+    ?>
+    <div class="card">
+        <h3>Registered Users</h3>
+        <table style="width: 100%; text-align: left;">
+            <tr><th>ID</th><th>Username</th><th>Email</th><th>Admin</th><th>Actions</th></tr>
+            <?php while($u = $users->fetch_assoc()): ?>
+            <tr>
+                <td><?php echo $u['id']; ?></td>
+                <td><?php echo htmlspecialchars($u['username']); ?></td>
+                <td><?php echo htmlspecialchars($u['email']); ?></td>
+                <td><?php echo $u['admin'] ? 'Yes' : 'No'; ?></td>
+                <td>
+                    <form method="POST" onsubmit="return confirm('Delete user?');">
+                        <input type="hidden" name="action" value="delete_record">
+                        <input type="hidden" name="table" value="users">
+                        <input type="hidden" name="id_col" value="id">
+                        <input type="hidden" name="id_val" value="<?php echo $u['id']; ?>">
+                        <button type="submit" style="background:#ef4444; color:white; border:none; padding:0.25rem 0.5rem; border-radius:0.25rem; cursor:pointer;">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <?php endwhile; ?>
+        </table>
+    </div>
+
+    <?php elseif ($tab == 'articles'): ?>
+    <div class="card">
+        <h3><?php echo $edit_data ? 'Edit Article' : 'New Article'; ?></h3>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="save_article">
+            <input type="hidden" name="id" value="<?php echo $edit_data['id'] ?? 0; ?>">
+            <div class="form-grid">
+                <div class="form-group form-full"><label>Title</label><input type="text" name="title" value="<?php echo htmlspecialchars($edit_data['title'] ?? ''); ?>" required></div>
+                <div class="form-group form-full"><label>Content (HTML allowed)</label><textarea name="content" rows="6" required><?php echo htmlspecialchars($edit_data['content'] ?? ''); ?></textarea></div>
+                <div class="form-group form-full">
+                    <label>Cover Image</label>
+                    <?php if(!empty($edit_data['image_url'])): ?><img src="<?php echo $edit_data['image_url']; ?>" style="height:60px; margin-bottom:1rem; border-radius:0.5rem;"><br><?php endif; ?>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+            </div>
+            <button type="submit" class="btn">Save Article</button>
+        </form>
+    </div>
+
+    <?php elseif ($tab == 'classes'): ?>
+    <div class="card">
+        <h3><?php echo $edit_data ? 'Edit Class' : 'New Class'; ?></h3>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="save_class">
+            <input type="hidden" name="class_id" value="<?php echo $edit_data['class_id'] ?? 0; ?>">
+            <div class="form-grid">
+                <div class="form-group"><label>Class Name</label><input type="text" name="name" value="<?php echo htmlspecialchars($edit_data['name'] ?? ''); ?>" required></div>
+                <div class="form-group">
+                    <label>Class Icon/Image</label>
+                    <?php if(!empty($edit_data['image_url'])): ?><img src="<?php echo $edit_data['image_url']; ?>" style="height:40px; margin-bottom:0.5rem; border-radius:0.25rem;"><br><?php endif; ?>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                <div class="form-group form-full"><label>Description</label><textarea name="description" rows="3"><?php echo htmlspecialchars($edit_data['description'] ?? ''); ?></textarea></div>
+            </div>
+            <button type="submit" class="btn">Save Class</button>
+        </form>
+    </div>
+
+    <?php elseif ($tab == 'weapons'): ?>
+    <div class="card">
+        <h3><?php echo $edit_data ? 'Edit Weapon' : 'New Weapon'; ?></h3>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="save_weapon">
+            <input type="hidden" name="weapon_id" value="<?php echo $edit_data['weapon_id'] ?? 0; ?>">
+            <div class="form-grid">
+                <div class="form-group"><label>Name</label><input type="text" name="name" value="<?php echo htmlspecialchars($edit_data['name'] ?? ''); ?>" required></div>
+                <div class="form-group"><label>Type (Sword, Bow, etc)</label><input type="text" name="weapon_type" value="<?php echo htmlspecialchars($edit_data['weapon_type'] ?? ''); ?>" required></div>
+                
+                <div class="form-group"><label>Attack (Mt)</label><input type="number" name="atk" value="<?php echo $edit_data['atk'] ?? 0; ?>" required></div>
+                <div class="form-group"><label>Hit Rate %</label><input type="number" name="hit_rate" value="<?php echo $edit_data['hit_rate'] ?? 90; ?>" required></div>
+                <div class="form-group"><label>Crit Rate %</label><input type="number" name="crit_rate" value="<?php echo $edit_data['crit_rate'] ?? 0; ?>" required></div>
+                <div class="form-group"><label>Weight (Wt)</label><input type="number" name="weight" value="<?php echo $edit_data['weight'] ?? 5; ?>" required></div>
+                
+                <div class="form-group"><label>Min Range</label><input type="number" name="min_range" value="<?php echo $edit_data['min_range'] ?? 1; ?>" required></div>
+                <div class="form-group"><label>Max Range</label><input type="number" name="max_range" value="<?php echo $edit_data['max_range'] ?? 1; ?>" required></div>
+                <div class="form-group"><label>Durability</label><input type="number" name="durability" value="<?php echo $edit_data['durability'] ?? 30; ?>" required></div>
+                
+                <div class="form-group">
+                    <label>Icon Image</label>
+                    <?php if(!empty($edit_data['image_url'])): ?><img src="<?php echo $edit_data['image_url']; ?>" style="height:40px;"><br><?php endif; ?>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                
+                <div class="form-group form-full"><label>Description</label><textarea name="description" rows="2"><?php echo htmlspecialchars($edit_data['description'] ?? ''); ?></textarea></div>
+            </div>
+            <button type="submit" class="btn">Save Weapon</button>
+        </form>
+    </div>
+
+    <?php elseif ($tab == 'characters'): 
+        $classes = $conn->query("SELECT class_id, name FROM classes");
+    ?>
+    <div class="card">
+        <h3><?php echo $edit_data ? 'Edit Character' : 'New Character'; ?></h3>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="save_character">
+            <input type="hidden" name="character_id" value="<?php echo $edit_data['character_id'] ?? 0; ?>">
+            <div class="form-grid">
+                <div class="form-group"><label>Name</label><input type="text" name="name" value="<?php echo htmlspecialchars($edit_data['name'] ?? ''); ?>" required></div>
+                <div class="form-group">
+                    <label>Class</label>
+                    <select name="class_id">
+                        <?php while($c = $classes->fetch_assoc()): ?>
+                            <option value="<?php echo $c['class_id']; ?>" <?php echo (isset($edit_data) && $edit_data['class_id'] == $c['class_id']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($c['name']); ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Allegiance</label>
+                    <select name="ally">
+                        <option value="1" <?php echo (isset($edit_data) && $edit_data['ally'] == 1) ? 'selected' : ''; ?>>Player Ally</option>
+                        <option value="0" <?php echo (isset($edit_data) && $edit_data['ally'] == 0) ? 'selected' : ''; ?>>Enemy Unit</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Portrait Image</label>
+                    <?php if(!empty($edit_data['image_url'])): ?><img src="<?php echo $edit_data['image_url']; ?>" style="height:40px;"><br><?php endif; ?>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+
+                <div class="form-group"><label>Base HP</label><input type="number" name="base_hp" value="<?php echo $edit_data['base_hp'] ?? 20; ?>" required></div>
+                <div class="form-group"><label>Strength (Str)</label><input type="number" name="base_str" value="<?php echo $edit_data['base_str'] ?? 5; ?>" required></div>
+                <div class="form-group"><label>Dexterity (Dex)</label><input type="number" name="base_dex" value="<?php echo $edit_data['base_dex'] ?? 5; ?>" required></div>
+                <div class="form-group"><label>Skill</label><input type="number" name="base_skill" value="<?php echo $edit_data['base_skill'] ?? 5; ?>" required></div>
+                <div class="form-group"><label>Defense (Def)</label><input type="number" name="base_def" value="<?php echo $edit_data['base_def'] ?? 3; ?>" required></div>
+                <div class="form-group"><label>Luck</label><input type="number" name="base_luck" value="<?php echo $edit_data['base_luck'] ?? 2; ?>" required></div>
+                <div class="form-group"><label>Movement (Move)</label><input type="number" name="base_move" value="<?php echo $edit_data['base_move'] ?? 5; ?>" required></div>
+                
+                <div class="form-group form-full"><label>Description</label><textarea name="description" rows="2"><?php echo htmlspecialchars($edit_data['description'] ?? ''); ?></textarea></div>
+            </div>
+            <button type="submit" class="btn">Save Character</button>
+        </form>
+    </div>
+    <?php endif; ?>
+
 </body>
 </html>
-<?php $conn->close(); ?>
