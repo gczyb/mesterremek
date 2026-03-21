@@ -120,7 +120,6 @@ $scores_result = $score_stmt->get_result();
             <a href="leaderboard.php">Leaderboard</a>
             <a href="wiki.php">Wiki</a>
             <?php if ($user): ?>
-                <a href="profile.php">Profile (<?php echo htmlspecialchars($user['username']); ?>)</a>
                 <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
                     <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
                 <?php endif; ?>
