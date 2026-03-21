@@ -137,14 +137,14 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                             
                             <?php if ($isAdmin): ?>
                                 <span class="admin-controls">
-                                    <a href="admin.php?tab=articles&edit=<?php echo $wiki['id']; ?>" class="badge badge-stat">✏️ Edit</a>
+                                    <a href="admin.php?tab=articles&edit=<?php echo $wiki['id']; ?>" class="badge badge-stat">Edit</a>
                                     <form method="POST" action="admin.php" onsubmit="return confirm('Delete this article?');" style="margin:0;">
                                         <input type="hidden" name="action" value="delete_record">
                                         <input type="hidden" name="table" value="wiki_entries">
                                         <input type="hidden" name="id_col" value="id">
                                         <input type="hidden" name="id_val" value="<?php echo $wiki['id']; ?>">
                                         <input type="hidden" name="return_to" value="wiki.php?tab=articles">
-                                        <button type="submit" class="badge badge-danger">🗑️</button>
+                                        <button type="submit" class="badge badge-danger">Delete</button>
                                     </form>
                                 </span>
                             <?php endif; ?>
@@ -174,14 +174,14 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
 
                             <?php if ($isAdmin): ?>
                                 <span class="admin-controls">
-                                    <a href="admin.php?tab=characters&edit=<?php echo $char['character_id']; ?>" class="badge badge-stat">✏️ Edit</a>
+                                    <a href="admin.php?tab=characters&edit=<?php echo $char['character_id']; ?>" class="badge badge-stat">Edit</a>
                                     <form method="POST" action="admin.php" onsubmit="return confirm('Delete character?');" style="margin:0;">
                                         <input type="hidden" name="action" value="delete_record">
                                         <input type="hidden" name="table" value="characters">
                                         <input type="hidden" name="id_col" value="character_id">
                                         <input type="hidden" name="id_val" value="<?php echo $char['character_id']; ?>">
                                         <input type="hidden" name="return_to" value="wiki.php?tab=characters">
-                                        <button type="submit" class="badge badge-danger">🗑️</button>
+                                        <button type="submit" class="badge badge-danger">Delete</button>
                                     </form>
                                 </span>
                             <?php endif; ?>
@@ -246,14 +246,14 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                                     
                                     <?php if ($isAdmin): ?>
                                     <td style="white-space:nowrap;">
-                                        <a href="admin.php?tab=classes&edit=<?php echo $class['class_id']; ?>" class="badge badge-stat">✏️</a>
+                                        <a href="admin.php?tab=classes&edit=<?php echo $class['class_id']; ?>" class="badge badge-stat">Edit</a>
                                         <form method="POST" action="admin.php" onsubmit="return confirm('Delete class?');" style="display:inline;">
                                             <input type="hidden" name="action" value="delete_record">
                                             <input type="hidden" name="table" value="classes">
                                             <input type="hidden" name="id_col" value="class_id">
                                             <input type="hidden" name="id_val" value="<?php echo $class['class_id']; ?>">
                                             <input type="hidden" name="return_to" value="wiki.php?tab=classes">
-                                            <button type="submit" class="badge badge-danger">🗑️</button>
+                                            <button type="submit" class="badge badge-danger">Delete</button>
                                         </form>
                                     </td>
                                     <?php endif; ?>
@@ -302,14 +302,14 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                                     
                                     <?php if ($isAdmin): ?>
                                     <td style="white-space:nowrap;">
-                                        <a href="admin.php?tab=weapons&edit=<?php echo $weapon['weapon_id']; ?>" class="badge badge-stat">✏️</a>
+                                        <a href="admin.php?tab=weapons&edit=<?php echo $weapon['weapon_id']; ?>" class="badge badge-stat">Edit</a>
                                         <form method="POST" action="admin.php" onsubmit="return confirm('Delete weapon?');" style="display:inline;">
                                             <input type="hidden" name="action" value="delete_record">
                                             <input type="hidden" name="table" value="weapons">
                                             <input type="hidden" name="id_col" value="weapon_id">
                                             <input type="hidden" name="id_val" value="<?php echo $weapon['weapon_id']; ?>">
                                             <input type="hidden" name="return_to" value="wiki.php?tab=weapons">
-                                            <button type="submit" class="badge badge-danger">🗑️</button>
+                                            <button type="submit" class="badge badge-danger">Delete</button>
                                         </form>
                                     </td>
                                     <?php endif; ?>
