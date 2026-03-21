@@ -40,7 +40,6 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
                                 <span><?php echo htmlspecialchars($user['email']); ?></span>
                             </div>
                             <a href="profile.php">My Profile</a>
-                            <a href="profile.php">Settings</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
                                 <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
                             <?php endif; ?>
@@ -75,7 +74,6 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
                                 <span><?php echo htmlspecialchars($user['email']); ?></span>
                             </div>
                             <a href="profile.php">My Profile</a>
-                            <a href="profile.php">Settings</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
                                 <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
                             <?php endif; ?>
@@ -105,7 +103,6 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
     </nav>
 
     <div class="leaderboard-container">
-        <a href="index.php" class="back-btn">← Back to Menu</a>
         <h1>Select a Realm</h1>
         <p class="subtitle">Choose a map to view the legends who conquered it.</p>
 

@@ -199,7 +199,6 @@ if (isset($_GET['edit'])) {
                                 <span><?php echo htmlspecialchars($user['email']); ?></span>
                             </div>
                             <a href="profile.php">My Profile</a>
-                            <a href="profile.php">Settings</a>
                             <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
                             <a href="logout.php">Logout</a>
                         </div>
@@ -230,7 +229,6 @@ if (isset($_GET['edit'])) {
                                 <span><?php echo htmlspecialchars($user['email']); ?></span>
                             </div>
                             <a href="profile.php">My Profile</a>
-                            <a href="profile.php">Settings</a>
                             <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
                             <a href="logout.php">Logout</a>
                         </div>

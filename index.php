@@ -12,6 +12,17 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Treasure Quest - Epic 2D Adventure</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- Standardized Orange Section Titles --- */
+        .about-content h2,
+        .section-header h2, 
+        .gallery-video h3 {
+            color: #fbbf24;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-size: 1.8rem;
+            margin-bottom: 2rem; /* Added generous space below the titles */
+        }
+    </style>
 </head>
 <body>
     <nav class="nav">
@@ -39,7 +50,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                                 <span><?php echo htmlspecialchars($user['email']); ?></span>
                             </div>
                             <a href="profile.php">My Profile</a>
-                            <a href="profile.php">Settings</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
                                 <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
                             <?php endif; ?>
@@ -75,7 +85,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                                 <span><?php echo htmlspecialchars($user['email']); ?></span>
                             </div>
                             <a href="profile.php">My Profile</a>
-                            <a href="profile.php">Settings</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
                                 <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
                             <?php endif; ?>
@@ -177,7 +186,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         <div class="section-container">
             <div class="section-header">
                 <h2>Game Features</h2>
-                <p>Discover what makes Treasure Quest an unforgettable adventure</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
@@ -218,7 +226,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         <div class="section-container">
             <div class="section-header">
                 <h2>Screenshot Gallery</h2>
-                <p>Take a peek at the beautiful pixel art and exciting gameplay</p>
             </div>
             
             <div class="carousel">

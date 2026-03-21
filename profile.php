@@ -10,6 +10,9 @@ $user = getCurrentUser();
 $error = '';
 $success = '';
 
+$currentPage = basename($_SERVER['PHP_SELF']);
+$isHomePage = ($currentPage === 'index.php' || $currentPage === '');
+
 // Handle profile picture upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_picture'])) {
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === 0) {
@@ -192,10 +195,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="profile-page">
+    
     <nav class="nav">
-        <div class="nav-container profile-nav">
-            <a href="index.php" class="logo profile-logo">TREASURE QUEST</a>
-            <a href="index.php" class="back-link">← Back to Home</a>
+        <div class="nav-container">
+            <div class="nav-links">
+                <?php if (!$isHomePage): ?><a href="index.php#home">Home</a><?php endif; ?>
+                <a href="index.php#about">About</a>
+                <a href="index.php#features">Features</a>
+                <a href="index.php#gallery">Gallery</a>
+                <a href="leaderboard.php">Leaderboard</a>
+                <a href="wiki.php">Wiki</a>
+                
+                <?php if ($user): ?>
+                    <div class="user-menu" style="margin-left: 1rem;">
+                        <div class="user-avatar" onclick="toggleUserMenu(event)">
+                            <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <?php else: ?>
+                                <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="user-info">
+                                <strong><?php echo htmlspecialchars($user['username']); ?></strong>
+                                <span><?php echo htmlspecialchars($user['email']); ?></span>
+                            </div>
+                            <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
+                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                            <?php endif; ?>
+                            <a href="logout.php">Logout</a>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <a href="login.php" class="btn btn-outline" style="cursor: pointer; margin-left: 1rem;">Login</a>
+                <?php endif; ?>
+            </div>
+            
+            <div class="mobile-controls">
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                
+                <?php if ($user): ?>
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
+                            <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <?php else: ?>
+                                <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="user-dropdown" id="mobileUserDropdown">
+                            <div class="user-info">
+                                <strong><?php echo htmlspecialchars($user['username']); ?></strong>
+                                <span><?php echo htmlspecialchars($user['email']); ?></span>
+                            </div>
+                            <a href="logout.php">Logout</a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <?php if (!$isHomePage): ?><a href="index.php#home">Home</a><?php endif; ?>
+            <a href="index.php#about">About</a>
+            <a href="index.php#features">Features</a>
+            <a href="index.php#gallery">Gallery</a>
+            <a href="leaderboard.php">Leaderboard</a>
+            <a href="wiki.php">Wiki</a>
+            <?php if ($user): ?>
+                <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
+                    <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
+                <?php endif; ?>
+                <a href="logout.php">Logout</a>
+            <?php else: ?>
+                <a href="login.php" class="btn btn-block">Login</a>
+            <?php endif; ?>
         </div>
     </nav>
 
@@ -225,30 +304,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
             
             <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #334155;">
                 <h3 style="color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1rem;">Profile Picture</h3>
-                <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;">
-                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #f59e0b); display: flex; align-items: center; justify-content: center; border: 3px solid #fbbf24; overflow: hidden;">
-                        <?php if (!empty($user['profile_picture'])): ?>
-                            <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
-                        <?php else: ?>
-                            <span style="font-size: 32px; color: #0f172a; font-weight: bold;"><?php echo strtoupper(substr($user['username'], 0, 1)); ?></span>
-                        <?php endif; ?>
-                    </div>
+                <div style="margin-bottom: 1rem;">
                     
-                    <div>
-                        <form method="POST" action="" enctype="multipart/form-data" style="display: inline-block;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                        
+                        <form method="POST" action="" enctype="multipart/form-data" style="flex: 1; min-width: 140px; margin: 0;">
                             <input type="file" name="profile_picture" accept="image/*" required style="display: none;" id="profilePicInput" onchange="this.form.submit()">
-                            <label for="profilePicInput" class="btn" style="cursor: pointer; display: inline-block; margin-right: 0.5rem;">Upload New Picture</label>
+                            <label for="profilePicInput" class="btn" style="cursor: pointer; display: block; text-align: center; width: 100%; box-sizing: border-box; margin: 0; padding: 0.75rem;">Upload New Picture</label>
                             <input type="hidden" name="upload_picture" value="1">
                         </form>
                         
                         <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                            <form method="POST" action="" style="display: inline-block;">
-                                <button type="submit" name="remove_picture" class="btn btn-danger" onclick="return confirm('Remove profile picture?')">Remove Picture</button>
+                            <form method="POST" action="" style="flex: 1; min-width: 140px; margin: 0;">
+                                <button type="submit" name="remove_picture" class="btn btn-danger" style="width: 100%; height: 100%; margin: 0; box-sizing: border-box; padding: 0.75rem;" onclick="return confirm('Remove profile picture?')">Remove Picture</button>
                             </form>
                         <?php endif; ?>
-                        
-                        <p style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">JPG, PNG or GIF. Max 5MB.</p>
+
                     </div>
+                    
+                    <p style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">JPG, PNG or GIF. Max 5MB.</p>
                 </div>
             </div>
 
@@ -263,7 +337,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
                     </div>
-                    <button type="submit" name="update_profile" class="btn btn-block">Update Profile</button>
+                    <button type="submit" name="update_profile" class="btn btn-block" style="padding: 0.75rem;">Update Profile</button>
                 </form>
             </div>
 
@@ -282,7 +356,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                         <label for="confirm_password">Confirm New Password</label>
                         <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
                     </div>
-                    <button type="submit" name="change_password" class="btn btn-block">Change Password</button>
+                    <button type="submit" name="change_password" class="btn btn-block" style="padding: 0.75rem;">Change Password</button>
                 </form>
             </div>
         </div>
@@ -290,22 +364,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
         <div class="card">
             <h2>Logout</h2>
             <p style="margin-bottom: 1.5rem;">End your current session and return to the homepage.</p>
-            <a href="logout.php" class="btn" style="background-color: #fbbf24; display:block; text-align:center;">Logout</a>
+            <a href="logout.php" class="btn btn-block" style="display:block; text-align:center; padding: 0.75rem;">Logout</a>
         </div>
 
         <div class="card danger-zone">
             <h2>Delete Account</h2>
             <div class="delete-warning">
-                <strong>⚠️ Warning:</strong> Deleting your account is permanent and cannot be undone. All your data will be lost forever.
+                <strong>Warning:</strong> Deleting your account is permanent and cannot be undone. All your data will be lost forever.
             </div>
             <form method="POST" action="" onsubmit="return confirm('Are you absolutely sure you want to delete your account? This action cannot be undone!');">
                 <div class="form-group">
                     <label for="confirm_delete_password">Enter your password to confirm deletion</label>
                     <input type="password" id="confirm_delete_password" name="confirm_delete_password" required>
                 </div>
-                <button type="submit" name="delete_account" class="btn btn-danger">Delete Account Permanently</button>
+                <button type="submit" name="delete_account" class="btn btn-danger btn-block" style="padding: 0.75rem;">Delete Account Permanently</button>
             </form>
         </div>
     </div>
+    
+    <script>
+        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userDropdown').classList.toggle('active'); }
+        function toggleMobileUserMenu(e) { e.stopPropagation(); document.getElementById('mobileUserDropdown').classList.toggle('active'); }
+        
+        document.addEventListener('click', function(e) {
+            document.querySelectorAll('.user-dropdown').forEach(dropdown => {
+                if (!dropdown.parentElement.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
