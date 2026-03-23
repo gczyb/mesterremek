@@ -32,21 +32,19 @@ body:not(.auth-page):not(.profile-page) h6 {
    BUTTONS & COMMON COMPONENTS
    ========================================================================== */
 .btn {
-    appearance: none; /* Strips browser default button styling */
+    appearance: none;
     -webkit-appearance: none;
     background-color: #fbbf24;
-    color: #000000 !important; /* Forces pure black text */
-    font-size: 1rem !important; /* Forces exact same font size */
+    color: #000000 !important;
+    font-size: 1rem !important;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     border: none;
-    padding: 0.75rem 1.5rem !important; /* Enforces exact identical padding */
+    padding: 0.75rem 1.5rem !important;
     border-radius: 0.375rem;
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
     text-decoration: none;
-    
-    /* Using flexbox perfectly aligns text regardless of if it's a label, a, or button tag */
     display: inline-flex; 
     align-items: center;
     justify-content: center;
@@ -61,14 +59,14 @@ body:not(.auth-page):not(.profile-page) h6 {
 /* Outline button variant */
 .btn-outline {
     background-color: transparent;
-    color: #fbbf24 !important; /* Keep orange here so it's readable on the dark background */
+    color: #fbbf24 !important;
     border: 2px solid #fbbf24;
-    padding: calc(0.75rem - 2px) calc(1.5rem - 2px) !important; /* Offsets the border thickness to stay the exact same height */
+    padding: calc(0.75rem - 2px) calc(1.5rem - 2px) !important;
 }
 
 .btn-outline:hover { 
     background-color: #fbbf24;
-    color: #000000 !important; /* Switch to black text when background fills on hover */
+    color: #000000 !important;
 }
 
 .btn-block { 
@@ -126,6 +124,14 @@ body:not(.auth-page):not(.profile-page) h6 {
     background-color: #0f172a;
     border-bottom: 1px solid #334155;
     font-family: 'Press Start 2P', system-ui, sans-serif;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Hide Navbar when Video is Maximized */
+body:has(.video-placeholder.is-expanded) .nav {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .nav-container {
@@ -162,7 +168,7 @@ body:not(.auth-page):not(.profile-page) h6 {
     transition: color 0.3s;
     font-size: 1rem;
 }
-.nav-links a:hover, .nav-links a.active { color: #fbbf24; }
+.nav-links a:hover { color: #fbbf24; }
 
 /* User Menu & Avatar */
 .user-menu {
@@ -222,7 +228,18 @@ body:not(.auth-page):not(.profile-page) h6 {
 .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; }
 .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, transparent, #0f172a); }
 .hero-content { position: relative; max-width: 1280px; margin: 0 auto; padding: 0 1rem; text-align: center; z-index: 10; }
-.hero-logo { max-width: 450px; width: 100%; height: auto; margin-bottom: 1.5rem; animation: pulse 2s infinite; display: inline-block; mix-blend-mode: screen; transition: max-width 0.3s ease; }
+
+.hero-logo { 
+    max-width: 450px; 
+    width: 100%; 
+    height: auto; 
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+    animation: pulse 2s infinite; 
+    display: inline-block; 
+    mix-blend-mode: screen; 
+    transition: max-width 0.3s ease; 
+}
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 .hero p { color: #cbd5e1; max-width: 42rem; margin: 0 auto 2rem; }
 
@@ -245,6 +262,10 @@ body:not(.auth-page):not(.profile-page) h6 {
 .controls-group { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
 .controls-group .control-btn { position: absolute; top: 1rem; width: 44px; height: 44px; opacity: 0; pointer-events: none; }
 .controls-group .control-btn.visible { opacity: 1; pointer-events: all; }
+
+.video-placeholder.is-playing .controls-group { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+.video-placeholder.is-playing:hover .controls-group { opacity: 1; visibility: visible; }
+
 #playPauseBtn { right: 4.5rem; }
 #sizeToggleBtn { right: 1rem; }
 #playBtnContent { position: absolute; inset: 0; margin: auto; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease; z-index: 15; }
@@ -363,7 +384,7 @@ footer p { color: #94a3b8; }
    PAGE: WIKI
    ========================================================================== */
 .wiki-container { max-width: 1000px; margin: 100px auto 4rem; padding: 0 1rem; }
-.wiki-container .page-header { text-align: center; margin-bottom: 2rem; }
+.wiki-container .page-header { color: #fbbf24; text-align: center; margin-bottom: 2rem; }
 .wiki-container .page-header p { color: #94a3b8; margin-top: 1rem; }
 
 .wiki-tabs { 
@@ -448,7 +469,7 @@ body.auth-page {
 /* Dangerous / Red Button Standardizations */
 .btn-danger { 
     background-color: #ef4444 !important; 
-    color: #000000 !important; /* Force black text on red buttons */
+    color: #000000 !important;
 }
 .btn-danger:hover { 
     background-color: #dc2626 !important; 
@@ -461,9 +482,29 @@ body.auth-page {
    PAGE: ADMIN DASHBOARD
    ========================================================================== */
 .admin-container { max-width: 1200px; margin: 100px auto 4rem; padding: 0 1rem; }
+
+/* Dashboard Title Styling */
+.admin-container h1 {
+    color: #fbbf24;
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
 .admin-container .back-link { display: inline-block; margin-bottom: 1rem; color: #94a3b8; text-decoration: none; font-size: 0.875rem; font-family: -apple-system, sans-serif; }
 .admin-container .back-link:hover { color: #fbbf24; }
-.admin-tabs { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; border-bottom: 2px solid #334155; padding-bottom: 1rem; }
+
+.admin-tabs { 
+    display: flex; 
+    justify-content: center; 
+    gap: 1rem; 
+    margin-bottom: 2rem; 
+    flex-wrap: wrap; 
+    border-bottom: 2px solid #334155; 
+    padding-bottom: 1rem; 
+}
+
 .admin-tab { padding: 0.75rem 1.5rem; color: #94a3b8; text-decoration: none; font-weight: bold; border-radius: 0.5rem; transition: all 0.2s; font-family: -apple-system, sans-serif; }
 .admin-tab:hover { background-color: rgba(251, 191, 36, 0.1); color: #fbbf24; }
 .admin-tab.active { background-color: #fbbf24; color: #0f172a; }
@@ -481,7 +522,46 @@ body.auth-page {
    ========================================================================== */
 @media (min-width: 640px) { .hero-buttons { flex-direction: row; } }
 @media (min-width: 768px) { .about-grid { grid-template-columns: 1fr 1fr; } .features-grid { grid-template-columns: repeat(2, 1fr); } .footer-grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 768px) { .hero-logo { max-width: 280px; margin-bottom: 1rem; } .hero-content { padding-top: 1rem; } }
+@media (max-width: 768px) { 
+    .hero-logo { max-width: 280px; margin-bottom: 1rem; } 
+    .hero-content { padding-top: 1rem; } 
+    
+    /* Responsive Data Table Stacking */
+    .data-table thead { 
+        display: none; 
+    }
+    .data-table, .data-table tbody, .data-table tr, .data-table td { 
+        display: block; 
+        width: 100%; 
+    }
+    .data-table tr { 
+        margin-bottom: 1rem; 
+        border: 1px solid #334155; 
+        border-radius: 0.5rem; 
+        background-color: #0f172a; 
+        overflow: hidden; 
+    }
+    .data-table td { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        text-align: right; 
+        border-bottom: 1px solid #334155; 
+        padding: 0.75rem 1rem; 
+    }
+    .data-table td:last-child { 
+        border-bottom: none; 
+    }
+    /* Generates labels from HTML data attributes */
+    .data-table td::before { 
+        content: attr(data-label); 
+        font-weight: bold; 
+        color: #fbbf24; 
+        text-align: left; 
+        font-size: 0.85rem; 
+        text-transform: uppercase; 
+    }
+}
 @media (min-width: 1024px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1025px) { .nav-links { display: flex; } .mobile-controls { display: none; } }
 @media (max-width: 1024px) { .mobile-controls { display: flex; } #sizeToggleBtn { display: none !important; } #playPauseBtn { right: 1rem !important; } }

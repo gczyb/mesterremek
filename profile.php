@@ -281,7 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
     <div class="profile-container">
         <div class="profile-header">
             <div class="profile-avatar">
-                <?php if (!empty($user['profile_picture'])): ?>
+                <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
                     <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                 <?php else: ?>
                     <?php echo strtoupper(substr($user['username'], 0, 1)); ?>

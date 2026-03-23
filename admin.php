@@ -244,7 +244,6 @@ if (isset($_GET['edit'])) {
             <a href="leaderboard.php">Leaderboard</a>
             <a href="wiki.php">Wiki</a>
             <?php if ($user): ?>
-                <a href="profile.php">Profile (<?php echo htmlspecialchars($user['username']); ?>)</a>
                 <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
                 <a href="logout.php">Logout</a>
             <?php endif; ?>
@@ -252,7 +251,7 @@ if (isset($_GET['edit'])) {
     </nav>
 
     <div class="admin-container">
-        <h1 style="margin-top: 1rem; font-size: 1.5rem; margin-bottom: 2rem;">Database Manager</h1>
+        <h1>Database Manager</h1>
 
         <?php if ($message): ?><div class="alert alert-success"><?php echo $message; ?></div><?php endif; ?>
 
@@ -270,14 +269,17 @@ if (isset($_GET['edit'])) {
         <div class="card">
             <h3>Registered Users</h3>
             <table class="data-table">
-                <tr><th>ID</th><th>Username</th><th>Email</th><th>Admin</th><th>Actions</th></tr>
+                <thead>
+                    <tr><th>ID</th><th>Username</th><th>Email</th><th>Admin</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
                 <?php while($u = $users->fetch_assoc()): ?>
                 <tr>
-                    <td class="badge-stat"><?php echo $u['id']; ?></td>
-                    <td><?php echo htmlspecialchars($u['username']); ?></td>
-                    <td><?php echo htmlspecialchars($u['email']); ?></td>
-                    <td><span class="badge <?php echo $u['admin'] ? 'badge-ally' : 'badge-enemy'; ?>"><?php echo $u['admin'] ? 'Yes' : 'No'; ?></span></td>
-                    <td>
+                    <td class="badge-stat" data-label="ID"><?php echo $u['id']; ?></td>
+                    <td data-label="Username"><?php echo htmlspecialchars($u['username']); ?></td>
+                    <td data-label="Email"><?php echo htmlspecialchars($u['email']); ?></td>
+                    <td data-label="Admin"><span class="badge <?php echo $u['admin'] ? 'badge-ally' : 'badge-enemy'; ?>"><?php echo $u['admin'] ? 'Yes' : 'No'; ?></span></td>
+                    <td data-label="Actions">
                         <form method="POST" onsubmit="return confirm('Delete user?');" style="margin:0;">
                             <input type="hidden" name="action" value="delete_record">
                             <input type="hidden" name="table" value="users">
@@ -288,6 +290,7 @@ if (isset($_GET['edit'])) {
                     </td>
                 </tr>
                 <?php endwhile; ?>
+                </tbody>
             </table>
         </div>
 
