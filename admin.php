@@ -59,29 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // SAVE ARTICLE
-    elseif ($action === 'save_article') {
-        $id = (int)$_POST['id'];
-        $title = trim($_POST['title']);
-        $content = trim($_POST['content']);
-        $img = handleAdminUpload($_FILES['image'] ?? null, 'wiki');
-
-        if ($id > 0) {
-            if ($img) {
-                $stmt = $conn->prepare("UPDATE wiki_entries SET title=?, content=?, image_url=? WHERE id=?");
-                $stmt->bind_param("sssi", $title, $content, $img, $id);
-            } else {
-                $stmt = $conn->prepare("UPDATE wiki_entries SET title=?, content=? WHERE id=?");
-                $stmt->bind_param("ssi", $title, $content, $id);
-            }
-        } else {
-            $stmt = $conn->prepare("INSERT INTO wiki_entries (title, content, image_url) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $title, $content, $img);
-        }
-        $stmt->execute();
-        $message = "Article saved.";
-    }
-
     // SAVE CLASS
     elseif ($action === 'save_class') {
         $id = (int)$_POST['class_id'];
@@ -159,7 +136,6 @@ $tab = $_GET['tab'] ?? 'users';
 $edit_data = null;
 if (isset($_GET['edit'])) {
     $edit_id = (int)$_GET['edit'];
-    if ($tab === 'articles') $edit_data = $conn->query("SELECT * FROM wiki_entries WHERE id = $edit_id")->fetch_assoc();
     if ($tab === 'classes') $edit_data = $conn->query("SELECT * FROM classes WHERE class_id = $edit_id")->fetch_assoc();
     if ($tab === 'weapons') $edit_data = $conn->query("SELECT * FROM weapons WHERE weapon_id = $edit_id")->fetch_assoc();
     if ($tab === 'characters') $edit_data = $conn->query("SELECT * FROM characters WHERE character_id = $edit_id")->fetch_assoc();
@@ -257,7 +233,6 @@ if (isset($_GET['edit'])) {
 
         <div class="admin-tabs">
             <a href="?tab=users" class="admin-tab <?php echo $tab=='users'?'active':'';?>">Users</a>
-            <a href="?tab=articles" class="admin-tab <?php echo $tab=='articles'?'active':'';?>">Articles</a>
             <a href="?tab=characters" class="admin-tab <?php echo $tab=='characters'?'active':'';?>">Characters</a>
             <a href="?tab=classes" class="admin-tab <?php echo $tab=='classes'?'active':'';?>">Classes</a>
             <a href="?tab=weapons" class="admin-tab <?php echo $tab=='weapons'?'active':'';?>">Weapons</a>
@@ -292,25 +267,6 @@ if (isset($_GET['edit'])) {
                 <?php endwhile; ?>
                 </tbody>
             </table>
-        </div>
-
-        <?php elseif ($tab == 'articles'): ?>
-        <div class="card">
-            <h3><?php echo $edit_data ? 'Edit Article' : 'New Article'; ?></h3>
-            <form method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="save_article">
-                <input type="hidden" name="id" value="<?php echo $edit_data['id'] ?? 0; ?>">
-                <div class="form-grid">
-                    <div class="form-group form-full"><label>Title</label><input type="text" name="title" value="<?php echo htmlspecialchars($edit_data['title'] ?? ''); ?>" required></div>
-                    <div class="form-group form-full"><label>Content (HTML allowed)</label><textarea name="content" rows="6" required><?php echo htmlspecialchars($edit_data['content'] ?? ''); ?></textarea></div>
-                    <div class="form-group form-full">
-                        <label>Cover Image</label>
-                        <?php if(!empty($edit_data['image_url'])): ?><img src="<?php echo $edit_data['image_url']; ?>" style="height:60px; margin-bottom:1rem; border-radius:0.5rem;"><br><?php endif; ?>
-                        <input type="file" name="image" accept="image/*">
-                    </div>
-                </div>
-                <button type="submit" class="btn" style="margin-top: 1rem;">Save Article</button>
-            </form>
         </div>
 
         <?php elseif ($tab == 'classes'): ?>

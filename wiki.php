@@ -109,7 +109,46 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                 text-align: center;
             }
 
-            /* --- Table to Card Layout for Mobile --- */
+            /* --- Characters Tab: 2-Column Stat Table Mobile Layout --- */
+            .char-stat-table thead {
+                display: none;
+            }
+            .char-stat-table,
+            .char-stat-table tbody,
+            .char-stat-table tr {
+                display: block;
+                width: 100%;
+            }
+            .char-stat-table tr {
+                border-radius: 0.5rem;
+                overflow: hidden;
+                border: 1px solid #334155;
+                background-color: rgba(0, 0, 0, 0.2);
+            }
+            .char-stat-table td {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                border: none !important;
+                border-bottom: 1px solid #334155 !important;
+                border-radius: 0 !important;
+                background-color: transparent !important;
+                padding: 0.75rem 1rem !important;
+                text-align: right !important;
+            }
+            .char-stat-table td:last-child {
+                border-bottom: none !important;
+            }
+            .char-stat-table td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #fbbf24;
+                text-transform: uppercase;
+                font-size: 0.85rem;
+                text-align: left;
+            }
+
+            /* --- Table to Card Layout for Mobile (Classes & Weapons) --- */
             .table-cards-mobile, 
             .table-cards-mobile tbody, 
             .table-cards-mobile tr, 
@@ -355,19 +394,19 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                         </div>
                         
                         <div style="overflow-x: auto; width: 100%;">
-                            <table class="data-table">
+                            <table class="data-table char-stat-table">
                                 <thead>
                                     <tr><th>HP</th><th>Str</th><th>Dex</th><th>Skill</th><th>Def</th><th>Luck</th><th>Move</th></tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="badge-stat"><?php echo $char['base_hp']; ?></td>
-                                        <td class="badge-stat"><?php echo $char['base_str']; ?></td>
-                                        <td class="badge-stat"><?php echo $char['base_dex']; ?></td>
-                                        <td class="badge-stat"><?php echo $char['base_skill']; ?></td>
-                                        <td class="badge-stat"><?php echo $char['base_def']; ?></td>
-                                        <td class="badge-stat"><?php echo $char['base_luck']; ?></td>
-                                        <td class="badge-stat"><?php echo $char['base_move']; ?></td>
+                                        <td class="badge-stat" data-label="HP"><?php echo $char['base_hp']; ?></td>
+                                        <td class="badge-stat" data-label="Str"><?php echo $char['base_str']; ?></td>
+                                        <td class="badge-stat" data-label="Dex"><?php echo $char['base_dex']; ?></td>
+                                        <td class="badge-stat" data-label="Skill"><?php echo $char['base_skill']; ?></td>
+                                        <td class="badge-stat" data-label="Def"><?php echo $char['base_def']; ?></td>
+                                        <td class="badge-stat" data-label="Luck"><?php echo $char['base_luck']; ?></td>
+                                        <td class="badge-stat" data-label="Move"><?php echo $char['base_move']; ?></td>
                                     </tr>
                                 </tbody>
                             </table>
