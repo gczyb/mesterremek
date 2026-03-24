@@ -2,6 +2,30 @@
 require_once 'config.php';
 $user = getCurrentUser();
 $conn = getDBConnection();
+
+// Simple BBCode Parser
+function parseBBCode($text) {
+    // 1. Secure the text first
+    $text = htmlspecialchars($text);
+    
+    // 2. Apply line breaks
+    $text = nl2br($text);
+    
+    // 3. Define BBCode rules (Regex to HTML)
+    $bbcode = [
+        '/\[b\](.*?)\[\/b\]/is' => '<strong>$1</strong>',
+        '/\[i\](.*?)\[\/i\]/is' => '<em>$1</em>',
+        '/\[u\](.*?)\[\/u\]/is' => '<u>$1</u>',
+        '/\[h3\](.*?)\[\/h3\]/is' => '<h3 style="color:#fbbf24; margin-top:1rem;">$1</h3>',
+        '/\[color=(.*?)\](.*?)\[\/color\]/is' => '<span style="color:$1;">$2</span>',
+        '/\[url=(.*?)\](.*?)\[\/url\]/is' => '<a href="$1" target="_blank" style="color:#fbbf24; text-decoration:underline;">$2</a>',
+        '/\[img\](.*?)\[\/img\]/is' => '<img src="$1" style="max-width:100%; border-radius:0.5rem; margin:1rem 0;">'
+    ];
+    
+    // 4. Run the replacement
+    return preg_replace(array_keys($bbcode), array_values($bbcode), $text);
+}
+
 $currentPage = basename($_SERVER['PHP_SELF']);
 $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
 
@@ -83,7 +107,7 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                 align-items: center;
                 text-align: center;
                 width: 100%;
-                gap: 1rem; 
+                gap: 1rem;
             }
             .wiki-card-header .action-group {
                 display: grid;
@@ -231,6 +255,7 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                 <a href="index.php#gallery">Gallery</a>
                 <a href="leaderboard.php">Leaderboard</a>
                 <a href="wiki.php" class="active">Wiki</a>
+              
                 <?php if ($user): ?>
                     <div class="user-menu" style="margin-left: 1rem;">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
@@ -349,8 +374,9 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                             <img src="<?php echo htmlspecialchars($wiki['image_url']); ?>" alt="Article Image" class="wiki-img-large">
                         <?php endif; ?>
                         
-                        <div class="wiki-content"><?php echo nl2br(htmlspecialchars($wiki['content'])); ?></div>
-                        <div class="wiki-meta">Posted: <?php echo date('M j, Y', strtotime($wiki['created_at'])); ?></div>
+                        <div class="wiki-content"><?php echo parseBBCode($wiki['content']); ?></div>
+                        
+                        <div class="wiki-meta"><?php echo date('M j, Y', strtotime($wiki['created_at'])); ?></div>
                     </div>
                 <?php endwhile; ?>
             <?php endif; ?>

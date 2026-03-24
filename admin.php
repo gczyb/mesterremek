@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_col = $_POST['id_col'];
         $id_val = (int)$_POST['id_val'];
         $allowed_tables = ['wiki_entries', 'characters', 'classes', 'weapons', 'users'];
-        
+
         if (in_array($table, $allowed_tables)) {
             $stmt = $conn->prepare("DELETE FROM $table WHERE $id_col = ?");
             $stmt->bind_param("i", $id_val);
@@ -57,6 +57,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
         }
+    }
+
+    // TOGGLE ADMIN PRIVILEGES
+    elseif ($action === 'toggle_admin') {
+        $target_id = (int)$_POST['user_id'];
+        $new_status = (int)$_POST['admin_status'];
+        
+        // Safeguard: Prevent the active admin from demoting themselves
+        if ($target_id === $user['id'] && $new_status === 0) {
+            $error = "You cannot revoke your own admin privileges.";
+        } else {
+            $stmt = $conn->prepare("UPDATE users SET admin = ? WHERE id = ?");
+            $stmt->bind_param("ii", $new_status, $target_id);
+            $stmt->execute();
+            $message = "User admin privileges updated successfully.";
+        }
+    }
+
+    // SAVE ARTICLE
+    elseif ($action === 'save_article') {
+        $id = (int)$_POST['article_id'];
+        $title = trim($_POST['title']);
+        $content = trim($_POST['content']);
+        $img = handleAdminUpload($_FILES['image'] ?? null, 'wiki');
+
+        if ($id > 0) {
+            if ($img) {
+                $stmt = $conn->prepare("UPDATE wiki_entries SET title=?, content=?, image_url=? WHERE id=?");
+                $stmt->bind_param("sssi", $title, $content, $img, $id);
+            } else {
+                $stmt = $conn->prepare("UPDATE wiki_entries SET title=?, content=? WHERE id=?");
+                $stmt->bind_param("ssi", $title, $content, $id);
+            }
+        } else {
+            $stmt = $conn->prepare("INSERT INTO wiki_entries (title, content, image_url) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $title, $content, $img);
+        }
+        $stmt->execute();
+        $message = "Article saved successfully.";
     }
 
     // SAVE CLASS
@@ -108,9 +147,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // SAVE CHARACTER
     elseif ($action === 'save_character') {
-        $id = (int)$_POST['character_id']; $name = $_POST['name']; $c_id = (int)$_POST['class_id'];
+        $id = (int)$_POST['character_id'];
+        $name = $_POST['name']; $c_id = (int)$_POST['class_id'];
         $ally = (int)$_POST['ally']; $hp = (int)$_POST['base_hp']; $str = (int)$_POST['base_str'];
-        $dex = (int)$_POST['base_dex']; $skill = (int)$_POST['base_skill']; $def = (int)$_POST['base_def'];
+        $dex = (int)$_POST['base_dex'];
+        $skill = (int)$_POST['base_skill']; $def = (int)$_POST['base_def'];
         $luck = (int)$_POST['base_luck']; $move = (int)$_POST['base_move']; $desc = $_POST['description'];
         $img = handleAdminUpload($_FILES['image'] ?? null, 'characters');
 
@@ -136,6 +177,7 @@ $tab = $_GET['tab'] ?? 'users';
 $edit_data = null;
 if (isset($_GET['edit'])) {
     $edit_id = (int)$_GET['edit'];
+    if ($tab === 'articles') $edit_data = $conn->query("SELECT * FROM wiki_entries WHERE id = $edit_id")->fetch_assoc();
     if ($tab === 'classes') $edit_data = $conn->query("SELECT * FROM classes WHERE class_id = $edit_id")->fetch_assoc();
     if ($tab === 'weapons') $edit_data = $conn->query("SELECT * FROM weapons WHERE weapon_id = $edit_id")->fetch_assoc();
     if ($tab === 'characters') $edit_data = $conn->query("SELECT * FROM characters WHERE character_id = $edit_id")->fetch_assoc();
@@ -159,7 +201,7 @@ if (isset($_GET['edit'])) {
                 <a href="index.php#gallery">Gallery</a>
                 <a href="leaderboard.php">Leaderboard</a>
                 <a href="wiki.php">Wiki</a>
-                
+               
                 <?php if ($user): ?>
                     <div class="user-menu" style="margin-left: 1rem;">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
@@ -230,15 +272,42 @@ if (isset($_GET['edit'])) {
         <h1>Database Manager</h1>
 
         <?php if ($message): ?><div class="alert alert-success"><?php echo $message; ?></div><?php endif; ?>
+        <?php if ($error): ?><div class="alert alert-error"><?php echo $error; ?></div><?php endif; ?>
 
         <div class="admin-tabs">
+            <a href="?tab=articles" class="admin-tab <?php echo $tab=='articles'?'active':'';?>">Articles</a>
             <a href="?tab=users" class="admin-tab <?php echo $tab=='users'?'active':'';?>">Users</a>
             <a href="?tab=characters" class="admin-tab <?php echo $tab=='characters'?'active':'';?>">Characters</a>
             <a href="?tab=classes" class="admin-tab <?php echo $tab=='classes'?'active':'';?>">Classes</a>
             <a href="?tab=weapons" class="admin-tab <?php echo $tab=='weapons'?'active':'';?>">Weapons</a>
         </div>
 
-        <?php if ($tab == 'users'): 
+        <?php if ($tab == 'articles'): ?>
+        <div class="card">
+            <h3><?php echo $edit_data ? 'Edit Article' : 'New Article'; ?></h3>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="save_article">
+                <input type="hidden" name="article_id" value="<?php echo $edit_data['id'] ?? 0; ?>">
+                <div class="form-grid">
+                    <div class="form-group form-full">
+                        <label>Article Title</label>
+                        <input type="text" name="title" value="<?php echo htmlspecialchars($edit_data['title'] ?? ''); ?>" required>
+                    </div>
+                    <div class="form-group form-full">
+                        <label>Header Image (Optional)</label>
+                        <?php if(!empty($edit_data['image_url'])): ?><img src="<?php echo $edit_data['image_url']; ?>" style="height:60px; margin-bottom:0.5rem; border-radius:0.25rem;"><br><?php endif; ?>
+                        <input type="file" name="image" accept="image/*">
+                    </div>
+                    <div class="form-group form-full">
+                        <label>Content</label>
+                        <textarea name="content" rows="12" placeholder="Write your guide here..." required><?php echo htmlspecialchars($edit_data['content'] ?? ''); ?></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn" style="margin-top: 1rem;">Save Article</button>
+            </form>
+        </div>
+
+        <?php elseif ($tab == 'users'): 
             $users = $conn->query("SELECT * FROM users");
         ?>
         <div class="card">
@@ -255,13 +324,25 @@ if (isset($_GET['edit'])) {
                     <td data-label="Email"><?php echo htmlspecialchars($u['email']); ?></td>
                     <td data-label="Admin"><span class="badge <?php echo $u['admin'] ? 'badge-ally' : 'badge-enemy'; ?>"><?php echo $u['admin'] ? 'Yes' : 'No'; ?></span></td>
                     <td data-label="Actions">
-                        <form method="POST" onsubmit="return confirm('Delete user?');" style="margin:0;">
-                            <input type="hidden" name="action" value="delete_record">
-                            <input type="hidden" name="table" value="users">
-                            <input type="hidden" name="id_col" value="id">
-                            <input type="hidden" name="id_val" value="<?php echo $u['id']; ?>">
-                            <button type="submit" class="badge badge-danger">Delete</button>
-                        </form>
+                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                            <form method="POST" style="margin:0;">
+                                <input type="hidden" name="action" value="toggle_admin">
+                                <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                <input type="hidden" name="admin_status" value="<?php echo $u['admin'] ? 0 : 1; ?>">
+                                <button type="submit" class="badge <?php echo $u['admin'] ? 'badge-enemy' : 'badge-ally'; ?>" 
+                                        onclick="return confirm('Change admin status for this user?');">
+                                    <?php echo $u['admin'] ? 'Revoke Admin' : 'Make Admin'; ?>
+                                </button>
+                            </form>
+
+                            <form method="POST" onsubmit="return confirm('Delete user?');" style="margin:0;">
+                                <input type="hidden" name="action" value="delete_record">
+                                <input type="hidden" name="table" value="users">
+                                <input type="hidden" name="id_col" value="id">
+                                <input type="hidden" name="id_val" value="<?php echo $u['id']; ?>">
+                                <button type="submit" class="badge badge-danger">Delete</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 <?php endwhile; ?>
