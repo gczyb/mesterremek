@@ -148,8 +148,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                 </div>
             </div>
             <div class="hero-buttons">
-                <button class="btn">Buy Now</button>
-                <button class="btn btn-outline" onclick="startVideo()">Watch Trailer</button>
+                <button class="btn">Download game</button>
             </div>
         </div>
     </section>

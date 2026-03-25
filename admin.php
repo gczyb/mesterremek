@@ -308,44 +308,73 @@ if (isset($_GET['edit'])) {
         </div>
 
         <?php elseif ($tab == 'users'): 
-            $users = $conn->query("SELECT * FROM users");
+            $search = $_GET['search'] ?? '';
+            
+            if ($search !== '') {
+                // Prepared statement for secure searching
+                $stmt = $conn->prepare("SELECT * FROM users WHERE username LIKE ? OR email LIKE ?");
+                $likeSearch = "%" . $search . "%";
+                $stmt->bind_param("ss", $likeSearch, $likeSearch);
+                $stmt->execute();
+                $users = $stmt->get_result();
+            } else {
+                $users = $conn->query("SELECT * FROM users");
+            }
         ?>
         <div class="card">
-            <h3>Registered Users</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; margin-bottom: 1.5rem; padding-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <h3 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">Registered Users</h3>
+                
+                <form method="GET" action="admin.php" style="display: flex; gap: 0.5rem; flex: 1; max-width: 400px; margin: 0;">
+                    <input type="hidden" name="tab" value="users">
+                    <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search username or email..." style="flex: 1; padding: 0.5rem 0.75rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; color: #e2e8f0; font-family: -apple-system, sans-serif;">
+                    <button type="submit" class="btn" style="padding: 0.5rem 1rem !important;">Search</button>
+                    <?php if ($search !== ''): ?>
+                        <a href="admin.php?tab=users" class="btn btn-outline" style="padding: 0.5rem 1rem !important; display: flex; align-items: center;">Clear</a>
+                    <?php endif; ?>
+                </form>
+            </div>
+
             <table class="data-table">
                 <thead>
                     <tr><th>ID</th><th>Username</th><th>Email</th><th>Admin</th><th>Actions</th></tr>
                 </thead>
                 <tbody>
-                <?php while($u = $users->fetch_assoc()): ?>
-                <tr>
-                    <td class="badge-stat" data-label="ID"><?php echo $u['id']; ?></td>
-                    <td data-label="Username"><?php echo htmlspecialchars($u['username']); ?></td>
-                    <td data-label="Email"><?php echo htmlspecialchars($u['email']); ?></td>
-                    <td data-label="Admin"><span class="badge <?php echo $u['admin'] ? 'badge-ally' : 'badge-enemy'; ?>"><?php echo $u['admin'] ? 'Yes' : 'No'; ?></span></td>
-                    <td data-label="Actions">
-                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                            <form method="POST" style="margin:0;">
-                                <input type="hidden" name="action" value="toggle_admin">
-                                <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
-                                <input type="hidden" name="admin_status" value="<?php echo $u['admin'] ? 0 : 1; ?>">
-                                <button type="submit" class="badge <?php echo $u['admin'] ? 'badge-enemy' : 'badge-ally'; ?>" 
-                                        onclick="return confirm('Change admin status for this user?');">
-                                    <?php echo $u['admin'] ? 'Revoke Admin' : 'Make Admin'; ?>
-                                </button>
-                            </form>
+                <?php if ($users->num_rows > 0): ?>
+                    <?php while($u = $users->fetch_assoc()): ?>
+                    <tr>
+                        <td class="badge-stat" data-label="ID"><?php echo $u['id']; ?></td>
+                        <td data-label="Username"><?php echo htmlspecialchars($u['username']); ?></td>
+                        <td data-label="Email"><?php echo htmlspecialchars($u['email']); ?></td>
+                        <td data-label="Admin"><span class="badge <?php echo $u['admin'] ? 'badge-ally' : 'badge-enemy'; ?>"><?php echo $u['admin'] ? 'Yes' : 'No'; ?></span></td>
+                        <td data-label="Actions">
+                            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <form method="POST" style="margin:0;">
+                                    <input type="hidden" name="action" value="toggle_admin">
+                                    <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                    <input type="hidden" name="admin_status" value="<?php echo $u['admin'] ? 0 : 1; ?>">
+                                    <button type="submit" class="badge <?php echo $u['admin'] ? 'badge-enemy' : 'badge-ally'; ?>" 
+                                            onclick="return confirm('Change admin status for this user?');">
+                                        <?php echo $u['admin'] ? 'Revoke Admin' : 'Make Admin'; ?>
+                                    </button>
+                                </form>
 
-                            <form method="POST" onsubmit="return confirm('Delete user?');" style="margin:0;">
-                                <input type="hidden" name="action" value="delete_record">
-                                <input type="hidden" name="table" value="users">
-                                <input type="hidden" name="id_col" value="id">
-                                <input type="hidden" name="id_val" value="<?php echo $u['id']; ?>">
-                                <button type="submit" class="badge badge-danger">Delete</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                <?php endwhile; ?>
+                                <form method="POST" onsubmit="return confirm('Delete user?');" style="margin:0;">
+                                    <input type="hidden" name="action" value="delete_record">
+                                    <input type="hidden" name="table" value="users">
+                                    <input type="hidden" name="id_col" value="id">
+                                    <input type="hidden" name="id_val" value="<?php echo $u['id']; ?>">
+                                    <button type="submit" class="badge badge-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #94a3b8; padding: 2rem;">No users found matching "<?php echo htmlspecialchars($search); ?>"</td>
+                    </tr>
+                <?php endif; ?>
                 </tbody>
             </table>
         </div>
