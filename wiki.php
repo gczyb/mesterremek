@@ -127,10 +127,28 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                 display: flex;
                 justify-content: center;
             }
+            
+            /* UPDATED: Characters Tab Side-by-Side Mobile Layout */
             .char-flex {
-                flex-direction: column !important;
-                align-items: center !important;
-                text-align: center;
+                flex-direction: row !important; /* Force side-by-side on mobile */
+                align-items: flex-start !important;
+                text-align: left;
+                flex-wrap: nowrap !important; /* Stop wrapping to enforce side-by-side */
+                gap: 0.5rem !important; /* Very tight gap on mobile */
+                margin-bottom: 0.25rem !important; /* Very tight space before table */
+            }
+            
+            /* Scale down portrait slightly on mobile to make room for text */
+            .char-flex img.char-img {
+                flex-shrink: 0;
+                width: 80px !important;
+                height: 80px !important;
+            }
+            
+            .char-flex .wiki-content {
+                width: auto;
+                flex: 1 1 auto;
+                min-width: 0; /* Prevent text overflow breaking layout */
             }
 
             /* --- Characters Tab: 2-Column Stat Table Mobile Layout --- */
@@ -381,65 +399,69 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                 <?php endwhile; ?>
             <?php endif; ?>
 
-        <?php elseif ($activeTab === 'characters'): ?>
-            <?php if ($wiki_data && $wiki_data->num_rows > 0): ?>
-                <?php while($char = $wiki_data->fetch_assoc()): ?>
-                    <div class="wiki-card">
-                        
-                        <div class="wiki-card-header">
-                            <div class="title-group">
-                                <h2><?php echo htmlspecialchars($char['name']); ?></h2>
-                                <span class="badge <?php echo $char['ally'] ? 'badge-ally' : 'badge-enemy'; ?>" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.85rem; padding: 0.4rem 0.8rem; height: fit-content; display: inline-flex; align-items: center; line-height: 1;">
-                                    <?php echo $char['ally'] ? 'Player Ally' : 'Enemy Unit'; ?>
-                                </span>
-                            </div>
-
-                            <?php if ($isAdmin): ?>
-                                <div class="action-group">
-                                    <a href="admin.php?tab=characters&edit=<?php echo $char['character_id']; ?>" class="btn">Edit</a>
-                                    <form method="POST" action="admin.php" onsubmit="return confirm('Delete character?');" style="margin:0;">
-                                        <input type="hidden" name="action" value="delete_record">
-                                        <input type="hidden" name="table" value="characters">
-                                        <input type="hidden" name="id_col" value="character_id">
-                                        <input type="hidden" name="id_val" value="<?php echo $char['character_id']; ?>">
-                                        <input type="hidden" name="return_to" value="wiki.php?tab=characters">
-                                        <button type="submit" class="btn btn-danger">Delete</button>
-                                    </form>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="char-flex" style="display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 1.5rem;">
-                            <?php if (!empty($char['image_url'])): ?>
-                                <img src="<?php echo htmlspecialchars($char['image_url']); ?>" alt="Portrait" class="char-img">
-                            <?php endif; ?>
-                            <div class="wiki-content" style="color: #94a3b8; flex: 1; min-width: 250px;">
-                                <strong>Class:</strong> <span style="color: #fbbf24;"><?php echo htmlspecialchars($char['class_name']); ?></span><br><br>
-                                <?php echo htmlspecialchars($char['description']); ?>
-                            </div>
-                        </div>
-                        
-                        <div style="overflow-x: auto; width: 100%;">
-                            <table class="data-table char-stat-table">
-                                <thead>
-                                    <tr><th>HP</th><th>Str</th><th>Dex</th><th>Skill</th><th>Def</th><th>Luck</th><th>Move</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="badge-stat" data-label="HP"><?php echo $char['base_hp']; ?></td>
-                                        <td class="badge-stat" data-label="Str"><?php echo $char['base_str']; ?></td>
-                                        <td class="badge-stat" data-label="Dex"><?php echo $char['base_dex']; ?></td>
-                                        <td class="badge-stat" data-label="Skill"><?php echo $char['base_skill']; ?></td>
-                                        <td class="badge-stat" data-label="Def"><?php echo $char['base_def']; ?></td>
-                                        <td class="badge-stat" data-label="Luck"><?php echo $char['base_luck']; ?></td>
-                                        <td class="badge-stat" data-label="Move"><?php echo $char['base_move']; ?></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+            <?php elseif ($activeTab === 'characters'): ?>
+    <?php if ($wiki_data && $wiki_data->num_rows > 0): ?>
+        <?php while($char = $wiki_data->fetch_assoc()): ?>
+            <div class="wiki-card character-card">
+                <div class="wiki-card-header">
+                    <div class="title-group">
+                        <h2><?php echo htmlspecialchars($char['name']); ?></h2>
+                        <span class="badge <?php echo $char['ally'] ? 'badge-ally' : 'badge-enemy'; ?>">
+                            <?php echo $char['ally'] ? 'Player Ally' : 'Enemy Unit'; ?>
+                        </span>
                     </div>
-                <?php endwhile; ?>
-            <?php endif; ?>
+
+                    <?php if ($isAdmin): ?>
+                        <div class="action-group">
+                            <a href="admin.php?tab=characters&edit=<?php echo $char['character_id']; ?>" class="btn">Edit</a>
+                            <form method="POST" action="admin.php" onsubmit="return confirm('Delete character?');" style="margin:0;">
+                                <input type="hidden" name="action" value="delete_record">
+                                <input type="hidden" name="table" value="characters">
+                                <input type="hidden" name="id_col" value="character_id">
+                                <input type="hidden" name="id_val" value="<?php echo $char['character_id']; ?>">
+                                <input type="hidden" name="return_to" value="wiki.php?tab=characters">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="char-layout-horizontal">
+                    <?php if (!empty($char['image_url'])): ?>
+                        <img src="<?php echo htmlspecialchars($char['image_url']); ?>" alt="Portrait" class="char-img-side">
+                    <?php endif; ?>
+                    
+                    <div class="char-text-side">
+                        <div class="char-class-line">
+                            <strong>Class:</strong> <span style="color: #fbbf24;"><?php echo htmlspecialchars($char['class_name']); ?></span>
+                        </div>
+                        <p class="char-description-text">
+                            <?php echo htmlspecialchars($char['description']); ?>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="char-table-container">
+                    <table class="data-table char-stat-table">
+                        <thead>
+                            <tr><th>HP</th><th>Str</th><th>Dex</th><th>Skill</th><th>Def</th><th>Luck</th><th>Move</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="HP"><?php echo $char['base_hp']; ?></td>
+                                <td data-label="Str"><?php echo $char['base_str']; ?></td>
+                                <td data-label="Dex"><?php echo $char['base_dex']; ?></td>
+                                <td data-label="Skill"><?php echo $char['base_skill']; ?></td>
+                                <td data-label="Def"><?php echo $char['base_def']; ?></td>
+                                <td data-label="Luck"><?php echo $char['base_luck']; ?></td>
+                                <td data-label="Move"><?php echo $char['base_move']; ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php endwhile; ?>
+    <?php endif; ?>
 
         <?php elseif ($activeTab === 'classes'): ?>
             <?php if ($wiki_data && $wiki_data->num_rows > 0): ?>
