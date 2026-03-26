@@ -301,6 +301,10 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
             </div>
             
             <div class="mobile-controls">
+                <?php if (!$user): ?>
+                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
+                <?php endif; ?>
+                
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -308,6 +312,7 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
+                
                 <?php if ($user): ?>
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
@@ -332,6 +337,7 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                 <?php endif; ?>
             </div>
         </div>
+        
         <div class="mobile-menu" id="mobileMenu">
             <?php if (!$isHomePage): ?><a href="index.php#home">Home</a><?php endif; ?>
             <a href="index.php#about">About</a>
@@ -339,14 +345,6 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
             <a href="index.php#gallery">Gallery</a>
             <a href="leaderboard.php">Leaderboard</a>
             <a href="wiki.php">Wiki</a>
-            <?php if ($user): ?>
-                <?php if ($isAdmin): ?>
-                    <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
-                <?php endif; ?>
-                <a href="logout.php">Logout</a>
-            <?php else: ?>
-                <a href="login.php" class="btn btn-block">Login</a>
-            <?php endif; ?>
         </div>
     </nav>
 
@@ -544,7 +542,6 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                         <table class="data-table table-cards-mobile" style="margin-top: 0; min-width: 800px;">
                             <thead>
                                 <tr>
-                                    <th width="60">Icon</th>
                                     <th>Weapon</th>
                                     <th>Type</th>
                                     <th>Atk</th>
@@ -558,14 +555,14 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                             <tbody>
                                 <?php while($weapon = $wiki_data->fetch_assoc()): ?>
                                     <tr>
-                                        <td data-label="Icon">
-                                            <?php if (!empty($weapon['image_url'])): ?>
-                                                <img src="<?php echo htmlspecialchars($weapon['image_url']); ?>" class="icon-img">
-                                            <?php endif; ?>
-                                        </td>
                                         <td data-label="Weapon">
-                                            <div style="color: #fbbf24; font-weight: bold;"><?php echo htmlspecialchars($weapon['name']); ?></div>
-                                            <div style="font-size: 0.8rem; color: #64748b;"><?php echo htmlspecialchars($weapon['description']); ?></div>
+                                            <div style="display: flex; align-items: center; gap: 0.5rem; color: #fbbf24; font-weight: bold;">
+                                                <?php if (!empty($weapon['image_url'])): ?>
+                                                    <img src="<?php echo htmlspecialchars($weapon['image_url']); ?>" class="class-inline-icon" alt="Icon">
+                                                <?php endif; ?>
+                                                <span><?php echo htmlspecialchars($weapon['name']); ?></span>
+                                            </div>
+                                            <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;"><?php echo htmlspecialchars($weapon['description']); ?></div>
                                         </td>
                                         <td data-label="Type"><span class="badge badge-stat"><?php echo htmlspecialchars($weapon['weapon_type']); ?></span></td>
                                         <td data-label="Atk" style="font-weight: bold; color: #ef4444;"><?php echo $weapon['atk']; ?></td>

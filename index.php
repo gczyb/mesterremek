@@ -70,6 +70,10 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                     </svg>
                 </button>
                 
+                <?php if (!$user): ?>
+                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
+                <?php endif; ?>
+                
                 <?php if ($user): ?>
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
@@ -101,14 +105,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             <a href="index.php#gallery">Gallery</a>
             <a href="leaderboard.php">Leaderboard</a>
             <a href="wiki.php">Wiki</a>
-            <?php if ($user): ?>
-                <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                    <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
-                <?php endif; ?>
-                <a href="logout.php">Logout</a>
-            <?php else: ?>
-                <a href="login.php" class="btn btn-block">Login</a>
-            <?php endif; ?>
         </div>
     </nav>
 

@@ -254,6 +254,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                                 <strong><?php echo htmlspecialchars($user['username']); ?></strong>
                                 <span><?php echo htmlspecialchars($user['email']); ?></span>
                             </div>
+                            <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
+                                <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
+                            <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
                     </div>
@@ -268,9 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
             <a href="leaderboard.php">Leaderboard</a>
             <a href="wiki.php">Wiki</a>
             <?php if ($user): ?>
-                <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                    <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
-                <?php endif; ?>
+                
                 <a href="logout.php">Logout</a>
             <?php else: ?>
                 <a href="login.php" class="btn btn-block">Login</a>
