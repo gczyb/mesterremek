@@ -239,20 +239,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                 <button class="carousel-btn carousel-btn-prev" onclick="previousSlide()"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
                 <button class="carousel-btn carousel-btn-next" onclick="nextSlide()"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
             </div>
-
-            <div class="gallery-video">
-                <h3>Gameplay Showcase</h3>
-                <div class="video-container">
-                    <div class="video-overlay">
-                        <div style="text-align: center;">
-                            <div style="background-color: rgba(251, 191, 36, 0.2); backdrop-filter: blur(4px); border-radius: 0.5rem; padding: 3rem; display: inline-block;">
-                                <p style="color: #cbd5e1; margin-bottom: 0.5rem;">Extended Gameplay Video</p>
-                                <p style="color: #64748b;">Coming Soon</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 

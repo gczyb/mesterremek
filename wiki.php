@@ -433,7 +433,20 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                     
                     <div class="char-text-side">
                         <div class="char-class-line">
-                            <strong>Class:</strong> <span style="color: #fbbf24;"><?php echo htmlspecialchars($char['class_name']); ?></span>
+                            <strong>Class:</strong> 
+                            <?php
+                                $cName = strtolower($char['class_name']);
+                                $cIcon = '';
+                                if (strpos($cName, 'archer') !== false) $cIcon = 'uploads/classes/archer-icon.png';
+                                elseif (strpos($cName, 'fighter') !== false) $cIcon = 'uploads/classes/fighter-icon.png';
+                                elseif (strpos($cName, 'knight') !== false) $cIcon = 'uploads/classes/knight-icon.png';
+                                elseif (strpos($cName, 'mage') !== false) $cIcon = 'uploads/classes/mage-icon.png';
+                                elseif (strpos($cName, 'thief') !== false) $cIcon = 'uploads/classes/thief-icon.png';
+                            ?>
+                            <?php if ($cIcon): ?>
+                                <img src="<?php echo $cIcon; ?>" class="class-inline-icon" alt="Class Icon">
+                            <?php endif; ?>
+                            <span style="color: #fbbf24;"><?php echo htmlspecialchars($char['class_name']); ?></span>
                         </div>
                         <p class="char-description-text">
                             <?php echo htmlspecialchars($char['description']); ?>
@@ -481,8 +494,18 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                                 <?php while($class = $wiki_data->fetch_assoc()): ?>
                                     <tr>
                                         <td data-label="Icon">
-                                            <?php if (!empty($class['image_url'])): ?>
-                                                <img src="<?php echo htmlspecialchars($class['image_url']); ?>" class="icon-img">
+                                            <?php 
+                                                $cName = strtolower($class['name']);
+                                                $cIcon = '';
+                                                if (strpos($cName, 'archer') !== false) $cIcon = 'uploads/classes/archer-icon.png';
+                                                elseif (strpos($cName, 'fighter') !== false) $cIcon = 'uploads/classes/fighter-icon.png';
+                                                elseif (strpos($cName, 'knight') !== false) $cIcon = 'uploads/classes/knight-icon.png';
+                                                elseif (strpos($cName, 'mage') !== false) $cIcon = 'uploads/classes/mage-icon.png';
+                                                elseif (strpos($cName, 'thief') !== false) $cIcon = 'uploads/classes/thief-icon.png';
+                                                else $cIcon = !empty($class['image_url']) ? $class['image_url'] : '';
+                                            ?>
+                                            <?php if (!empty($cIcon)): ?>
+                                                <img src="<?php echo htmlspecialchars($cIcon); ?>" class="icon-img" alt="<?php echo htmlspecialchars($class['name']); ?> Icon">
                                             <?php endif; ?>
                                         </td>
                                         <td data-label="Class Name" style="color: #fbbf24; font-weight: bold;"><?php echo htmlspecialchars($class['name']); ?></td>
