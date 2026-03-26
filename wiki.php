@@ -301,10 +301,6 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
             </div>
             
             <div class="mobile-controls">
-                <?php if (!$user): ?>
-                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
-                <?php endif; ?>
-                
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -313,7 +309,9 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                     </svg>
                 </button>
                 
-                <?php if ($user): ?>
+                <?php if (!$user): ?>
+                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
+                <?php else: ?>
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>

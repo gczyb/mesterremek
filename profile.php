@@ -220,6 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                                 <strong><?php echo htmlspecialchars($user['username']); ?></strong>
                                 <span><?php echo htmlspecialchars($user['email']); ?></span>
                             </div>
+                            <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
                                 <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
                             <?php endif; ?>
@@ -232,6 +233,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
             </div>
             
             <div class="mobile-controls">
+                <?php if (!$user): ?>
+                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
+                <?php endif; ?>
+                
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -254,8 +259,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                                 <strong><?php echo htmlspecialchars($user['username']); ?></strong>
                                 <span><?php echo htmlspecialchars($user['email']); ?></span>
                             </div>
+                            <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24;">Admin Dashboard</a>
+                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
@@ -270,12 +276,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
             <a href="index.php#gallery">Gallery</a>
             <a href="leaderboard.php">Leaderboard</a>
             <a href="wiki.php">Wiki</a>
-            <?php if ($user): ?>
-                
-                <a href="logout.php">Logout</a>
-            <?php else: ?>
-                <a href="login.php" class="btn btn-block">Login</a>
-            <?php endif; ?>
         </div>
     </nav>
 
