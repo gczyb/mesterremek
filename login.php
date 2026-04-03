@@ -65,7 +65,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             $stmt->bind_param("sss", $username, $email, $hashed_password);
             
             if ($stmt->execute()) {
-                $success = 'Account created successfully! You can now login.';
+                // --- SEND WELCOME EMAIL ---
+                $subject = "Welcome to Treasure Quest!";
+                $message = "
+                <html>
+                <body style='font-family: Arial, sans-serif; background-color: #0f172a; color: #cbd5e1; padding: 20px;'>
+                    <div style='background-color: #1e293b; padding: 30px; border-radius: 8px; border: 1px solid #334155; max-width: 600px; margin: 0 auto;'>
+                        <h2 style='color: #fbbf24; margin-top: 0;'>Welcome to Treasure Quest, " . htmlspecialchars($username) . "!</h2>
+                        <p style='font-size: 16px; line-height: 1.5;'>Your epic 2D adventure begins now. We are thrilled to have you join our community.</p>
+                        <p style='font-size: 16px; line-height: 1.5;'>Head back to the website to log in and start exploring!</p>
+                        <br>
+                        <p style='font-size: 14px; color: #94a3b8;'>- The Treasure Quest Team</p>
+                    </div>
+                </body>
+                </html>";
+                
+                $headers = "MIME-Version: 1.0\r\n";
+                $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+                $headers .= "From: noreply@" . $_SERVER['HTTP_HOST'] . "\r\n";
+                
+                mail($email, $subject, $message, $headers);
+                // --------------------------
+
+                $success = 'Account created successfully! A welcome email has been sent. You can now login.';
             } else {
                 $error = 'Registration failed. Please try again.';
             }

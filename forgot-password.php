@@ -32,7 +32,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_reset'])) {
             $stmt->execute();
             
             $reset_link = "http://" . $_SERVER['HTTP_HOST'] . "/forgot-password.php?token=" . $reset_token;
-            $success = "Password reset link: <a href='$reset_link' style='color: #fbbf24;'>$reset_link</a>";
+            
+            // --- SEND PASSWORD RESET EMAIL ---
+            $subject = "Treasure Quest - Password Reset Request";
+            $message = "
+            <html>
+            <body style='font-family: Arial, sans-serif; background-color: #0f172a; color: #cbd5e1; padding: 20px;'>
+                <div style='background-color: #1e293b; padding: 30px; border-radius: 8px; border: 1px solid #334155; max-width: 600px; margin: 0 auto;'>
+                    <h2 style='color: #fbbf24; margin-top: 0;'>Password Reset Request</h2>
+                    <p style='font-size: 16px; line-height: 1.5;'>We received a request to reset your Treasure Quest password.</p>
+                    <p style='font-size: 16px; line-height: 1.5;'>Click the link below to set a new password. This link will expire in 1 hour.</p>
+                    <div style='margin: 30px 0;'>
+                        <a href='" . $reset_link . "' style='background-color: #fbbf24; color: #000000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Reset Password</a>
+                    </div>
+                    <p style='font-size: 12px; color: #94a3b8; margin-top: 30px; border-top: 1px solid #334155; padding-top: 15px;'>If you did not request this, please safely ignore this email. Your password will remain unchanged.</p>
+                </div>
+            </body>
+            </html>";
+            
+            $headers = "MIME-Version: 1.0\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+            $headers .= "From: noreply@" . $_SERVER['HTTP_HOST'] . "\r\n";
+            
+            mail($email, $subject, $message, $headers);
+            // ---------------------------------
+            
+            // Generic message maintains security so attackers can't verify if an email exists
+            $success = 'If an account exists with that email, a reset link has been sent.';
         } else {
             $success = 'If an account exists with that email, a reset link has been sent.';
         }
@@ -85,137 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password - Treasure Quest</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .auth-container {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 1rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            max-width: 450px;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .auth-header {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .auth-header h1 {
-            color: #0f172a;
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .auth-header p {
-            color: #1e293b;
-        }
-
-        .auth-content {
-            padding: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            color: #cbd5e1;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 0.5rem;
-            color: #e2e8f0;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #fbbf24;
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-error {
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 1px solid #ef4444;
-            color: #fca5a5;
-        }
-
-        .alert-success {
-            background-color: rgba(34, 197, 94, 0.1);
-            border: 1px solid #22c55e;
-            color: #86efac;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #fbbf24;
-            color: #0f172a;
-            border: none;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .btn:hover {
-            background-color: #f59e0b;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 1rem;
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.875rem;
-        }
-
-        .back-link:hover {
-            color: #fbbf24;
-        }
-
-        .info-text {
-            color: #94a3b8;
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css"> 
 </head>
-<body>
+<body class="auth-page">
     <div class="auth-container">
         <div class="auth-header">
             <h1>TREASURE QUEST</h1>
@@ -240,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
                         <label for="email">Email Address</label>
                         <input type="email" id="email" name="email" required>
                     </div>
-                    <button type="submit" name="request_reset" class="btn">Send Reset Link</button>
+                    <button type="submit" name="request_reset" class="btn btn-block">Send Reset Link</button>
                 </form>
             <?php else: ?>
                 <p class="info-text">Enter your new password below.</p>
@@ -254,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
                         <label for="confirm_password">Confirm New Password</label>
                         <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
                     </div>
-                    <button type="submit" name="reset_password" class="btn">Reset Password</button>
+                    <button type="submit" name="reset_password" class="btn btn-block">Reset Password</button>
                 </form>
             <?php endif; ?>
         </div>

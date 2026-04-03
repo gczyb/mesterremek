@@ -346,17 +346,6 @@ section { padding: 5rem 0; }
 .gallery-video { margin-top: 4rem; max-width: 56rem; margin-left: auto; margin-right: auto; }
 .gallery-video h3 { text-align: center; color: #fbbf24; margin-bottom: 1.5rem; font-size: 18px; }
 
-/* Footer */
-footer { background-color: #020617; border-top: 1px solid #1e293b; padding: 3rem 0; }
-.footer-grid { display: grid; gap: 2rem; margin-bottom: 2rem; }
-footer h3 { color: #fbbf24; margin-bottom: 1rem; font-size: 16px; font-family: 'Press Start 2P', system-ui, sans-serif;}
-footer h4 { color: #e2e8f0; margin-bottom: 1rem; font-size: 14px; font-family: 'Press Start 2P', system-ui, sans-serif;}
-footer p { color: #94a3b8; }
-.social-links { display: flex; gap: 1rem; }
-.social-links a { color: #94a3b8; transition: color 0.3s; }
-.social-links a:hover { color: #fbbf24; }
-.social-links svg { width: 24px; height: 24px; }
-.footer-bottom { padding-top: 2rem; border-top: 1px solid #1e293b; text-align: center; color: #64748b; }
 
 /* ==========================================================================
    PAGE: LEADERBOARDS
@@ -558,6 +547,12 @@ body.auth-page {
 .auth-page .back-link:hover { color: #fbbf24; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
+
+.info-text {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+}
 
 /* ==========================================================================
    PAGE: PROFILE

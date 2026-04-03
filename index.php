@@ -144,7 +144,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                 </div>
             </div>
             <div class="hero-buttons">
-                <button class="btn">Download game</button>
+                <a href="downloads/TreasureQuestLauncher.zip" download="TreasureQuestLauncher.zip" class="btn">Download game</a>
             </div>
         </div>
     </section>
@@ -237,29 +237,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             </div>
         </div>
     </section>
-
-    <footer>
-        <div class="section-container">
-            <div class="footer-grid">
-                <div>
-                    <h3>Treasure Quest</h3>
-                    <p>An epic 2D adventure awaits. Begin your quest today.</p>
-                </div>
-                <div>
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="#" aria-label="Twitter"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path></svg></a>
-                        <a href="#" aria-label="YouTube"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg></a>
-                        <a href="#" aria-label="Twitch"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M21 2H3v16h5v4l4-4h5l4-4V2zm-10 9V7h2v4h-2zm5 0V7h2v4h-2z"></path></svg></a>
-                        <a href="#" aria-label="Email"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Treasure Quest. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <script>
         function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
