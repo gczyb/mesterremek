@@ -13,6 +13,7 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select a Realm - Leaderboard</title>
+    <link rel="icon" type="image/x-icon" href="img/icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>

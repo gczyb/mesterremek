@@ -42,6 +42,7 @@ $scores_result = $score_stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($map_info['name']); ?> - Leaderboard</title>
+    <link rel="icon" type="image/x-icon" href="img/icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>

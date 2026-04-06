@@ -296,7 +296,7 @@ if (isset($_GET['edit'])) {
     </nav>
 
     <div class="admin-container">
-        <h1>Database Manager</h1>
+        <h1>Admin Panel</h1>
 
         <?php if ($message): ?><div class="alert alert-success"><?php echo $message; ?></div><?php endif; ?>
         <?php if ($error): ?><div class="alert alert-error"><?php echo $error; ?></div><?php endif; ?>
