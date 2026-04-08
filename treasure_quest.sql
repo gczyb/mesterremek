@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Már 17. 13:18
--- Kiszolgáló verziója: 10.4.32-MariaDB
--- PHP verzió: 8.2.12
+-- Host: localhost
+-- Generation Time: Apr 09, 2026 at 12:35 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Adatbázis: `treasure_quest`
+-- Database: `treasure_quest`
 --
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `characters`
+-- Table structure for table `characters`
 --
 
 CREATE TABLE `characters` (
@@ -44,7 +44,7 @@ CREATE TABLE `characters` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `characters`
+-- Dumping data for table `characters`
 --
 
 INSERT INTO `characters` (`character_id`, `name`, `class_id`, `ally`, `base_hp`, `base_str`, `base_dex`, `base_skill`, `base_def`, `base_luck`, `base_move`, `description`, `image_url`) VALUES
@@ -58,7 +58,7 @@ INSERT INTO `characters` (`character_id`, `name`, `class_id`, `ally`, `base_hp`,
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `classes`
+-- Table structure for table `classes`
 --
 
 CREATE TABLE `classes` (
@@ -69,7 +69,7 @@ CREATE TABLE `classes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `classes`
+-- Dumping data for table `classes`
 --
 
 INSERT INTO `classes` (`class_id`, `name`, `description`, `image_url`) VALUES
@@ -82,7 +82,7 @@ INSERT INTO `classes` (`class_id`, `name`, `description`, `image_url`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `class_weapons`
+-- Table structure for table `class_weapons`
 --
 
 CREATE TABLE `class_weapons` (
@@ -91,24 +91,19 @@ CREATE TABLE `class_weapons` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `class_weapons`
+-- Dumping data for table `class_weapons`
 --
 
 INSERT INTO `class_weapons` (`class_id`, `weapon_id`) VALUES
-(1, 1),
 (1, 2),
-(1, 3),
 (2, 5),
 (2, 6),
-(4, 2),
-(4, 3),
-(5, 1),
-(5, 4);
+(4, 2);
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `maps`
+-- Table structure for table `maps`
 --
 
 CREATE TABLE `maps` (
@@ -120,18 +115,17 @@ CREATE TABLE `maps` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `maps`
+-- Dumping data for table `maps`
 --
 
 INSERT INTO `maps` (`id`, `name`, `bg`, `description`, `created_at`) VALUES
-(1, 'Goblin Forest', 'uploads/maps/goblin_forest.jpg', 'A dense forest teeming with goblin patrols.', '2026-01-29 07:45:14'),
 (2, 'Ruins of Eldoria', 'uploads/maps/ruins_of_eldoria.jpg', 'Ancient ruins said to hold magical artifacts.', '2026-01-29 07:45:14'),
-(3, 'Dragon Peak', 'uploads/maps/dragon_peak.jpg', 'A treacherous mountain path leading to the dragon\'s lair.', '2026-01-29 07:45:14');
+(4, 'Forgotten Bastion ', 'uploads/maps/forgotten_bastion.jpg', 'Where the fallen kingdom lies buried in dust.', '2026-04-08 22:09:28');
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `map_characters`
+-- Table structure for table `map_characters`
 --
 
 CREATE TABLE `map_characters` (
@@ -140,7 +134,7 @@ CREATE TABLE `map_characters` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `map_characters`
+-- Dumping data for table `map_characters`
 --
 
 INSERT INTO `map_characters` (`map_id`, `character_id`) VALUES
@@ -155,7 +149,7 @@ INSERT INTO `map_characters` (`map_id`, `character_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `scores`
+-- Table structure for table `scores`
 --
 
 CREATE TABLE `scores` (
@@ -167,26 +161,17 @@ CREATE TABLE `scores` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `scores`
+-- Dumping data for table `scores`
 --
 
 INSERT INTO `scores` (`score_id`, `user_id`, `map_id`, `turns`, `date`) VALUES
-(1, 1, 1, 15, '2026-01-28 10:00:00'),
-(2, 2, 1, 12, '2026-01-29 14:30:00'),
-(3, 3, 1, 20, '2026-01-29 09:15:00'),
 (4, 2, 2, 25, '2026-01-29 15:00:00'),
-(5, 4, 2, 24, '2026-01-28 18:45:00'),
-(6, 1, 3, 40, '2026-01-29 08:00:00'),
-(7, 4, 3, 38, '2026-01-29 11:20:00'),
-(8, 5, 1, 1, '2026-02-16 14:09:58'),
-(9, 5, 1, 2, '2026-02-17 11:52:12'),
-(10, 6, 1, 1, '2026-02-17 12:58:25'),
-(11, 6, 1, 2, '2026-02-18 12:56:15');
+(5, 4, 2, 24, '2026-01-28 18:45:00');
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -203,7 +188,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `admin`, `reset_token`, `reset_token_expires`, `created_at`, `profile_picture`, `api_token`) VALUES
@@ -212,14 +197,16 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `admin`, `reset_toke
 (3, 'CasualGamer', 'casual@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
 (4, 'QuestMaster', 'master@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
 (5, 'gecseb', 'gecseboti@gmail.com', '$2y$10$5nPUWNls6dhs0VPLHVrZyepi6aHpk7cRktI0crBaDkuCFFSSNoBZe', 0, NULL, NULL, '2026-02-16 12:44:03', '', 'b5a937b82b92823beccdcb3bb877567e64263a50a4a85b81195ef6d3ab3c58f4'),
-(6, 'aasfadsadada', 'a@a.a', '$2y$10$nuE40heApBAmmESbA.zALuJLgg4OhePCQw.pybjZveza86i7nUo8K', 1, NULL, NULL, '2026-02-17 11:56:37', 'uploads/profiles/user_6_1773741693.png', 'c16d33a74ae22276528ad698e0d44755274c983fa5aab434f8c6cbb8d7124a2d'),
+(6, 'aasfadsadada', 'a@a.a', '$2y$10$nuE40heApBAmmESbA.zALuJLgg4OhePCQw.pybjZveza86i7nUo8K', 0, NULL, NULL, '2026-02-17 11:56:37', 'uploads/profiles/user_6_1773741693.png', 'c16d33a74ae22276528ad698e0d44755274c983fa5aab434f8c6cbb8d7124a2d'),
 (7, 'csuma', 'csuma@a.a', '$2y$10$CKWl4gCmnIDZdRm.SDuPHua/.6cdk.PNWY8HwJWf27s9nRpBhh6Iy', 0, NULL, NULL, '2026-03-12 09:58:57', 'uploads/profiles/user_7_1773310521.png', NULL),
-(8, 'asdasd', 'asd@a.a', '$2y$10$GZVlgEAe5FxMG2KXSLBxXuAKna/ptvWgFMh1x.Szr1kswtRGN.EQq', 0, NULL, NULL, '2026-03-12 10:17:16', 'uploads/profiles/user_8_1773666004.gif', NULL);
+(8, 'asdasd', 'asd@a.a', '$2y$10$GZVlgEAe5FxMG2KXSLBxXuAKna/ptvWgFMh1x.Szr1kswtRGN.EQq', 0, NULL, NULL, '2026-03-12 10:17:16', 'uploads/profiles/user_8_1773666004.gif', NULL),
+(9, 'ma', 'bamagx@gmail.com', '$2y$12$//G92EfXL.cETuRAAIzU4u9a8bhd8rjYURVP/Un44382H4HyDcA9m', 1, NULL, NULL, '2026-03-24 09:17:51', 'uploads/profiles/default.png', NULL),
+(14, 'molnarm', 'marcell.13.molnar@gmail.com', '$2y$12$ao/e.V.cecF1xspfehlkSemud1G0wwohDPnv8ITeQaSib5qT7W4cu', 0, 'f336c34f426c0b85b5a21bec7e3c3f918e2197086c4a58c533154ac9efd9d100', '2026-04-08 22:25:39', '2026-04-08 21:25:31', 'uploads/profiles/default.png', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `weapons`
+-- Table structure for table `weapons`
 --
 
 CREATE TABLE `weapons` (
@@ -238,21 +225,19 @@ CREATE TABLE `weapons` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `weapons`
+-- Dumping data for table `weapons`
 --
 
 INSERT INTO `weapons` (`weapon_id`, `name`, `weapon_type`, `atk`, `hit_rate`, `crit_rate`, `weight`, `min_range`, `max_range`, `durability`, `description`, `image_url`) VALUES
-(1, 'Bronze Sword', 'Sword', 3, 100, 0, 3, 1, 1, 40, 'A basic, lightweight sword. Cannot critical hit, but highly accurate.', NULL),
-(2, 'Iron Sword', 'Sword', 5, 90, 0, 5, 1, 1, 35, 'A standard issue sword used by infantry. Reliable and balanced.', NULL),
-(3, 'Steel Sword', 'Sword', 8, 75, 0, 9, 1, 1, 30, 'A heavy blade that deals massive damage but lowers Attack Speed.', NULL),
-(4, 'Slim Sword', 'Sword', 2, 100, 10, 2, 1, 1, 30, 'Exceptionally light and precise, allowing for quick critical strikes.', NULL),
-(5, 'Iron Bow', 'Bow', 4, 85, 0, 5, 2, 2, 35, 'A standard bow. Cannot attack enemies right next to the user.', NULL),
-(6, 'Hunter\'s Bow', 'Bow', 6, 80, 5, 6, 2, 2, 25, 'A sturdy bow used by experienced woodsmen. Deals solid damage.', NULL);
+(2, 'Iron Sword', 'Sword', 8, 90, 0, 5, 1, 1, 40, 'A standard issue sword used by infantry. Reliable and balanced.', NULL),
+(5, 'Iron Bow', 'Bow', 7, 85, 0, 6, 2, 2, 40, 'A standard bow. Cannot attack enemies right next to the user.', NULL),
+(6, 'Iron Dagger', 'Dagger', 4, 95, 5, 2, 1, 1, 30, 'A swift, sturdy blade that relies on speed and precision over raw power.', NULL),
+(7, 'Iron Axe', 'Axe', 10, 80, 0, 7, 1, 1, 40, 'A sturdy iron axe that trades precision for raw, devastating power.', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `wiki_entries`
+-- Table structure for table `wiki_entries`
 --
 
 CREATE TABLE `wiki_entries` (
@@ -264,18 +249,20 @@ CREATE TABLE `wiki_entries` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- A tábla adatainak kiíratása `wiki_entries`
+-- Dumping data for table `wiki_entries`
 --
 
 INSERT INTO `wiki_entries` (`id`, `title`, `content`, `image_url`, `created_at`) VALUES
-(1, 'Getting Started', 'fasz', NULL, '2026-03-16 12:15:34');
+(6, 'The Basics: Move and Fight', 'Ready to start? Here is how you control your hero:\r\nMove: Use WASD or select the tiles to walk around.\r\nAttack: Use Left Click to swing your weapon.\r\nTip: Watch the red bars above enemies. When the bar is empty, they are defeated!', 'uploads/wiki/img_69cad0333bacf.png', '2026-03-30 19:34:11'),
+(7, 'Navigating The Game Menu', 'Here is a quick look at what the buttons on the start screen do:\r\nStory: Start your main adventure here.\r\nChallenge: Test your skills in difficult, special levels.\r\nLogin: Sign in to your account to save your progress.\r\nLeaderboard: Opens our website in your browser so you can see the top-ranked players.\r\nHelp: Opens our website for technical support.\r\nTip: If you want to see your name on the Leaderboard, make sure you are logged in while you play!', 'uploads/wiki/img_69cfe4fa573ec.png', '2026-04-03 16:04:10'),
+(8, 'Game Objective: How To Complete The Challenge Mode', 'To complete a level in Treasure Quest, you must reach the finish line. Here is your checklist:\r\nDefeat All Enemies: You cannot finish the level until every enemy on the screen is gone. Use teamwork to take them down!\r\nFind Loot & Caches: Search the map for treasure chests and hidden caches. These contain items you need to get stronger.\r\nReach the End: Once the enemies are defeated and the loot is collected, move both players to the exit point to win.\r\nTip: Speed is key! Finishing the map with the least turns is the best way to earn a high score and climb to the top of the Leaderboard.', 'uploads/wiki/img_69d6d7f1c52e5.jpg', '2026-04-06 17:17:39');
 
 --
--- Indexek a kiírt táblákhoz
+-- Indexes for dumped tables
 --
 
 --
--- A tábla indexei `characters`
+-- Indexes for table `characters`
 --
 ALTER TABLE `characters`
   ADD PRIMARY KEY (`character_id`),
@@ -283,35 +270,35 @@ ALTER TABLE `characters`
   ADD KEY `class_id` (`class_id`);
 
 --
--- A tábla indexei `classes`
+-- Indexes for table `classes`
 --
 ALTER TABLE `classes`
   ADD PRIMARY KEY (`class_id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- A tábla indexei `class_weapons`
+-- Indexes for table `class_weapons`
 --
 ALTER TABLE `class_weapons`
   ADD PRIMARY KEY (`class_id`,`weapon_id`),
   ADD KEY `weapon_id` (`weapon_id`);
 
 --
--- A tábla indexei `maps`
+-- Indexes for table `maps`
 --
 ALTER TABLE `maps`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- A tábla indexei `map_characters`
+-- Indexes for table `map_characters`
 --
 ALTER TABLE `map_characters`
   ADD PRIMARY KEY (`map_id`,`character_id`),
   ADD KEY `character_id` (`character_id`);
 
 --
--- A tábla indexei `scores`
+-- Indexes for table `scores`
 --
 ALTER TABLE `scores`
   ADD PRIMARY KEY (`score_id`),
@@ -319,7 +306,7 @@ ALTER TABLE `scores`
   ADD KEY `map_id` (`map_id`);
 
 --
--- A tábla indexei `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -327,89 +314,89 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- A tábla indexei `weapons`
+-- Indexes for table `weapons`
 --
 ALTER TABLE `weapons`
   ADD PRIMARY KEY (`weapon_id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- A tábla indexei `wiki_entries`
+-- Indexes for table `wiki_entries`
 --
 ALTER TABLE `wiki_entries`
   ADD PRIMARY KEY (`id`);
 
 --
--- A kiírt táblák AUTO_INCREMENT értéke
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT a táblához `characters`
+-- AUTO_INCREMENT for table `characters`
 --
 ALTER TABLE `characters`
   MODIFY `character_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT a táblához `classes`
+-- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
   MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT a táblához `maps`
+-- AUTO_INCREMENT for table `maps`
 --
 ALTER TABLE `maps`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT a táblához `scores`
+-- AUTO_INCREMENT for table `scores`
 --
 ALTER TABLE `scores`
   MODIFY `score_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT a táblához `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `weapons`
+--
+ALTER TABLE `weapons`
+  MODIFY `weapon_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `wiki_entries`
+--
+ALTER TABLE `wiki_entries`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT a táblához `weapons`
---
-ALTER TABLE `weapons`
-  MODIFY `weapon_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT a táblához `wiki_entries`
---
-ALTER TABLE `wiki_entries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- Megkötések a kiírt táblákhoz
+-- Constraints for dumped tables
 --
 
 --
--- Megkötések a táblához `characters`
+-- Constraints for table `characters`
 --
 ALTER TABLE `characters`
   ADD CONSTRAINT `characters_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`) ON DELETE CASCADE;
 
 --
--- Megkötések a táblához `class_weapons`
+-- Constraints for table `class_weapons`
 --
 ALTER TABLE `class_weapons`
   ADD CONSTRAINT `class_weapons_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `class_weapons_ibfk_2` FOREIGN KEY (`weapon_id`) REFERENCES `weapons` (`weapon_id`) ON DELETE CASCADE;
 
 --
--- Megkötések a táblához `map_characters`
+-- Constraints for table `map_characters`
 --
 ALTER TABLE `map_characters`
   ADD CONSTRAINT `map_characters_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `characters` (`character_id`) ON DELETE CASCADE;
 
 --
--- Megkötések a táblához `scores`
+-- Constraints for table `scores`
 --
 ALTER TABLE `scores`
   ADD CONSTRAINT `scores_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,

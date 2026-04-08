@@ -311,6 +311,14 @@ section { padding: 5rem 0; }
 .about-content { color: #cbd5e1; }
 .about-content p { margin-bottom: 1rem; }
 .about-content .highlight { color: #fbbf24; }
+.about-content h2,
+        .section-header h2, 
+        .gallery-video h3 {
+            color: #fbbf24;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-size: 1.8rem;
+            margin-bottom: 2rem; /* Added generous space below the titles */
+        }
 .about-info { padding-top: 1rem; margin-top: 1rem; border-top: 1px solid #334155; }
 .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .info-item p:first-child { color: #fbbf24; margin-bottom: 0.25rem; font-weight: bold; }

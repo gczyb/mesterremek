@@ -14,17 +14,6 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
     <title>Treasure Quest - Epic 2D Adventure</title>
     <link rel="icon" type="image/x-icon" href="img/icon.png">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* --- Standardized Orange Section Titles --- */
-        .about-content h2,
-        .section-header h2, 
-        .gallery-video h3 {
-            color: #fbbf24;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            font-size: 1.8rem;
-            margin-bottom: 2rem; /* Added generous space below the titles */
-        }
-    </style>
 </head>
 <body>
     <nav class="nav">
