@@ -1,4 +1,13 @@
 <?php
+// Add PHPMailer namespaces at the very top
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Require PHPMailer files (Make sure the 'PHPMailer' folder is in the same directory as this file)
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
+
 require_once 'config.php';
 
 $error = '';
@@ -33,33 +42,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_reset'])) {
             
             $reset_link = "http://" . $_SERVER['HTTP_HOST'] . "/forgot-password.php?token=" . $reset_token;
             
-            // --- SEND PASSWORD RESET EMAIL ---
-            $subject = "Treasure Quest - Password Reset Request";
-            $message = "
-            <html>
-            <body style='font-family: Arial, sans-serif; background-color: #0f172a; color: #cbd5e1; padding: 20px;'>
-                <div style='background-color: #1e293b; padding: 30px; border-radius: 8px; border: 1px solid #334155; max-width: 600px; margin: 0 auto;'>
-                    <h2 style='color: #fbbf24; margin-top: 0;'>Password Reset Request</h2>
-                    <p style='font-size: 16px; line-height: 1.5;'>We received a request to reset your Treasure Quest password.</p>
-                    <p style='font-size: 16px; line-height: 1.5;'>Click the link below to set a new password. This link will expire in 1 hour.</p>
-                    <div style='margin: 30px 0;'>
-                        <a href='" . $reset_link . "' style='background-color: #fbbf24; color: #000000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Reset Password</a>
+            // --- SEND PASSWORD RESET EMAIL VIA PHPMAILER ---
+            $mail = new PHPMailer(true);
+
+            try {
+                // Server settings
+                $mail->isSMTP();                                            
+                $mail->Host       = 'smtp.gmail.com'; 
+                $mail->SMTPAuth   = true;                                   
+                
+                $mail->Username   = 'geczyba@gmail.com';
+                $mail->Password   = 'kqxzzlwwfktyqvhi';
+                
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;         
+                $mail->Port       = 465;                                    
+
+                // Recipients
+                $mail->setFrom('noreply@treasurequest.com', 'Treasure Quest');
+                $mail->addAddress($email);
+
+                // Content
+                $mail->isHTML(true);                                  
+                $mail->Subject = 'Treasure Quest - Password Reset Request';
+                $mail->Body    = "
+                <html>
+                <body style='font-family: Arial, sans-serif; background-color: #0f172a; color: #cbd5e1; padding: 20px;'>
+                    <div style='background-color: #1e293b; padding: 30px; border-radius: 8px; border: 1px solid #334155; max-width: 600px; margin: 0 auto;'>
+                        <h2 style='color: #fbbf24; margin-top: 0;'>Password Reset Request</h2>
+                        <p style='font-size: 16px; line-height: 1.5;'>We received a request to reset your Treasure Quest password.</p>
+                        <p style='font-size: 16px; line-height: 1.5;'>Click the link below to set a new password. This link will expire in 1 hour.</p>
+                        <div style='margin: 30px 0;'>
+                            <a href='" . $reset_link . "' style='background-color: #fbbf24; color: #000000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Reset Password</a>
+                        </div>
+                        <p style='font-size: 12px; color: #94a3b8; margin-top: 30px; border-top: 1px solid #334155; padding-top: 15px;'>If you did not request this, please safely ignore this email. Your password will remain unchanged.</p>
                     </div>
-                    <p style='font-size: 12px; color: #94a3b8; margin-top: 30px; border-top: 1px solid #334155; padding-top: 15px;'>If you did not request this, please safely ignore this email. Your password will remain unchanged.</p>
-                </div>
-            </body>
-            </html>";
-            
-            $headers = "MIME-Version: 1.0\r\n";
-            $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-            $headers .= "From: noreply@" . $_SERVER['HTTP_HOST'] . "\r\n";
-            
-            mail($email, $subject, $message, $headers);
+                </body>
+                </html>";
+
+                $mail->send();
+                // Standard success message if email sends perfectly
+                $success = 'If an account exists with that email, a reset link has been sent.';
+                
+            } catch (Exception $e) {
+                // LOCALHOST DEV HACK: If the email fails to send, just show the link on screen!
+                error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+                $success = '<strong>DEV MODE (Email Failed):</strong> <a href="' . $reset_link . '" style="color: #fbbf24; text-decoration: underline;">Click here to simulate opening the email link</a>';
+            }
             // ---------------------------------
             
-            // Generic message maintains security so attackers can't verify if an email exists
-            $success = 'If an account exists with that email, a reset link has been sent.';
         } else {
+            // We always show success even if the email doesn't exist to prevent email enumeration attacks
             $success = 'If an account exists with that email, a reset link has been sent.';
         }
         

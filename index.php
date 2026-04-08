@@ -5,6 +5,7 @@ $user = getCurrentUser();
 $currentPage = basename($_SERVER['PHP_SELF']);
 $isHomePage = ($currentPage === 'index.php' || $currentPage === ''); 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
