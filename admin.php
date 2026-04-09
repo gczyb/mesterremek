@@ -26,7 +26,9 @@ function handleAdminUpload($file, $folder) {
             $dir = 'uploads/' . $folder . '/';
             if (!is_dir($dir)) mkdir($dir, 0777, true);
             $path = $dir . uniqid('img_') . '.' . $ext;
-            if (move_uploaded_file($file['tmp_name'], $path)) return $path;
+            if (move_uploaded_file($file['tmp_name'], $path)) {
+                return $path;
+            }
         }
     }
     return null;
@@ -47,36 +49,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (in_array($table, $allowed_tables)) {
             
-            // 1. Determine which column holds the image path
-            $image_col = ($table === 'users') ? 'profile_picture' : 'image_url';
-            
-            // 2. Fetch the file path BEFORE deleting the record
-            $img_stmt = $conn->prepare("SELECT $image_col FROM $table WHERE $id_col = ?");
-            $img_stmt->bind_param("i", $id_val);
-            $img_stmt->execute();
-            $img_result = $img_stmt->get_result();
-            
-            if ($img_row = $img_result->fetch_assoc()) {
-                $file_path = $img_row[$image_col];
-                
-                // 3. Convert relative path to an absolute server path
-                if (!empty($file_path)) {
-                    // __DIR__ gets the exact folder admin.php is in
-                    $absolute_path = __DIR__ . '/' . ltrim($file_path, '/');
-                    
-                    // 4. Delete the file from the server
-                    if (file_exists($absolute_path) && strpos($file_path, 'default.png') === false) {
-                        unlink($absolute_path);
+            // --- NEW CODE START: DELETE ASSOCIATED WIKI IMAGE ---
+            if ($table === 'wiki_entries') {
+                // Get the image path from the database before deleting the record
+                $stmt_img = $conn->prepare("SELECT image_url FROM wiki_entries WHERE id = ?");
+                $stmt_img->bind_param("i", $id_val);
+                $stmt_img->execute();
+                $result_img = $stmt_img->get_result();
+                if ($row_img = $result_img->fetch_assoc()) {
+                    $image_path = $row_img['image_url'];
+                    if (!empty($image_path)) {
+                        // Construct the full server path
+                        // This assumes admin.php is in the project root, same as wiki.php.
+                        // If admin.php is in an 'admin' folder, use: __DIR__ . '/../' . $image_path
+                        $full_path = __DIR__ . '/' . $image_path; 
+
+                        // Check if file exists and delete it
+                        if (file_exists($full_path)) {
+                            unlink($full_path);
+                        }
                     }
                 }
+                $stmt_img->close();
             }
-            $img_stmt->close();
+            // --- NEW CODE END ---
 
-            // 5. Now, delete the record from the database
             $stmt = $conn->prepare("DELETE FROM $table WHERE $id_col = ?");
             $stmt->bind_param("i", $id_val);
             $stmt->execute();
-            $message = "Record and associated files deleted successfully.";
+            $message = "Record deleted successfully.";
             
             // Redirect back to wiki if requested
             if (!empty($_POST['return_to'])) {
