@@ -5,13 +5,10 @@ $conn = getDBConnection();
 
 // Simple BBCode Parser
 function parseBBCode($text) {
-    // 1. Secure the text first
     $text = htmlspecialchars($text);
     
-    // 2. Apply line breaks
     $text = nl2br($text);
     
-    // 3. Define BBCode rules (Regex to HTML)
     $bbcode = [
         '/\[b\](.*?)\[\/b\]/is' => '<strong>$1</strong>',
         '/\[i\](.*?)\[\/i\]/is' => '<em>$1</em>',
@@ -22,7 +19,6 @@ function parseBBCode($text) {
         '/\[img\](.*?)\[\/img\]/is' => '<img src="$1" style="max-width:100%; border-radius:0.5rem; margin:1rem 0;">'
     ];
     
-    // 4. Run the replacement
     return preg_replace(array_keys($bbcode), array_values($bbcode), $text);
 }
 

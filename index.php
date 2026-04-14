@@ -151,9 +151,9 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                     <div class="about-info">
                         <div class="info-grid">
                             <div class="info-item"><p>Genre</p><p>2D Action Platformer RPG</p></div>
-                            <div class="info-item"><p>Platform</p><p>PC, Console</p></div>
+                            <div class="info-item"><p>Platform</p><p>PC</p></div>
                             <div class="info-item"><p>Players</p><p>Single Player</p></div>
-                            <div class="info-item"><p>Release</p><p>2025</p></div>
+                            <div class="info-item"><p>Release</p><p>2026</p></div>
                         </div>
                     </div>
                 </div>
