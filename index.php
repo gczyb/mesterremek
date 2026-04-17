@@ -19,7 +19,9 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
     <nav class="nav">
         <div class="nav-container">
             <div class="nav-links">
-                <?php if (!$isHomePage): ?><a href="index.php#home">Home</a><?php endif; ?>
+                <?php if (!$isHomePage): ?>
+                    <a href="index.php#home">Home</a>
+                <?php endif; ?>
                 <a href="index.php#about">About</a>
                 <a href="index.php#features">Features</a>
                 <a href="index.php#gallery">Gallery</a>
@@ -27,10 +29,10 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                 <a href="wiki.php">Wiki</a>
                 
                 <?php if ($user): ?>
-                    <div class="user-menu" style="margin-left: 1rem;">
+                    <div class="user-menu nav-user-menu">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                            <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -42,13 +44,13 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="login.php" class="btn btn-outline" style="cursor: pointer; margin-left: 1rem;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-desktop">Login</a>
                 <?php endif; ?>
             </div>
             
@@ -62,14 +64,14 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                 </button>
                 
                 <?php if (!$user): ?>
-                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-mobile">Login</a>
                 <?php endif; ?>
                 
                 <?php if ($user): ?>
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                            <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -81,7 +83,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
@@ -90,7 +92,9 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             </div>
         </div>
         <div class="mobile-menu" id="mobileMenu">
-            <?php if (!$isHomePage): ?><a href="index.php#home">Home</a><?php endif; ?>
+            <?php if (!$isHomePage): ?>
+                <a href="index.php#home">Home</a>
+            <?php endif; ?>
             <a href="index.php#about">About</a>
             <a href="index.php#features">Features</a>
             <a href="index.php#gallery">Gallery</a>
@@ -123,7 +127,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                         </div>
                         <div id="controlsGroup" class="controls-group">
                             <button id="playPauseBtn" class="control-btn" onclick="togglePlayPause(event)" title="Play/Pause Video">
-                                <svg id="iconPause" class="btn-icon" fill="currentColor" viewBox="0 0 24 24" style="display: none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                                <svg id="iconPause" class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
                                 <svg id="iconPlay" class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                             </button>
                             <button id="sizeToggleBtn" class="control-btn" onclick="toggleVideoSize(event)" title="Toggle Fullscreen">
@@ -217,23 +221,54 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             <div class="carousel">
                 <div class="carousel-container">
                     <div class="carousel-track" id="carouselTrack">
-                        <div class="carousel-item"><div class="video-container"><img src="https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?w=1080" alt="Epic Boss Battles"><div class="carousel-caption"><h3>Epic Boss Battles</h3></div></div></div>
-                        <div class="carousel-item"><div class="video-container"><img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1080" alt="Retro Inspired Graphics"><div class="carousel-caption"><h3>Retro Inspired Graphics</h3></div></div></div>
-                        <div class="carousel-item"><div class="video-container"><img src="https://images.unsplash.com/photo-1553986782-9f6de60b51b4?w=1080" alt="Heroic Adventures"><div class="carousel-caption"><h3>Heroic Adventures</h3></div></div></div>
-                        <div class="carousel-item"><div class="video-container"><img src="https://images.unsplash.com/photo-1707042711207-2b38f5d93974?w=1080" alt="Mystical Worlds"><div class="carousel-caption"><h3>Mystical Worlds</h3></div></div></div>
+                        <div class="carousel-item">
+                            <div class="video-container">
+                                <img src="https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?w=1080" alt="Epic Boss Battles">
+                                <div class="carousel-caption"><h3>Epic Boss Battles</h3></div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="video-container">
+                                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1080" alt="Retro Inspired Graphics">
+                                <div class="carousel-caption"><h3>Retro Inspired Graphics</h3></div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="video-container">
+                                <img src="https://images.unsplash.com/photo-1553986782-9f6de60b51b4?w=1080" alt="Heroic Adventures">
+                                <div class="carousel-caption"><h3>Heroic Adventures</h3></div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="video-container">
+                                <img src="https://images.unsplash.com/photo-1707042711207-2b38f5d93974?w=1080" alt="Mystical Worlds">
+                                <div class="carousel-caption"><h3>Mystical Worlds</h3></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button class="carousel-btn carousel-btn-prev" onclick="previousSlide()"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
-                <button class="carousel-btn carousel-btn-next" onclick="nextSlide()"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                <button class="carousel-btn carousel-btn-prev" onclick="previousSlide()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button class="carousel-btn carousel-btn-next" onclick="nextSlide()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
             </div>
         </div>
     </section>
 
     <script>
-        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
-        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userDropdown').classList.toggle('active'); }
-        function toggleMobileUserMenu(e) { e.stopPropagation(); document.getElementById('mobileUserDropdown').classList.toggle('active'); }
-        
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        }
+        function toggleUserMenu(e) {
+            e.stopPropagation();
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+        function toggleMobileUserMenu(e) {
+            e.stopPropagation();
+            document.getElementById('mobileUserDropdown').classList.toggle('active');
+        }  
         document.addEventListener('click', function(e) {
             document.querySelectorAll('.user-dropdown').forEach(dropdown => {
                 if (!dropdown.parentElement.contains(e.target)) {
@@ -244,9 +279,24 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
 
         let currentSlide = 0;
         const totalSlides = 4;
-        function updateCarousel() { const t = document.getElementById('carouselTrack'); if (t) t.style.transform = `translateX(-${currentSlide * 100}%)`; }
-        function nextSlide() { currentSlide = (currentSlide + 1) % totalSlides; updateCarousel(); }
-        function previousSlide() { currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; updateCarousel(); }
+
+        function updateCarousel() {
+            const t = document.getElementById('carouselTrack');
+            if (t) {
+                t.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
+
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+
         setInterval(nextSlide, 5000);
 
         let isVideoExpanded = false;
@@ -254,15 +304,25 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
         const iconPause = document.getElementById('iconPause');
         const iconPlay = document.getElementById('iconPlay');
 
-        if(localVideo) {
-            localVideo.addEventListener('play', () => { iconPlay.style.display = 'none'; iconPause.style.display = 'block'; });
-            localVideo.addEventListener('pause', () => { iconPause.style.display = 'none'; iconPlay.style.display = 'block'; });
-            localVideo.addEventListener('ended', () => { iconPause.style.display = 'none'; iconPlay.style.display = 'block'; });
+        if (localVideo) {
+            localVideo.addEventListener('play', () => {
+                iconPlay.style.display = 'none';
+                iconPause.style.display = 'block';
+            });
+            localVideo.addEventListener('pause', () => {
+                iconPause.style.display = 'none';
+                iconPlay.style.display = 'block';
+            });
+            localVideo.addEventListener('ended', () => {
+                iconPause.style.display = 'none';
+                iconPlay.style.display = 'block';
+            });
         }
 
         function startVideo() {
             const placeholder = document.getElementById('mainVideo');
             if (placeholder.classList.contains('is-playing')) return; 
+
             const overlayContent = document.getElementById('playBtnContent');
             const overlayBackground = document.getElementById('videoOverlay');
             const sizeToggleBtn = document.getElementById('sizeToggleBtn');
@@ -284,14 +344,20 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
 
         function togglePlayPause(event) {
             event.stopPropagation();
-            if (localVideo.paused) localVideo.play();
-            else localVideo.pause();
+            if (localVideo.paused) {
+                localVideo.play();
+            } else {
+                localVideo.pause();
+            }
         }
 
         function toggleVideoSize(event) {
             event.stopPropagation(); 
-            if (!isVideoExpanded) maximizeVideo();
-            else minimizeVideo();
+            if (!isVideoExpanded) {
+                maximizeVideo();
+            } else {
+                minimizeVideo();
+            }
         }
 
         function maximizeVideo() {

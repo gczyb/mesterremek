@@ -24,13 +24,21 @@ if (file_exists($derivedPath)) {
     $bgImage = 'uploads/maps/default-map.jpg'; 
 }
 
-$char_sql = "SELECT c.name, cl.name as class_name, c.ally FROM map_characters mc JOIN characters c ON mc.character_id = c.character_id JOIN classes cl ON c.class_id = cl.class_id WHERE mc.map_id = ?";
+$char_sql = "SELECT c.name, cl.name as class_name, c.ally 
+             FROM map_characters mc 
+             JOIN characters c ON mc.character_id = c.character_id 
+             JOIN classes cl ON c.class_id = cl.class_id 
+             WHERE mc.map_id = ?";
 $char_stmt = $conn->prepare($char_sql);
 $char_stmt->bind_param("i", $map_id);
 $char_stmt->execute();
 $chars_result = $char_stmt->get_result();
 
-$score_sql = "SELECT s.turns, s.date, u.username, u.profile_picture FROM scores s JOIN users u ON s.user_id = u.id WHERE s.map_id = ? ORDER BY s.turns ASC, s.date DESC LIMIT 50";
+$score_sql = "SELECT s.turns, s.date, u.username, u.profile_picture 
+              FROM scores s 
+              JOIN users u ON s.user_id = u.id 
+              WHERE s.map_id = ? 
+              ORDER BY s.turns ASC, s.date DESC LIMIT 50";
 $score_stmt = $conn->prepare($score_sql);
 $score_stmt->bind_param("i", $map_id);
 $score_stmt->execute();
@@ -56,10 +64,10 @@ $scores_result = $score_stmt->get_result();
                 <a href="leaderboard.php" class="active">Leaderboard</a>
                 <a href="wiki.php">Wiki</a>
                 <?php if ($user): ?>
-                    <div class="user-menu" style="margin-left: 1rem;">
+                    <div class="user-menu nav-user-menu">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -71,13 +79,13 @@ $scores_result = $score_stmt->get_result();
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="login.php" class="btn btn-outline" style="cursor: pointer; margin-left: 1rem;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-desktop">Login</a>
                 <?php endif; ?>
             </div>
             
@@ -91,14 +99,14 @@ $scores_result = $score_stmt->get_result();
                 </button>
                 
                 <?php if (!$user): ?>
-                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-mobile">Login</a>
                 <?php endif; ?>
                 
                 <?php if ($user): ?>
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -110,7 +118,7 @@ $scores_result = $score_stmt->get_result();
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
@@ -139,12 +147,12 @@ $scores_result = $score_stmt->get_result();
                 
                 <?php if ($chars_result->num_rows > 0): ?>
                     <div class="char-container">
-                        <span style="color: #cbd5e1; font-size: 0.9rem; margin-right: 0.5rem; align-self: center;">Featured Characters:</span>
+                        <span class="featured-chars-label">Featured Characters:</span>
                         <?php while($char = $chars_result->fetch_assoc()): ?>
                             <div class="char-tag <?php echo $char['ally'] ? 'char-ally' : 'char-enemy'; ?>">
                                 <?php echo $char['ally'] ? '🛡️' : '⚔️'; ?>
                                 <?php echo htmlspecialchars($char['name']); ?> 
-                                <span style="opacity: 0.7; font-size: 0.8em;">(<?php echo htmlspecialchars($char['class_name']); ?>)</span>
+                                <span class="char-class-label">(<?php echo htmlspecialchars($char['class_name']); ?>)</span>
                             </div>
                         <?php endwhile; ?>
                     </div>
@@ -156,7 +164,12 @@ $scores_result = $score_stmt->get_result();
             <?php if ($scores_result->num_rows > 0): ?>
             <table>
                 <thead>
-                    <tr><th width="10%">Rank</th><th width="50%">Player</th><th width="20%">Turns</th><th width="20%">Date Achieved</th></tr>
+                    <tr>
+                        <th width="10%">Rank</th>
+                        <th width="50%">Player</th>
+                        <th width="20%">Turns</th>
+                        <th width="20%">Date Achieved</th>
+                    </tr>
                 </thead>
                 <tbody>
                     <?php 
@@ -170,7 +183,7 @@ $scores_result = $score_stmt->get_result();
                             <div class="user-flex">
                                 <div class="avatar">
                                     <?php if (!empty($row['profile_picture']) && $row['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                        <img src="<?php echo htmlspecialchars($row['profile_picture']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img src="<?php echo htmlspecialchars($row['profile_picture']); ?>" alt="Profile">
                                     <?php else: ?>
                                         <?php echo strtoupper(substr($row['username'], 0, 1)); ?>
                                     <?php endif; ?>
@@ -178,7 +191,7 @@ $scores_result = $score_stmt->get_result();
                                 <?php echo htmlspecialchars($row['username']); ?>
                             </div>
                         </td>
-                        <td style="font-family: monospace; font-size: 1.1rem; color: #fbbf24;"><?php echo htmlspecialchars($row['turns']); ?></td>
+                        <td class="score-turns"><?php echo htmlspecialchars($row['turns']); ?></td>
                         <td><?php echo date('M j, Y', strtotime($row['date'])); ?></td>
                     </tr>
                     <?php $rank++; endwhile; ?>

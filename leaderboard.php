@@ -4,7 +4,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
 $user = getCurrentUser();
 $conn = getDBConnection();
-// Fetch all maps
+
 $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
 ?>
 <!DOCTYPE html>
@@ -27,10 +27,10 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
                 <a href="leaderboard.php" class="active">Leaderboard</a>
                 <a href="wiki.php">Wiki</a>
                 <?php if ($user): ?>
-                    <div class="user-menu" style="margin-left: 1rem;">
+                    <div class="user-menu nav-user-menu">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -42,13 +42,13 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="login.php" class="btn btn-outline" style="cursor: pointer; margin-left: 1rem;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-desktop">Login</a>
                 <?php endif; ?>
             </div>
             
@@ -62,14 +62,14 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
                 </button>
                 
                 <?php if (!$user): ?>
-                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-mobile">Login</a>
                 <?php endif; ?>
                 
                 <?php if ($user): ?>
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -81,7 +81,7 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
@@ -128,7 +128,7 @@ $maps_result = $conn->query("SELECT * FROM maps ORDER BY id ASC");
                     </a>
                 <?php endwhile; ?>
             <?php else: ?>
-                <p style="text-align: center; grid-column: 1/-1;">No maps available.</p>
+                <p class="maps-empty-state">No maps available.</p>
             <?php endif; ?>
         </div>
     </div>

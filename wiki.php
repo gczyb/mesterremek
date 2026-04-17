@@ -3,20 +3,18 @@ require_once 'config.php';
 $user = getCurrentUser();
 $conn = getDBConnection();
 
-// Simple BBCode Parser
 function parseBBCode($text) {
     $text = htmlspecialchars($text);
-    
     $text = nl2br($text);
     
     $bbcode = [
         '/\[b\](.*?)\[\/b\]/is' => '<strong>$1</strong>',
         '/\[i\](.*?)\[\/i\]/is' => '<em>$1</em>',
         '/\[u\](.*?)\[\/u\]/is' => '<u>$1</u>',
-        '/\[h3\](.*?)\[\/h3\]/is' => '<h3 style="color:#fbbf24; margin-top:1rem;">$1</h3>',
+        '/\[h3\](.*?)\[\/h3\]/is' => '<h3 class="bb-h3">$1</h3>',
         '/\[color=(.*?)\](.*?)\[\/color\]/is' => '<span style="color:$1;">$2</span>',
-        '/\[url=(.*?)\](.*?)\[\/url\]/is' => '<a href="$1" target="_blank" style="color:#fbbf24; text-decoration:underline;">$2</a>',
-        '/\[img\](.*?)\[\/img\]/is' => '<img src="$1" style="max-width:100%; border-radius:0.5rem; margin:1rem 0;">'
+        '/\[url=(.*?)\](.*?)\[\/url\]/is' => '<a href="$1" target="_blank" class="bb-link">$2</a>',
+        '/\[img\](.*?)\[\/img\]/is' => '<img src="$1" class="bb-img">'
     ];
     
     return preg_replace(array_keys($bbcode), array_values($bbcode), $text);
@@ -27,13 +25,20 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
 
 $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'articles';
 $allowedTabs = ['articles', 'characters', 'classes', 'weapons'];
-if (!in_array($activeTab, $allowedTabs)) $activeTab = 'articles';
+if (!in_array($activeTab, $allowedTabs)) {
+    $activeTab = 'articles';
+}
 
 $wiki_data = null;
-if ($activeTab === 'articles') $wiki_data = $conn->query("SELECT * FROM wiki_entries ORDER BY created_at DESC");
-elseif ($activeTab === 'characters') $wiki_data = $conn->query("SELECT ch.*, cl.name as class_name FROM characters ch JOIN classes cl ON ch.class_id = cl.class_id ORDER BY ch.ally DESC, ch.character_id ASC");
-elseif ($activeTab === 'classes') $wiki_data = $conn->query("SELECT c.*, GROUP_CONCAT(w.name SEPARATOR ', ') as usable_weapons FROM classes c LEFT JOIN class_weapons cw ON c.class_id = cw.class_id LEFT JOIN weapons w ON cw.weapon_id = w.weapon_id GROUP BY c.class_id");
-elseif ($activeTab === 'weapons') $wiki_data = $conn->query("SELECT * FROM weapons ORDER BY weapon_type, name");
+if ($activeTab === 'articles') {
+    $wiki_data = $conn->query("SELECT * FROM wiki_entries ORDER BY created_at DESC");
+} elseif ($activeTab === 'characters') {
+    $wiki_data = $conn->query("SELECT ch.*, cl.name as class_name FROM characters ch JOIN classes cl ON ch.class_id = cl.class_id ORDER BY ch.ally DESC, ch.character_id ASC");
+} elseif ($activeTab === 'classes') {
+    $wiki_data = $conn->query("SELECT c.*, GROUP_CONCAT(w.name SEPARATOR ', ') as usable_weapons FROM classes c LEFT JOIN class_weapons cw ON c.class_id = cw.class_id LEFT JOIN weapons w ON cw.weapon_id = w.weapon_id GROUP BY c.class_id");
+} elseif ($activeTab === 'weapons') {
+    $wiki_data = $conn->query("SELECT * FROM weapons ORDER BY weapon_type, name");
+}
 
 $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
 ?>
@@ -45,9 +50,6 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
     <title>The Wiki - Treasure Quest</title>
     <link rel="icon" type="image/x-icon" href="img/icon.png">
     <link rel="stylesheet" href="styles.css">
-    <style>
-
-    </style>
 </head>
 <body class="wiki-page">
     <nav class="nav">
@@ -61,10 +63,10 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                 <a href="wiki.php" class="active">Wiki</a>
               
                 <?php if ($user): ?>
-                    <div class="user-menu" style="margin-left: 1rem;">
+                    <div class="user-menu nav-user-menu">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -76,13 +78,13 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if ($isAdmin): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="login.php" class="btn btn-outline" style="cursor: pointer; margin-left: 1rem;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-desktop">Login</a>
                 <?php endif; ?>
             </div>
             
@@ -96,12 +98,12 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                 </button>
                 
                 <?php if (!$user): ?>
-                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-mobile">Login</a>
                 <?php else: ?>
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -113,7 +115,7 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if ($isAdmin): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
@@ -158,7 +160,7 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                             <?php if ($isAdmin): ?>
                                 <div class="action-group">
                                     <a href="admin.php?tab=articles&edit=<?php echo $wiki['id']; ?>" class="btn">Edit</a>
-                                    <form method="POST" action="admin.php" onsubmit="return confirm('Delete this article?');" style="margin:0;">
+                                    <form method="POST" action="admin.php" onsubmit="return confirm('Delete this article?');" class="inline-form">
                                         <input type="hidden" name="action" value="delete_record">
                                         <input type="hidden" name="table" value="wiki_entries">
                                         <input type="hidden" name="id_col" value="id">
@@ -181,88 +183,88 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                 <?php endwhile; ?>
             <?php endif; ?>
 
-            <?php elseif ($activeTab === 'characters'): ?>
-    <?php if ($wiki_data && $wiki_data->num_rows > 0): ?>
-        <?php while($char = $wiki_data->fetch_assoc()): ?>
-            <div class="wiki-card character-card">
-                <div class="wiki-card-header">
-                    <div class="title-group">
-                        <h2><?php echo htmlspecialchars($char['name']); ?></h2>
-                        <span class="badge <?php echo $char['ally'] ? 'badge-ally' : 'badge-enemy'; ?>">
-                            <?php echo $char['ally'] ? 'Player Ally' : 'Enemy Unit'; ?>
-                        </span>
-                    </div>
+        <?php elseif ($activeTab === 'characters'): ?>
+            <?php if ($wiki_data && $wiki_data->num_rows > 0): ?>
+                <?php while($char = $wiki_data->fetch_assoc()): ?>
+                    <div class="wiki-card character-card">
+                        <div class="wiki-card-header">
+                            <div class="title-group">
+                                <h2><?php echo htmlspecialchars($char['name']); ?></h2>
+                                <span class="badge <?php echo $char['ally'] ? 'badge-ally' : 'badge-enemy'; ?>">
+                                    <?php echo $char['ally'] ? 'Player Ally' : 'Enemy Unit'; ?>
+                                </span>
+                            </div>
 
-                    <?php if ($isAdmin): ?>
-                        <div class="action-group">
-                            <a href="admin.php?tab=characters&edit=<?php echo $char['character_id']; ?>" class="btn">Edit</a>
-                            <form method="POST" action="admin.php" onsubmit="return confirm('Delete character?');" style="margin:0;">
-                                <input type="hidden" name="action" value="delete_record">
-                                <input type="hidden" name="table" value="characters">
-                                <input type="hidden" name="id_col" value="character_id">
-                                <input type="hidden" name="id_val" value="<?php echo $char['character_id']; ?>">
-                                <input type="hidden" name="return_to" value="wiki.php?tab=characters">
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        </div>
-                    <?php endif; ?>
-                </div>
-                
-                <div class="char-layout-horizontal">
-                    <?php if (!empty($char['image_url'])): ?>
-                        <img src="<?php echo htmlspecialchars($char['image_url']); ?>" alt="Portrait" class="char-img-side">
-                    <?php endif; ?>
-                    
-                    <div class="char-text-side">
-                        <div class="char-class-line">
-                            <strong>Class:</strong> 
-                            <?php
-                                $cName = strtolower($char['class_name']);
-                                $cIcon = '';
-                                if (strpos($cName, 'archer') !== false) $cIcon = 'uploads/classes/archer-icon.png';
-                                elseif (strpos($cName, 'fighter') !== false) $cIcon = 'uploads/classes/fighter-icon.png';
-                                elseif (strpos($cName, 'knight') !== false) $cIcon = 'uploads/classes/knight-icon.png';
-                                elseif (strpos($cName, 'mage') !== false) $cIcon = 'uploads/classes/mage-icon.png';
-                                elseif (strpos($cName, 'thief') !== false) $cIcon = 'uploads/classes/thief-icon.png';
-                            ?>
-                            <?php if ($cIcon): ?>
-                                <img src="<?php echo $cIcon; ?>" class="class-inline-icon" alt="Class Icon">
+                            <?php if ($isAdmin): ?>
+                                <div class="action-group">
+                                    <a href="admin.php?tab=characters&edit=<?php echo $char['character_id']; ?>" class="btn">Edit</a>
+                                    <form method="POST" action="admin.php" onsubmit="return confirm('Delete character?');" class="inline-form">
+                                        <input type="hidden" name="action" value="delete_record">
+                                        <input type="hidden" name="table" value="characters">
+                                        <input type="hidden" name="id_col" value="character_id">
+                                        <input type="hidden" name="id_val" value="<?php echo $char['character_id']; ?>">
+                                        <input type="hidden" name="return_to" value="wiki.php?tab=characters">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
                             <?php endif; ?>
-                            <span style="color: #fbbf24;"><?php echo htmlspecialchars($char['class_name']); ?></span>
                         </div>
-                        <p class="char-description-text">
-                            <?php echo htmlspecialchars($char['description']); ?>
-                        </p>
+                        
+                        <div class="char-layout-horizontal">
+                            <?php if (!empty($char['image_url'])): ?>
+                                <img src="<?php echo htmlspecialchars($char['image_url']); ?>" alt="Portrait" class="char-img-side">
+                            <?php endif; ?>
+                            
+                            <div class="char-text-side">
+                                <div class="char-class-line">
+                                    <strong>Class:</strong> 
+                                    <?php
+                                        $cName = strtolower($char['class_name']);
+                                        $cIcon = '';
+                                        if (strpos($cName, 'archer') !== false) $cIcon = 'uploads/classes/archer-icon.png';
+                                        elseif (strpos($cName, 'fighter') !== false) $cIcon = 'uploads/classes/fighter-icon.png';
+                                        elseif (strpos($cName, 'knight') !== false) $cIcon = 'uploads/classes/knight-icon.png';
+                                        elseif (strpos($cName, 'mage') !== false) $cIcon = 'uploads/classes/mage-icon.png';
+                                        elseif (strpos($cName, 'thief') !== false) $cIcon = 'uploads/classes/thief-icon.png';
+                                    ?>
+                                    <?php if ($cIcon): ?>
+                                        <img src="<?php echo $cIcon; ?>" class="class-inline-icon" alt="Class Icon">
+                                    <?php endif; ?>
+                                    <span><?php echo htmlspecialchars($char['class_name']); ?></span>
+                                </div>
+                                <p class="char-description-text">
+                                    <?php echo htmlspecialchars($char['description']); ?>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="char-table-container">
+                            <table class="data-table char-stat-table">
+                                <thead>
+                                    <tr><th>HP</th><th>Str</th><th>Dex</th><th>Skill</th><th>Def</th><th>Luck</th><th>Move</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td data-label="HP"><?php echo $char['base_hp']; ?></td>
+                                        <td data-label="Str"><?php echo $char['base_str']; ?></td>
+                                        <td data-label="Dex"><?php echo $char['base_dex']; ?></td>
+                                        <td data-label="Skill"><?php echo $char['base_skill']; ?></td>
+                                        <td data-label="Def"><?php echo $char['base_def']; ?></td>
+                                        <td data-label="Luck"><?php echo $char['base_luck']; ?></td>
+                                        <td data-label="Move"><?php echo $char['base_move']; ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="char-table-container">
-                    <table class="data-table char-stat-table">
-                        <thead>
-                            <tr><th>HP</th><th>Str</th><th>Dex</th><th>Skill</th><th>Def</th><th>Luck</th><th>Move</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td data-label="HP"><?php echo $char['base_hp']; ?></td>
-                                <td data-label="Str"><?php echo $char['base_str']; ?></td>
-                                <td data-label="Dex"><?php echo $char['base_dex']; ?></td>
-                                <td data-label="Skill"><?php echo $char['base_skill']; ?></td>
-                                <td data-label="Def"><?php echo $char['base_def']; ?></td>
-                                <td data-label="Luck"><?php echo $char['base_luck']; ?></td>
-                                <td data-label="Move"><?php echo $char['base_move']; ?></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        <?php endwhile; ?>
-    <?php endif; ?>
+                <?php endwhile; ?>
+            <?php endif; ?>
 
         <?php elseif ($activeTab === 'classes'): ?>
             <?php if ($wiki_data && $wiki_data->num_rows > 0): ?>
-                <div class="wiki-card" style="padding: 0; overflow: hidden;">
-                    <div style="overflow-x: auto; width: 100%;">
-                        <table class="data-table table-cards-mobile" style="margin-top: 0; min-width: 600px;">
+                <div class="wiki-card wiki-card-table">
+                    <div class="table-responsive-wrapper">
+                        <table class="data-table table-cards-mobile data-table-classes">
                             <thead>
                                 <tr>
                                     <th width="60">Icon</th>
@@ -290,17 +292,17 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                                                 <img src="<?php echo htmlspecialchars($cIcon); ?>" class="icon-img" alt="<?php echo htmlspecialchars($class['name']); ?> Icon">
                                             <?php endif; ?>
                                         </td>
-                                        <td data-label="Class Name" style="color: #fbbf24; font-weight: bold;"><?php echo htmlspecialchars($class['name']); ?></td>
-                                        <td data-label="Description" style="color: #cbd5e1;"><?php echo htmlspecialchars($class['description']); ?></td>
-                                        <td data-label="Usable Weapons" style="color: #94a3b8; font-style: italic;">
+                                        <td data-label="Class Name" class="text-highlight-bold"><?php echo htmlspecialchars($class['name']); ?></td>
+                                        <td data-label="Description" class="text-standard"><?php echo htmlspecialchars($class['description']); ?></td>
+                                        <td data-label="Usable Weapons" class="text-muted-italic">
                                             <?php echo !empty($class['usable_weapons']) ? htmlspecialchars($class['usable_weapons']) : 'None specific'; ?>
                                         </td>
                                         
                                         <?php if ($isAdmin): ?>
-                                        <td data-label="Admin" class="admin-actions-cell" style="white-space: nowrap;">
+                                        <td data-label="Admin" class="admin-actions-cell cell-nowrap">
                                             <div class="table-actions">
                                                 <a href="admin.php?tab=classes&edit=<?php echo $class['class_id']; ?>" class="btn">Edit</a>
-                                                <form method="POST" action="admin.php" onsubmit="return confirm('Delete class?');" style="margin: 0; display: inline-block;">
+                                                <form method="POST" action="admin.php" onsubmit="return confirm('Delete class?');" class="inline-block-form">
                                                     <input type="hidden" name="action" value="delete_record">
                                                     <input type="hidden" name="table" value="classes">
                                                     <input type="hidden" name="id_col" value="class_id">
@@ -321,9 +323,9 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
 
         <?php elseif ($activeTab === 'weapons'): ?>
             <?php if ($wiki_data && $wiki_data->num_rows > 0): ?>
-                <div class="wiki-card" style="padding: 0; overflow: hidden;">
-                    <div style="overflow-x: auto; width: 100%;">
-                        <table class="data-table table-cards-mobile" style="margin-top: 0; min-width: 800px;">
+                <div class="wiki-card wiki-card-table">
+                    <div class="table-responsive-wrapper">
+                        <table class="data-table table-cards-mobile data-table-weapons">
                             <thead>
                                 <tr>
                                     <th>Weapon</th>
@@ -340,26 +342,26 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
                                 <?php while($weapon = $wiki_data->fetch_assoc()): ?>
                                     <tr>
                                         <td data-label="Weapon">
-                                            <div style="display: flex; align-items: center; gap: 0.5rem; color: #fbbf24; font-weight: bold;">
+                                            <div class="weapon-name-row">
                                                 <?php if (!empty($weapon['image_url'])): ?>
                                                     <img src="<?php echo htmlspecialchars($weapon['image_url']); ?>" class="class-inline-icon" alt="Icon">
                                                 <?php endif; ?>
                                                 <span><?php echo htmlspecialchars($weapon['name']); ?></span>
                                             </div>
-                                            <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;"><?php echo htmlspecialchars($weapon['description']); ?></div>
+                                            <div class="weapon-desc-row"><?php echo htmlspecialchars($weapon['description']); ?></div>
                                         </td>
                                         <td data-label="Type"><span class="badge badge-stat"><?php echo htmlspecialchars($weapon['weapon_type']); ?></span></td>
-                                        <td data-label="Atk" style="font-weight: bold; color: #ef4444;"><?php echo $weapon['atk']; ?></td>
-                                        <td data-label="Hit%" style="color: #4ade80;"><?php echo $weapon['hit_rate']; ?></td>
-                                        <td data-label="Crit%" style="color: #a855f7;"><?php echo $weapon['crit_rate']; ?></td>
-                                        <td data-label="Range" style="color: #cbd5e1;"><?php echo $weapon['min_range'] === $weapon['max_range'] ? $weapon['min_range'] : $weapon['min_range'] . '-' . $weapon['max_range']; ?></td>
-                                        <td data-label="Durability" style="color: #94a3b8;"><?php echo $weapon['durability']; ?></td>
+                                        <td data-label="Atk" class="stat-atk"><?php echo $weapon['atk']; ?></td>
+                                        <td data-label="Hit%" class="stat-hit"><?php echo $weapon['hit_rate']; ?></td>
+                                        <td data-label="Crit%" class="stat-crit"><?php echo $weapon['crit_rate']; ?></td>
+                                        <td data-label="Range" class="stat-range"><?php echo $weapon['min_range'] === $weapon['max_range'] ? $weapon['min_range'] : $weapon['min_range'] . '-' . $weapon['max_range']; ?></td>
+                                        <td data-label="Durability" class="stat-dur"><?php echo $weapon['durability']; ?></td>
                                         
                                         <?php if ($isAdmin): ?>
-                                        <td data-label="Admin" class="admin-actions-cell" style="white-space: nowrap;">
+                                        <td data-label="Admin" class="admin-actions-cell cell-nowrap">
                                             <div class="table-actions">
                                                 <a href="admin.php?tab=weapons&edit=<?php echo $weapon['weapon_id']; ?>" class="btn">Edit</a>
-                                                <form method="POST" action="admin.php" onsubmit="return confirm('Delete weapon?');" style="margin: 0; display: inline-block;">
+                                                <form method="POST" action="admin.php" onsubmit="return confirm('Delete weapon?');" class="inline-block-form">
                                                     <input type="hidden" name="action" value="delete_record">
                                                     <input type="hidden" name="table" value="weapons">
                                                     <input type="hidden" name="id_col" value="weapon_id">

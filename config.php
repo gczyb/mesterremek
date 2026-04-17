@@ -59,22 +59,15 @@ function getDBConnection() {
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
     
     if ($conn->connect_error) {
-        // If treasure_quest database doesn't exist, try to create it
-        $conn_temp = new mysqli(DB_HOST, DB_USER, DB_PASS, '', DB_PORT);
-        
+        $conn_temp = new mysqli(DB_HOST, DB_USER, DB_PASS, '', DB_PORT);    
         if (!$conn_temp->connect_error) {
             $conn_temp->query("CREATE DATABASE IF NOT EXISTS " . DB_NAME);
             $conn_temp->close();
-            
-            // Try connecting again
             $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
-            
             if (!$conn->connect_error) {
                 return $conn;
             }
         }
-        
-        // Show helpful error message
         die("
         <div style='font-family: Arial; padding: 20px; background: #0f172a; color: #cbd5e1;'>
             <h2 style='color: #ef4444;'>Database Connection Failed</h2>
@@ -118,12 +111,10 @@ function getDBConnection() {
     return $conn;
 }
 
-// Check if user is logged in
 function isLoggedIn() {
     return isset($_SESSION['user_id']);
 }
 
-// Get current user data
 function getCurrentUser() {
     if (!isLoggedIn()) {
         return null;
@@ -132,7 +123,6 @@ function getCurrentUser() {
     $conn = getDBConnection();
     $user_id = $_SESSION['user_id'];
     
-    // UPDATED: Added 'admin' to the SELECT query
     $stmt = $conn->prepare("SELECT id, username, email, profile_picture, admin FROM users WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
@@ -145,3 +135,5 @@ function getCurrentUser() {
     return $user;
 }
 ?>
+
+

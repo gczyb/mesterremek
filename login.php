@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 mail($email, $subject, $message, $headers);
                 // --------------------------
 
-                $success = 'Account created successfully! A welcome email has been sent. You can now login.';
+                $success = 'Account created successfully!';
             } else {
                 $error = 'Registration failed. Please try again.';
             }

@@ -13,7 +13,6 @@ $success = '';
 $currentPage = basename($_SERVER['PHP_SELF']);
 $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
 
-// Handle profile picture upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_picture'])) {
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === 0) {
         $allowed = ['jpg', 'jpeg', 'png', 'gif'];
@@ -58,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_picture'])) {
     }
 }
 
-// Handle profile picture removal
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_picture'])) {
     if (!empty($user['profile_picture']) && file_exists($user['profile_picture']) && strpos($user['profile_picture'], 'default.png') === false) {
         unlink($user['profile_picture']);
@@ -79,7 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_picture'])) {
     $conn->close();
 }
 
-// Handle profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
@@ -113,7 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     }
 }
 
-// Handle password change
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
@@ -151,7 +147,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     }
 }
 
-// Handle account deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
     $confirm_password = $_POST['confirm_delete_password'];
     
@@ -208,10 +203,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                 <a href="wiki.php">Wiki</a>
                 
                 <?php if ($user): ?>
-                    <div class="user-menu" style="margin-left: 1rem;">
+                    <div class="user-menu nav-user-menu">
                         <div class="user-avatar" onclick="toggleUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -223,19 +218,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="login.php" class="btn btn-outline" style="cursor: pointer; margin-left: 1rem;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-desktop">Login</a>
                 <?php endif; ?>
             </div>
             
             <div class="mobile-controls">
                 <?php if (!$user): ?>
-                    <a href="login.php" class="btn btn-outline" style="padding: 0.4rem 0.8rem !important; font-size: 0.8rem !important;">Login</a>
+                    <a href="login.php" class="btn btn-outline btn-login-mobile">Login</a>
                 <?php endif; ?>
                 
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
@@ -250,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                     <div class="user-menu">
                         <div class="user-avatar" onclick="toggleMobileUserMenu(event)">
                             <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile">
                             <?php else: ?>
                                 <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                             <?php endif; ?>
@@ -262,7 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                             </div>
                             <a href="profile.php">My Profile</a>
                             <?php if (isset($user['admin']) && $user['admin'] == 1): ?>
-                                <a href="admin.php" style="color: #fbbf24; border-top: 1px solid #334155;">Admin Dashboard</a>
+                                <a href="admin.php" class="admin-link">Admin Dashboard</a>
                             <?php endif; ?>
                             <a href="logout.php">Logout</a>
                         </div>
@@ -284,7 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
         <div class="profile-header">
             <div class="profile-avatar">
                 <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                    <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" alt="Profile Picture">
                 <?php else: ?>
                     <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
                 <?php endif; ?>
@@ -304,32 +299,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
         <div class="card">
             <h2>Account Actions</h2>
             
-            <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #334155;">
-                <h3 style="color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1rem;">Profile Picture</h3>
-                <div style="margin-bottom: 1rem;">
+            <div class="profile-section">
+                <h3 class="profile-section-title">Profile Picture</h3>
+                <div class="profile-section-body">
                     
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                    <div class="profile-action-group">
                         
-                        <form method="POST" action="" enctype="multipart/form-data" style="flex: 1; min-width: 140px; margin: 0;">
-                            <input type="file" name="profile_picture" accept="image/*" required style="display: none;" id="profilePicInput" onchange="this.form.submit()">
-                            <label for="profilePicInput" class="btn" style="cursor: pointer; display: block; text-align: center; width: 100%; box-sizing: border-box; margin: 0; padding: 0.75rem;">Upload New Picture</label>
+                        <form method="POST" action="" enctype="multipart/form-data" class="profile-action-form">
+                            <input type="file" name="profile_picture" accept="image/*" required class="hidden-input" id="profilePicInput" onchange="this.form.submit()">
+                            <label for="profilePicInput" class="btn btn-upload-label">Upload New Picture</label>
                             <input type="hidden" name="upload_picture" value="1">
                         </form>
                         
                         <?php if (!empty($user['profile_picture']) && $user['profile_picture'] !== 'uploads/profiles/default.png'): ?>
-                            <form method="POST" action="" style="flex: 1; min-width: 140px; margin: 0;">
-                                <button type="submit" name="remove_picture" class="btn btn-danger" style="width: 100%; height: 100%; margin: 0; box-sizing: border-box; padding: 0.75rem;" onclick="return confirm('Remove profile picture?')">Remove Picture</button>
+                            <form method="POST" action="" class="profile-action-form">
+                                <button type="submit" name="remove_picture" class="btn btn-danger btn-remove-pic" onclick="return confirm('Remove profile picture?')">Remove Picture</button>
                             </form>
                         <?php endif; ?>
 
                     </div>
                     
-                    <p style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">JPG, PNG or GIF. Max 5MB.</p>
+                    <p class="profile-help-text">JPG, PNG or GIF. Max 5MB.</p>
                 </div>
             </div>
 
-            <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #334155;">
-                <h3 style="color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1rem;">Change Username</h3>
+            <div class="profile-section">
+                <h3 class="profile-section-title">Change Username</h3>
                 <form method="POST" action="">
                     <div class="form-group">
                         <label for="username">New Username</label>
@@ -339,12 +334,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
                     </div>
-                    <button type="submit" name="update_profile" class="btn btn-block" style="padding: 0.75rem;">Update Profile</button>
+                    <button type="submit" name="update_profile" class="btn btn-block btn-large">Update Profile</button>
                 </form>
             </div>
 
             <div>
-                <h3 style="color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1rem;">Change Password</h3>
+                <h3 class="profile-section-title">Change Password</h3>
                 <form method="POST" action="">
                     <div class="form-group">
                         <label for="current_password">Current Password</label>
@@ -358,15 +353,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                         <label for="confirm_password">Confirm New Password</label>
                         <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
                     </div>
-                    <button type="submit" name="change_password" class="btn btn-block" style="padding: 0.75rem;">Change Password</button>
+                    <button type="submit" name="change_password" class="btn btn-block btn-large">Change Password</button>
                 </form>
             </div>
         </div>
 
         <div class="card">
             <h2>Logout</h2>
-            <p style="margin-bottom: 1.5rem;">End your current session and return to the homepage.</p>
-            <a href="logout.php" class="btn btn-block" style="display:block; text-align:center; padding: 0.75rem;">Logout</a>
+            <p class="logout-text">End your current session and return to the homepage.</p>
+            <a href="logout.php" class="btn btn-block btn-logout">Logout</a>
         </div>
 
         <div class="card danger-zone">
@@ -379,7 +374,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
                     <label for="confirm_delete_password">Enter your password to confirm deletion</label>
                     <input type="password" id="confirm_delete_password" name="confirm_delete_password" required>
                 </div>
-                <button type="submit" name="delete_account" class="btn btn-danger btn-block" style="padding: 0.75rem;">Delete Account Permanently</button>
+                <button type="submit" name="delete_account" class="btn btn-danger btn-block btn-large">Delete Account Permanently</button>
             </form>
         </div>
     </div>
