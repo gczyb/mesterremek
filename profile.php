@@ -19,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_picture'])) {
         $filename = $_FILES['profile_picture']['name'];
         $filetype = pathinfo($filename, PATHINFO_EXTENSION);
         $filesize = $_FILES['profile_picture']['size'];
-
         if (!in_array(strtolower($filetype), $allowed)) {
             $error = 'Only JPG, JPEG, PNG, and GIF files are allowed';
         } elseif ($filesize > 5000000) { 

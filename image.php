@@ -19,7 +19,6 @@ if (isset($_GET['id'])) {
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             $mime_type = $finfo->buffer($user['profile_picture']);
             
-            // Set appropriate headers
             header("Content-Type: " . $mime_type);
             header("Content-Length: " . strlen($user['profile_picture']));
             header("Cache-Control: max-age=3600"); // Cache for 1 hour

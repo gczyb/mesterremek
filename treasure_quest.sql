@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 09, 2026 at 12:35 AM
+-- Generation Time: Apr 20, 2026 at 02:21 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -197,11 +197,10 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `admin`, `reset_toke
 (3, 'CasualGamer', 'casual@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
 (4, 'QuestMaster', 'master@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
 (5, 'gecseb', 'gecseboti@gmail.com', '$2y$10$5nPUWNls6dhs0VPLHVrZyepi6aHpk7cRktI0crBaDkuCFFSSNoBZe', 0, NULL, NULL, '2026-02-16 12:44:03', '', 'b5a937b82b92823beccdcb3bb877567e64263a50a4a85b81195ef6d3ab3c58f4'),
-(6, 'aasfadsadada', 'a@a.a', '$2y$10$nuE40heApBAmmESbA.zALuJLgg4OhePCQw.pybjZveza86i7nUo8K', 0, NULL, NULL, '2026-02-17 11:56:37', 'uploads/profiles/user_6_1773741693.png', 'c16d33a74ae22276528ad698e0d44755274c983fa5aab434f8c6cbb8d7124a2d'),
-(7, 'csuma', 'csuma@a.a', '$2y$10$CKWl4gCmnIDZdRm.SDuPHua/.6cdk.PNWY8HwJWf27s9nRpBhh6Iy', 0, NULL, NULL, '2026-03-12 09:58:57', 'uploads/profiles/user_7_1773310521.png', NULL),
-(8, 'asdasd', 'asd@a.a', '$2y$10$GZVlgEAe5FxMG2KXSLBxXuAKna/ptvWgFMh1x.Szr1kswtRGN.EQq', 0, NULL, NULL, '2026-03-12 10:17:16', 'uploads/profiles/user_8_1773666004.gif', NULL),
 (9, 'ma', 'bamagx@gmail.com', '$2y$12$//G92EfXL.cETuRAAIzU4u9a8bhd8rjYURVP/Un44382H4HyDcA9m', 1, NULL, NULL, '2026-03-24 09:17:51', 'uploads/profiles/default.png', NULL),
-(14, 'molnarm', 'marcell.13.molnar@gmail.com', '$2y$12$ao/e.V.cecF1xspfehlkSemud1G0wwohDPnv8ITeQaSib5qT7W4cu', 0, 'f336c34f426c0b85b5a21bec7e3c3f918e2197086c4a58c533154ac9efd9d100', '2026-04-08 22:25:39', '2026-04-08 21:25:31', 'uploads/profiles/default.png', NULL);
+(14, 'molnarm', 'marcell.13.molnar@gmail.com', '$2y$12$ao/e.V.cecF1xspfehlkSemud1G0wwohDPnv8ITeQaSib5qT7W4cu', 0, 'f336c34f426c0b85b5a21bec7e3c3f918e2197086c4a58c533154ac9efd9d100', '2026-04-08 22:25:39', '2026-04-08 21:25:31', 'uploads/profiles/default.png', NULL),
+(15, 'test_user', 'user@user.hu', '$2y$12$XD.z5aU6tqUE8dFKn149wuHeHk.qVuvR2826EkjOa8VMRdJAh2AGS', 0, NULL, NULL, '2026-04-20 12:17:18', 'uploads/profiles/default.png', NULL),
+(16, 'test_admin', 'admin@admin.hu', '$2y$12$68Ln86zTWkiuQkEjAXqceujUBotZ6im2ja6o5O4Cd/NBWU8l4Cu/W', 1, NULL, NULL, '2026-04-20 12:19:20', 'uploads/profiles/default.png', NULL);
 
 -- --------------------------------------------------------
 
@@ -358,7 +357,7 @@ ALTER TABLE `scores`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `weapons`

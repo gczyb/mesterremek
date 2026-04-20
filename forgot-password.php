@@ -22,7 +22,6 @@ if (isset($_GET['token'])) {
 // Handle password reset request
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_reset'])) {
     $email = trim($_POST['email']);
-    
     if (empty($email)) {
         $error = 'Please enter your email';
     } else {
@@ -31,37 +30,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_reset'])) {
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
-        
         if ($result->num_rows === 1) {
             $reset_token = bin2hex(random_bytes(32));
-            $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
-            
+            $expires = date('Y-m-d H:i:s', strtotime('+1 hour')); 
             $stmt = $conn->prepare("UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE email = ?");
             $stmt->bind_param("sss", $reset_token, $expires, $email);
-            $stmt->execute();
-            
+            $stmt->execute();   
             $reset_link = "http://" . $_SERVER['HTTP_HOST'] . "/forgot-password.php?token=" . $reset_token;
-            
-            // --- SEND PASSWORD RESET EMAIL VIA PHPMAILER ---
             $mail = new PHPMailer(true);
-
             try {
-                // Server settings
                 $mail->isSMTP();                                            
                 $mail->Host       = 'smtp.gmail.com'; 
-                $mail->SMTPAuth   = true;                                   
-                
+                $mail->SMTPAuth   = true;                                    
                 $mail->Username   = 'geczyba@gmail.com';
-                $mail->Password   = 'kqxzzlwwfktyqvhi';
-                
+                $mail->Password   = 'kqxzzlwwfktyqvhi';   
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;         
                 $mail->Port       = 465;                                    
-
-                // Recipients
                 $mail->setFrom('noreply@treasurequest.com', 'Treasure Quest');
                 $mail->addAddress($email);
-
-                // Content
                 $mail->isHTML(true);                                  
                 $mail->Subject = 'Treasure Quest - Password Reset Request';
                 $mail->Body    = "
@@ -72,29 +58,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_reset'])) {
                         <p style='font-size: 16px; line-height: 1.5;'>We received a request to reset your Treasure Quest password.</p>
                         <p style='font-size: 16px; line-height: 1.5;'>Click the link below to set a new password. This link will expire in 1 hour.</p>
                         <div style='margin: 30px 0;'>
-                            <a href='" . $reset_link . "' style='background-color: #fbbf24; color: #000000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Reset Password</a>
+                            <a href='" . $reset_link . "' style='background-color: #fbbf24; color: #000000; padding: 12px 24px; 
+                            text-decoration: none; border-radius: 6px; font-weight: bold;'>Reset Password</a>
                         </div>
                         <p style='font-size: 12px; color: #94a3b8; margin-top: 30px; border-top: 1px solid #334155; padding-top: 15px;'>If you did not request this, please safely ignore this email. Your password will remain unchanged.</p>
                     </div>
                 </body>
                 </html>";
-
                 $mail->send();
-                // Standard success message if email sends perfectly
-                $success = 'If an account exists with that email, a reset link has been sent.';
-                
+                $success = 'If an account exists with that email, a reset link has been sent.';   
             } catch (Exception $e) {
-                // LOCALHOST DEV HACK: If the email fails to send, just show the link on screen!
                 error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
                 $success = '<strong>DEV MODE (Email Failed):</strong> <a href="' . $reset_link . '" style="color: #fbbf24; text-decoration: underline;">Click here to simulate opening the email link</a>';
-            }
-            // ---------------------------------
-            
+            }      
         } else {
-            // We always show success even if the email doesn't exist to prevent email enumeration attacks
             $success = 'If an account exists with that email, a reset link has been sent.';
-        }
-        
+        } 
         $stmt->close();
         $conn->close();
     }

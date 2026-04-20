@@ -19,8 +19,6 @@ $conn = getDBConnection();
 if ($action === 'login') {
     $email = $data['email'] ?? '';
     $password = $data['password'] ?? '';
-
-    // Check credentials (ADDED profile_picture to SELECT)
     $stmt = $conn->prepare("SELECT id, password, username, profile_picture FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -29,15 +27,10 @@ if ($action === 'login') {
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
         if (password_verify($password, $user['password'])) {
-            // Generate a secure token
             $token = bin2hex(random_bytes(32));
-
-            // Save token to database
             $update = $conn->prepare("UPDATE users SET api_token = ? WHERE id = ?");
             $update->bind_param("si", $token, $user['id']);
             $update->execute();
-
-            // Construct full URL for Godot
             $baseUrl = 'http://localhost/geczygod/mesterremek/';
             $pfpPath = !empty($user['profile_picture']) ? $baseUrl . $user['profile_picture'] : $baseUrl . 'uploads/profiles/default.png';
 
