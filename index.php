@@ -120,10 +120,10 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                             <source src="your-downloaded-video.mp4" type="video/mp4">
                         </video>
                         <div id="playBtnContent">
-                            <div class="control-btn initial-play-btn" title="Watch Gameplay Trailer">
+                            <div class="control-btn initial-play-btn" title="Watch Gameplay">
                                 <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                             </div>
-                            <p>Watch Gameplay Trailer</p>
+                            <p>Watch Gameplay</p>
                         </div>
                         <div id="controlsGroup" class="controls-group">
                             <button id="playPauseBtn" class="control-btn" onclick="togglePlayPause(event)" title="Play/Pause Video">
