@@ -110,7 +110,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             <a href="index.php">
                 <img src="img/logo.png" alt="Treasure Quest Logo" class="hero-logo">
             </a>
-            <p>Embark on an epic 2D adventure through treacherous dungeons, mystical forests, and ancient ruins. Master the art of combat, discover legendary treasures, and become the hero of legend.</p>
+            <p>Embark on an epic 2D adventure through treacherous dungeons, mystical forests, and ancient ruins. Master the art of combat, discover legendary treasures, and become the hero of the World.</p>
             <div class="video-backdrop" id="videoBackdrop" onclick="minimizeVideo()"></div>
             <div class="video-wrapper">
                 <div id="mainVideo" class="video-placeholder initial-state" onclick="startVideo()">
@@ -149,8 +149,8 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
             <div class="about-grid">
                 <div class="about-content">
                     <h2>About the Game</h2>
-                    <p><span class="highlight">Treasure Quest</span> is a love letter to classic 2D sidescrolling adventures, combining tight platforming mechanics with deep RPG elements and a charming retro aesthetic.</p>
-                    <p>Armed with your trusty weapon and an arsenal of magical abilities, you'll traverse dangerous lands, battle fierce enemies, and uncover the secrets of a forgotten civilization.</p>
+                    <p><span class="highlight">Treasure Quest</span> is a love letter to classic tactical role-playing games with a charming retro aesthetic.</p>
+                    <p>Armed with your trusty weapon, you'll traverse dangerous lands, battle fierce enemies, and uncover the secrets of a forgotten civilization.</p>
                     <p>Every level is meticulously crafted to challenge your skills while rewarding exploration and creativity. Whether you're speedrunning through levels or hunting for every last collectible, Treasure Quest offers endless replayability.</p>
                     <div class="about-info">
                         <div class="info-grid">
@@ -163,7 +163,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                 </div>
                 <div class="about-image-container">
                     <div class="about-image">
-                        <img src="https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080" alt="Game artwork">
+                        <img src="img/about.png" alt="Game artwork">
                     </div>
                     <div class="glow-effect glow-bottom-right"></div>
                     <div class="glow-effect glow-top-left"></div>
@@ -191,12 +191,12 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                 <div class="feature-card">
                     <div class="feature-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
                     <h3>Memorable Characters</h3>
-                    <p>Meet a cast of quirky allies and fearsome bosses, each with their own stories and personalities.</p>
+                    <p>Meet a cast of quirky allies and fearsome bosses.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg></div>
-                    <h3>Magical Abilities</h3>
-                    <p>Unlock powerful spells and special abilities. Combine them creatively to overcome any obstacle.</p>
+                    <h3>Strategic Maneuvering</h3>
+                    <p>Command the field with precision. Use forests for cover and mountains for defense as you outflank your enemies. In this world, positioning is the difference between victory and defeat.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg></div>
@@ -223,26 +223,26 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                     <div class="carousel-track" id="carouselTrack">
                         <div class="carousel-item">
                             <div class="video-container">
-                                <img src="https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?w=1080" alt="Epic Boss Battles">
-                                <div class="carousel-caption"><h3>Epic Boss Battles</h3></div>
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <div class="video-container">
-                                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1080" alt="Retro Inspired Graphics">
-                                <div class="carousel-caption"><h3>Retro Inspired Graphics</h3></div>
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <div class="video-container">
-                                <img src="https://images.unsplash.com/photo-1553986782-9f6de60b51b4?w=1080" alt="Heroic Adventures">
+                                <img src="img/screenshot-gallery.png" alt="Heroic Adventures">
                                 <div class="carousel-caption"><h3>Heroic Adventures</h3></div>
                             </div>
                         </div>
                         <div class="carousel-item">
                             <div class="video-container">
-                                <img src="https://images.unsplash.com/photo-1707042711207-2b38f5d93974?w=1080" alt="Mystical Worlds">
+                                <img src="img/screenshot-gallery2.png" alt="Mystical Worlds">
                                 <div class="carousel-caption"><h3>Mystical Worlds</h3></div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="video-container">
+                                <img src="img/screenshot-gallery3.png" alt="Challenging Objectives">
+                                <div class="carousel-caption"><h3>Challenging Objectives</h3></div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="video-container">
+                                <img src="img/screenshot-gallery4.png" alt="Epic Boss Battles">
+                                <div class="carousel-caption"><h3>Epic Boss Battles</h3></div>
                             </div>
                         </div>
                     </div>
