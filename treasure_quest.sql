@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 20, 2026 at 02:21 PM
+-- Generation Time: May 09, 2026 at 01:47 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -48,12 +48,10 @@ CREATE TABLE `characters` (
 --
 
 INSERT INTO `characters` (`character_id`, `name`, `class_id`, `ally`, `base_hp`, `base_str`, `base_dex`, `base_skill`, `base_def`, `base_luck`, `base_move`, `description`, `image_url`) VALUES
-(1, 'Tibi', 1, 1, 22, 6, 5, 4, 4, 2, 5, 'A dependable frontline fighter. Good health and strength.', 'uploads/characters/img_69b936f37e425.jpg'),
-(2, 'Tibo', 2, 1, 18, 5, 6, 6, 3, 3, 5, 'A sharp-eyed archer. Excels at dealing chip damage from behind the lines.', NULL),
-(3, 'Geri', 4, 1, 25, 7, 3, 4, 9, 2, 4, 'A heavily armored knight. Moves slowly but can block chokepoints.', NULL),
+(1, 'Woodland Scout', 1, 1, 22, 6, 5, 4, 4, 2, 5, 'A dependable frontline fighter. Good health and strength.', ''),
+(3, 'Rookie Knight', 4, 1, 25, 7, 3, 4, 9, 2, 4, 'A heavily armored knight. Moves slowly but can block chokepoints.', NULL),
 (5, 'Goblin Grunt', 1, 0, 18, 4, 4, 3, 2, 0, 5, 'A weak but aggressive forest dweller.', NULL),
-(6, 'Goblin Scout', 2, 0, 16, 3, 5, 4, 2, 0, 5, 'A goblin equipped with a crude bow.', NULL),
-(7, 'Orc Brute', 4, 0, 26, 8, 2, 2, 5, 0, 4, 'A terrifyingly strong and durable orc boss.', NULL);
+(7, 'Slime', 5, 0, 26, 8, 2, 2, 5, 0, 4, 'A terrifyingly strong and durable enemy.', NULL);
 
 -- --------------------------------------------------------
 
@@ -139,9 +137,7 @@ CREATE TABLE `map_characters` (
 
 INSERT INTO `map_characters` (`map_id`, `character_id`) VALUES
 (1, 1),
-(1, 2),
 (1, 5),
-(1, 6),
 (2, 3),
 (2, 5),
 (2, 7);
@@ -253,8 +249,8 @@ CREATE TABLE `wiki_entries` (
 
 INSERT INTO `wiki_entries` (`id`, `title`, `content`, `image_url`, `created_at`) VALUES
 (6, 'The Basics: Move and Fight', 'Ready to start? Here is how you control your hero:\r\nMove: Use WASD or select the tiles to walk around.\r\nAttack: Use Left Click to swing your weapon.\r\nTip: Watch the red bars above enemies. When the bar is empty, they are defeated!', 'uploads/wiki/img_69cad0333bacf.png', '2026-03-30 19:34:11'),
-(7, 'Navigating The Game Menu', 'Here is a quick look at what the buttons on the start screen do:\r\nStory: Start your main adventure here.\r\nChallenge: Test your skills in difficult, special levels.\r\nLogin: Sign in to your account to save your progress.\r\nLeaderboard: Opens our website in your browser so you can see the top-ranked players.\r\nHelp: Opens our website for technical support.\r\nTip: If you want to see your name on the Leaderboard, make sure you are logged in while you play!', 'uploads/wiki/img_69cfe4fa573ec.png', '2026-04-03 16:04:10'),
-(8, 'Game Objective: How To Complete The Challenge Mode', 'To complete a level in Treasure Quest, you must reach the finish line. Here is your checklist:\r\nDefeat All Enemies: You cannot finish the level until every enemy on the screen is gone. Use teamwork to take them down!\r\nFind Loot & Caches: Search the map for treasure chests and hidden caches. These contain items you need to get stronger.\r\nReach the End: Once the enemies are defeated and the loot is collected, move both players to the exit point to win.\r\nTip: Speed is key! Finishing the map with the least turns is the best way to earn a high score and climb to the top of the Leaderboard.', 'uploads/wiki/img_69d6d7f1c52e5.jpg', '2026-04-06 17:17:39');
+(7, 'Navigating The Game Menu', 'Here is a quick look at what the buttons on the start screen do:\r\nStory: Start your main adventure here.\r\nChallenge: Test your skills in difficult, special levels.\r\nLogin: Sign in to your account to save your progress.\r\nLeaderboard: Opens our website in your browser so you can see the top-ranked players.\r\nHelp: Opens our website for technical support.\r\nTip: If you want to see your name on the Leaderboard, make sure you are logged in while you play!', 'uploads/wiki/img_69ff1aba66f5c.png', '2026-04-03 16:04:10'),
+(8, 'Game Objective: How To Complete The Challenge Mode', 'To complete a level in Treasure Quest, you must reach the finish line. Here is your checklist:\r\nDefeat All Enemies: You cannot finish the level until every enemy on the screen is gone. Use teamwork to take them down!\r\nFind Loot & Caches: Search the map for treasure chests and hidden caches. These contain items you need to get stronger.\r\nReach the End: Once the enemies are defeated and the loot is collected, move both players to the exit point to win.\r\nTip: Speed is key! Finishing the map with the least turns is the best way to earn a high score and climb to the top of the Leaderboard.', 'uploads/wiki/img_69ff1aaf67ba1.jpg', '2026-04-06 17:17:39');
 
 --
 -- Indexes for dumped tables
