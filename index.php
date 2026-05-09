@@ -117,7 +117,7 @@ $isHomePage = ($currentPage === 'index.php' || $currentPage === '');
                     <div class="video-container">
                         <div class="video-overlay" id="videoOverlay"></div>
                         <video id="localVideo" playsinline>
-                            <source src="your-downloaded-video.mp4" type="video/mp4">
+                            <source src="img/gameplay_video.mp4" type="video/mp4">
                         </video>
                         <div id="playBtnContent">
                             <div class="control-btn initial-play-btn" title="Watch Gameplay">
