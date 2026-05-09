@@ -261,6 +261,14 @@ $isAdmin = ($user && isset($user['admin']) && $user['admin'] == 1);
             <?php endif; ?>
 
         <?php elseif ($activeTab === 'classes'): ?>
+            <div class="coming-soon-banner">
+                <span class="banner-icon">⚔️</span>
+                <div class="banner-text">
+                    <h3>Classes Coming Soon!</h3>
+                    <p>The Realm Masters are currently working on creating classes. Check back later for updates.</p>
+                </div>
+            </div>
+            
             <?php if ($wiki_data && $wiki_data->num_rows > 0): ?>
                 <div class="wiki-card wiki-card-table">
                     <div class="table-responsive-wrapper">
