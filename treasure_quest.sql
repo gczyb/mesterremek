@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: May 09, 2026 at 01:47 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Host: 127.0.0.1
+-- Generation Time: May 11, 2026 at 09:03 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -48,10 +48,10 @@ CREATE TABLE `characters` (
 --
 
 INSERT INTO `characters` (`character_id`, `name`, `class_id`, `ally`, `base_hp`, `base_str`, `base_dex`, `base_skill`, `base_def`, `base_luck`, `base_move`, `description`, `image_url`) VALUES
-(1, 'Woodland Scout', 1, 1, 22, 6, 5, 4, 4, 2, 5, 'A dependable frontline fighter. Good health and strength.', ''),
-(3, 'Rookie Knight', 4, 1, 25, 7, 3, 4, 9, 2, 4, 'A heavily armored knight. Moves slowly but can block chokepoints.', NULL),
-(5, 'Goblin Grunt', 1, 0, 18, 4, 4, 3, 2, 0, 5, 'A weak but aggressive forest dweller.', NULL),
-(7, 'Slime', 5, 0, 26, 8, 2, 2, 5, 0, 4, 'A terrifyingly strong and durable enemy.', NULL);
+(1, 'Knight', 2, 1, 22, 6, 5, 4, 4, 2, 5, 'A dependable frontline fighter. Good health and strength.', 'uploads/characters/img_6a0226a9a4541.png'),
+(3, 'Soldier', 4, 1, 25, 7, 3, 4, 9, 2, 4, 'A heavily armored knight. Moves slowly but can block chokepoints.', 'uploads/characters/img_6a0225c231eb6.png'),
+(5, 'Orc', 1, 0, 18, 4, 4, 3, 2, 0, 5, 'A weak but aggressive forest dweller.', 'uploads/characters/img_6a02266896ea7.png'),
+(7, 'Slime', 6, 0, 26, 8, 2, 2, 5, 0, 4, 'A terrifyingly strong and durable enemy.', 'uploads/characters/img_6a02263466a75.png');
 
 -- --------------------------------------------------------
 
@@ -75,7 +75,8 @@ INSERT INTO `classes` (`class_id`, `name`, `description`, `image_url`) VALUES
 (2, 'Archer', 'A ranged specialist who strikes from afar but is vulnerable up close.', NULL),
 (3, 'Mage', 'A spellcaster targeting the enemy\'s magical resistance.', NULL),
 (4, 'Knight', 'A heavily armored wall. High Defense, but very low Speed and Movement.', NULL),
-(5, 'Thief', 'A fragile but incredibly fast rogue. High Dexterity and Luck for dodging.', NULL);
+(5, 'Thief', 'A fragile but incredibly fast rogue. High Dexterity and Luck for dodging.', NULL),
+(6, '???', 'Unknown entity.', 'uploads/classes/img_6a02275aa62f8.png');
 
 -- --------------------------------------------------------
 
@@ -162,7 +163,8 @@ CREATE TABLE `scores` (
 
 INSERT INTO `scores` (`score_id`, `user_id`, `map_id`, `turns`, `date`) VALUES
 (4, 2, 2, 25, '2026-01-29 15:00:00'),
-(5, 4, 2, 24, '2026-01-28 18:45:00');
+(5, 4, 2, 24, '2026-01-28 18:45:00'),
+(6, 1, 2, 5, '2026-05-11 20:48:45');
 
 -- --------------------------------------------------------
 
@@ -188,7 +190,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `admin`, `reset_token`, `reset_token_expires`, `created_at`, `profile_picture`, `api_token`) VALUES
-(1, 'gx', 'geczyba@gmail.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 1, NULL, NULL, '2026-01-29 07:28:32', 'uploads/profiles/user_1_1773664004.jpg', NULL),
+(1, 'gx', 'geczyba@gmail.com', '$2y$10$z1uPAfFBbQYVxsSgbDfJRuYKM7038aqy7TVMQvvrCzFRs75Iu0LKy', 1, NULL, NULL, '2026-01-29 07:28:32', 'uploads/profiles/user_1_1778500167.jpg', '2457af88016f4dbff5c0020dfa199f5f51bd81d8805c465a670b7ab2b01d99d5'),
 (2, 'SpeedRunner99', 'speed@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
 (3, 'CasualGamer', 'casual@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
 (4, 'QuestMaster', 'master@example.com', '$2y$10$LN8GWt8Q3qmjctp8pShKR.6V1yeiX79JTl0e4/U2luoJz9QkJDos.', 0, NULL, NULL, '2026-01-29 07:45:14', NULL, NULL),
@@ -250,7 +252,7 @@ CREATE TABLE `wiki_entries` (
 INSERT INTO `wiki_entries` (`id`, `title`, `content`, `image_url`, `created_at`) VALUES
 (6, 'The Basics: Move and Fight', 'Ready to start? Here is how you control your hero:\r\nMove: Use WASD or select the tiles to walk around.\r\nAttack: Use Left Click to swing your weapon.\r\nTip: Watch the red bars above enemies. When the bar is empty, they are defeated!', 'uploads/wiki/img_69cad0333bacf.png', '2026-03-30 19:34:11'),
 (7, 'Navigating The Game Menu', 'Here is a quick look at what the buttons on the start screen do:\r\nStory: Start your main adventure here.\r\nChallenge: Test your skills in difficult, special levels.\r\nLogin: Sign in to your account to save your progress.\r\nLeaderboard: Opens our website in your browser so you can see the top-ranked players.\r\nHelp: Opens our website for technical support.\r\nTip: If you want to see your name on the Leaderboard, make sure you are logged in while you play!', 'uploads/wiki/img_69ff1aba66f5c.png', '2026-04-03 16:04:10'),
-(8, 'Game Objective: How To Complete The Challenge Mode', 'To complete a level in Treasure Quest, you must reach the finish line. Here is your checklist:\r\nDefeat All Enemies: You cannot finish the level until every enemy on the screen is gone. Use teamwork to take them down!\r\nFind Loot & Caches: Search the map for treasure chests and hidden caches. These contain items you need to get stronger.\r\nReach the End: Once the enemies are defeated and the loot is collected, move both players to the exit point to win.\r\nTip: Speed is key! Finishing the map with the least turns is the best way to earn a high score and climb to the top of the Leaderboard.', 'uploads/wiki/img_69ff1aaf67ba1.jpg', '2026-04-06 17:17:39');
+(8, 'Game Objective: How To Complete The Challenge Mode', 'Here is your checklist:\r\nDefeat All Enemies: You cannot finish the level until every enemy on the screen is gone. Use teamwork to take them down!\r\nFind Loot & Caches: Search the map for treasure chests and hidden caches. These contain items you need to get stronger.\r\nReach the End: Once the enemies are defeated and the loot is collected, move both players to the exit point to win.\r\nTip: Speed is key! Finishing the map with the least turns is the best way to earn a high score and climb to the top of the Leaderboard.', 'uploads/wiki/img_69ff1aaf67ba1.jpg', '2026-04-06 17:17:39');
 
 --
 -- Indexes for dumped tables
@@ -335,7 +337,7 @@ ALTER TABLE `characters`
 -- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
-  MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `class_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `maps`
@@ -353,7 +355,7 @@ ALTER TABLE `scores`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `weapons`
@@ -365,7 +367,7 @@ ALTER TABLE `weapons`
 -- AUTO_INCREMENT for table `wiki_entries`
 --
 ALTER TABLE `wiki_entries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
