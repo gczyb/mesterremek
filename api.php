@@ -31,7 +31,7 @@ if ($action === 'login') {
             $update = $conn->prepare("UPDATE users SET api_token = ? WHERE id = ?");
             $update->bind_param("si", $token, $user['id']);
             $update->execute();
-            $baseUrl = 'http://localhost/geczygod/mesterremek/';
+            $baseUrl = 'http://localhost/mesterremek/';
             $pfpPath = !empty($user['profile_picture']) ? $baseUrl . $user['profile_picture'] : $baseUrl . 'uploads/profiles/default.png';
 
             echo json_encode([
